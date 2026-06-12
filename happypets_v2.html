@@ -1,0 +1,2478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Happy Pets — Premium Pet Care, Delhi NCR</title>
+
+<!-- Google Analytics 4 — replace G-XXXXXXXXXX with your Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', {
+    page_title: 'Happy Pets Home',
+    page_location: window.location.href,
+    send_page_view: true
+  });
+  // Central tracking helper — wraps gtag so we never throw if blocked
+  window.HP = window.HP || {};
+  HP.track = function(eventName, params) {
+    try {
+      gtag('event', eventName, Object.assign({ platform: 'happy_pets_web', city_context: 'delhi_ncr' }, params));
+    } catch(e) {}
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+<style>
+/* ─────────────────────────────────────────
+   DESIGN TOKENS — Warm, inviting palette
+   Signature: amber-green duotone glow + 
+   rounded everything + warm shadow tints
+───────────────────────────────────────── */
+:root {
+  /* Core palette */
+  --ink:       #0E1A10;
+  --forest:    #1B4030;
+  --moss:      #2A6048;
+  --sage:      #4CAF80;
+  --mint:      #C8F0D8;
+  --amber:     #E8A838;
+  --amber-soft:#FFF0C8;
+  --peach:     #FF8C5A;
+  --peach-soft:#FFE8D8;
+  --cream:     #FDFAF4;
+  --warm-white:#FFFFFF;
+  --parchment: #F5EFE4;
+  --border:    #E8DFD0;
+  --mid:       #7A7060;
+  --soft:      #A89880;
+
+  /* Warm shadows — tinted, not grey */
+  --sh-xs: 0 2px 8px rgba(30,60,40,.06);
+  --sh-sm: 0 4px 20px rgba(30,60,40,.09);
+  --sh-md: 0 12px 48px rgba(30,60,40,.13);
+  --sh-lg: 0 32px 96px rgba(30,60,40,.18);
+  --sh-amber: 0 8px 32px rgba(232,168,56,.25);
+  --sh-peach: 0 8px 32px rgba(255,140,90,.3);
+
+  /* Radius — rounder = friendlier */
+  --r-xs: 8px;
+  --r-sm: 14px;
+  --r-md: 22px;
+  --r-lg: 32px;
+  --r-xl: 60px;
+
+  /* Typography */
+  --font-d: 'Lora', Georgia, serif;
+  --font-b: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-m: 'DM Mono', monospace;
+
+  /* Easing */
+  --ease:   cubic-bezier(.4,0,.2,1);
+  --spring: cubic-bezier(.34,1.56,.64,1);
+  --smooth: cubic-bezier(.25,.46,.45,.94);
+}
+
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  /* Smooth overscroll feel */
+  -webkit-overflow-scrolling: touch;
+}
+body {
+  font-family: var(--font-b);
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.65;
+  overflow-x: hidden;
+  /* Prevent layout shift during font load */
+  font-display: swap;
+}
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+select, input { font: inherit; border: none; background: none; outline: none; }
+img { max-width: 100%; display: block; }
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--parchment); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--sage), var(--amber)); border-radius: 3px; }
+
+/* ── CONTAINER ── */
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+/* ─────────────────────────────────────────
+   NAVIGATION
+───────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  padding: 20px 0;
+  transition: all .5s var(--smooth);
+}
+.nav.up {
+  background: rgba(253,250,244,.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 1px 0 var(--border), var(--sh-xs);
+  padding: 14px 0;
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo { display: flex; align-items: center; gap: 11px; }
+.logo-mark {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--forest), var(--moss));
+  border-radius: 12px;
+  display: grid; place-items: center; font-size: 1.1rem;
+  box-shadow: var(--sh-sm);
+  transition: transform .4s var(--spring), box-shadow .3s;
+  flex-shrink: 0;
+}
+.logo-mark:hover { transform: rotate(-10deg) scale(1.08); box-shadow: var(--sh-md); }
+.logo-name {
+  font-family: var(--font-d); font-size: 1.32rem; font-weight: 600;
+  color: var(--forest); letter-spacing: -.01em;
+}
+.logo-name em { font-style: normal; color: var(--peach); }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links a {
+  font-size: .875rem; font-weight: 500; color: var(--forest);
+  transition: color .2s; position: relative; letter-spacing: .01em;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -3px; left: 0; right: 0; height: 2px;
+  background: var(--peach); border-radius: 2px;
+  transform: scaleX(0); transition: transform .3s var(--spring);
+  transform-origin: left;
+}
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-links a:hover { color: var(--peach); }
+.nav-cta {
+  background: linear-gradient(135deg, var(--forest), var(--moss)) !important;
+  color: #fff !important; padding: 11px 24px; border-radius: var(--r-xl);
+  font-size: .83rem !important; font-weight: 600 !important;
+  box-shadow: var(--sh-sm); transition: transform .3s var(--spring), box-shadow .3s !important;
+}
+.nav-cta::after { display: none !important; }
+.nav-cta:hover { transform: translateY(-2px) !important; box-shadow: var(--sh-md) !important; }
+.hamburger { display: none; flex-direction: column; gap: 5px; padding: 4px; }
+.hamburger span { width: 22px; height: 2px; background: var(--forest); border-radius: 2px; transition: .35s var(--smooth); display: block; }
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+.hero {
+  position: relative; min-height: 100vh;
+  background: radial-gradient(ellipse at 30% 50%, #0F2E1C 0%, #091A0F 60%, #0B2218 100%);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; padding: 130px 32px 90px;
+}
+/* Breathing dual glow — the signature element */
+.hero-glow-a {
+  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(76,175,128,.15) 0%, transparent 65%);
+  top: 50%; left: 35%; transform: translate(-50%,-50%);
+  animation: glowA 6s ease-in-out infinite; pointer-events: none;
+}
+.hero-glow-b {
+  position: absolute; width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,168,56,.1) 0%, transparent 65%);
+  top: 35%; right: 10%; transform: translateY(-50%);
+  animation: glowB 8s ease-in-out infinite 1s; pointer-events: none;
+}
+@keyframes glowA { 0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)} }
+@keyframes glowB { 0%,100%{opacity:.4;transform:translateY(-50%) scale(1)} 50%{opacity:.8;transform:translateY(-55%) scale(1.1)} }
+#bgCanvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+
+.hero-content { position: relative; z-index: 2; max-width: 820px; text-align: center; }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-m); font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--amber); background: rgba(232,168,56,.12);
+  border: 1px solid rgba(232,168,56,.28); padding: 8px 20px; border-radius: 100px;
+  margin-bottom: 36px;
+  animation: riseIn .9s var(--smooth) .1s both;
+}
+.hero-badge::before { content: '✦'; font-size: .6rem; opacity: .8; }
+
+.hero-h1 {
+  font-family: var(--font-d);
+  font-size: clamp(2.8rem, 7.5vw, 5.8rem);
+  font-weight: 500; color: #fff; line-height: 1.04;
+  letter-spacing: -.03em; margin-bottom: 26px;
+  animation: riseIn .9s var(--smooth) .28s both;
+}
+.hero-h1 em {
+  font-style: italic; display: block;
+  background: linear-gradient(90deg, var(--sage), var(--amber));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(.95rem, 2vw, 1.15rem);
+  color: rgba(255,255,255,.58); max-width: 520px; margin: 0 auto 52px;
+  line-height: 1.8; animation: riseIn .9s var(--smooth) .44s both;
+}
+@keyframes riseIn { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SEARCH ── */
+.search-wrap { animation: riseIn .9s var(--smooth) .58s both; margin-bottom: 56px; }
+.search-box {
+  display: flex; align-items: center;
+  background: rgba(255,255,255,.97);
+  border-radius: var(--r-xl); padding: 7px 7px 7px 24px;
+  box-shadow: var(--sh-lg), 0 0 0 1px rgba(255,255,255,.1);
+  max-width: 680px; margin: 0 auto;
+  transition: box-shadow .3s var(--ease), transform .3s var(--spring);
+}
+.search-box:focus-within { box-shadow: var(--sh-lg), 0 0 0 3px rgba(76,175,128,.35); transform: translateY(-2px); }
+.sf { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.sf svg { width: 17px; height: 17px; color: var(--soft); flex-shrink: 0; }
+.sf input, .sf select {
+  width: 100%; font-size: .92rem; color: var(--ink);
+  background: transparent;
+}
+.sf input::placeholder { color: #B0A090; }
+.sf select option { background: #fff; color: var(--ink); }
+.sdiv { width: 1px; height: 24px; background: var(--border); margin: 0 16px; flex-shrink: 0; }
+.sf-city { flex: 0 0 140px; }
+.sbtn {
+  background: linear-gradient(135deg, var(--peach), #FF6B35);
+  color: #fff; padding: 14px 32px; border-radius: 100px;
+  font-weight: 700; font-size: .9rem; flex-shrink: 0;
+  box-shadow: var(--sh-peach);
+  transition: transform .25s var(--spring), box-shadow .25s;
+  white-space: nowrap;
+}
+.sbtn:hover { transform: scale(1.05) translateY(-1px); box-shadow: 0 12px 40px rgba(255,140,90,.45); }
+.sbtn:active { transform: scale(.98); }
+
+/* ── HERO STATS ── */
+.hero-stats {
+  display: flex; align-items: center; justify-content: center;
+  animation: riseIn .9s var(--smooth) .72s both;
+}
+.hstat { text-align: center; padding: 0 36px; }
+.hstat-n {
+  display: block; font-family: var(--font-d); font-size: 2.8rem;
+  font-weight: 600; color: #fff; line-height: 1; margin-bottom: 6px;
+}
+.hstat-l { font-family: var(--font-m); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+.hdiv { width: 1px; height: 44px; background: rgba(255,255,255,.12); }
+.hero-scroll-hint {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: rgba(255,255,255,.3); font-family: var(--font-m); font-size: .66rem;
+  letter-spacing: .13em; text-transform: uppercase;
+}
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,.4), transparent);
+  animation: scrollLine 2s ease-in-out infinite;
+}
+@keyframes scrollLine { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+
+/* ─────────────────────────────────────────
+   SHARED SECTION STYLES
+───────────────────────────────────────── */
+.sec { padding: 120px 0; }
+.sec-alt { background: var(--warm-white); }
+.sec-warm { background: var(--parchment); }
+.sec-head { text-align: center; margin-bottom: 72px; }
+.eyebrow {
+  display: inline-block; font-family: var(--font-m); font-size: .7rem;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--peach);
+  margin-bottom: 14px;
+}
+.sec-head h2 {
+  font-family: var(--font-d); font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 500; color: var(--forest); line-height: 1.15; letter-spacing: -.02em;
+}
+.sec-head h2 em { font-style: italic; color: var(--peach); }
+.sec-head p { color: var(--mid); font-size: 1.05rem; margin-top: 14px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.75; }
+
+/* ─────────────────────────────────────────
+   SERVICES
+───────────────────────────────────────── */
+.srv-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px;
+}
+.srv-card {
+  background: var(--cream); border: 1.5px solid var(--border);
+  border-radius: var(--r-lg); padding: 38px 22px 30px; text-align: center;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: transform .45s var(--spring), box-shadow .4s var(--ease), border-color .3s;
+  /* GPU layer for smooth transform */
+  will-change: transform;
+}
+.srv-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(76,175,128,.07), rgba(232,168,56,.05));
+  opacity: 0; transition: opacity .4s var(--ease);
+  border-radius: inherit;
+}
+.srv-card:hover { transform: translateY(-10px); box-shadow: var(--sh-md); border-color: rgba(76,175,128,.4); }
+.srv-card:hover::before { opacity: 1; }
+.srv-ico {
+  font-size: 2.6rem; margin-bottom: 18px; display: block;
+  transition: transform .5s var(--spring);
+}
+.srv-card:hover .srv-ico { transform: scale(1.18) rotate(-6deg); }
+.srv-card h3 {
+  font-family: var(--font-d); font-size: 1.1rem; font-weight: 600;
+  color: var(--forest); margin-bottom: 10px;
+}
+.srv-card p { font-size: .82rem; color: var(--mid); line-height: 1.7; margin-bottom: 22px; }
+.srv-link {
+  font-size: .8rem; font-weight: 600; color: var(--sage); letter-spacing: .02em;
+  transition: color .25s, letter-spacing .25s;
+  display: inline-block;
+}
+.srv-card:hover .srv-link { color: var(--forest); letter-spacing: .04em; }
+
+/* ─────────────────────────────────────────
+   LISTINGS
+───────────────────────────────────────── */
+.filter-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 56px; }
+.fbtn {
+  padding: 11px 26px; border-radius: 100px;
+  border: 1.5px solid var(--border); font-size: .855rem; font-weight: 500;
+  color: var(--mid); background: var(--warm-white);
+  transition: all .3s var(--ease); position: relative; overflow: hidden;
+}
+.fbtn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--forest), var(--moss));
+  opacity: 0; transition: opacity .3s var(--ease); border-radius: inherit;
+}
+.fbtn span { position: relative; z-index: 1; transition: color .3s; }
+.fbtn:hover { border-color: var(--sage); color: var(--forest); transform: translateY(-1px); box-shadow: var(--sh-xs); }
+.fbtn.on { border-color: transparent; color: #fff; box-shadow: 0 4px 18px rgba(27,64,48,.22); }
+.fbtn.on::before { opacity: 1; }
+.fbtn.on span { color: #fff; }
+
+.lst-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  min-height: 300px;
+}
+
+/* ── LOADER with fun facts ── */
+.lst-loader {
+  grid-column: 1 / -1;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 0; padding: 80px 20px;
+}
+.loader-anim {
+  display: flex; gap: 8px; margin-bottom: 28px;
+}
+.loader-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sage);
+  animation: dotBounce 1.4s ease-in-out infinite;
+}
+.loader-dot:nth-child(1) { animation-delay: 0s; background: var(--sage); }
+.loader-dot:nth-child(2) { animation-delay: .2s; background: var(--amber); }
+.loader-dot:nth-child(3) { animation-delay: .4s; background: var(--peach); }
+@keyframes dotBounce {
+  0%,80%,100% { transform: scale(.6); opacity: .4; }
+  40% { transform: scale(1.2); opacity: 1; }
+}
+.loader-fact {
+  text-align: center; max-width: 380px;
+  animation: factFade 1s var(--ease) both;
+}
+.loader-fact .fact-label {
+  font-family: var(--font-m); font-size: .68rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--peach); margin-bottom: 8px; display: block;
+}
+.loader-fact p {
+  font-family: var(--font-d); font-size: 1.05rem; font-style: italic;
+  color: var(--forest); line-height: 1.65;
+}
+@keyframes factFade { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── LISTING CARD ── */
+.lcard {
+  background: var(--warm-white); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 28px;
+  transition: transform .45s var(--spring), box-shadow .35s var(--ease), border-color .3s;
+  opacity: 0; transform: translateY(20px);
+  animation: cardIn .5s var(--smooth) forwards;
+  will-change: transform;
+  position: relative; overflow: hidden;
+}
+.lcard::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--sage), var(--amber));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .4s var(--ease); border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+.lcard:hover { transform: translateY(-6px); box-shadow: var(--sh-md); border-color: rgba(76,175,128,.25); }
+.lcard:hover::after { transform: scaleX(1); }
+@keyframes cardIn { to{opacity:1;transform:translateY(0)} }
+
+.ch { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; gap: 8px; }
+.badge {
+  font-family: var(--font-m); font-size: .63rem; letter-spacing: .1em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 100px;
+  font-weight: 500; white-space: nowrap; flex-shrink: 0;
+}
+.bv { background: #E6F4EC; color: #1A6B40; }
+.bg { background: #FFF0E8; color: #B04020; }
+.bb { background: #EEF0FF; color: #3730A3; }
+.bs { background: #FFFBEB; color: #92400E; }
+.bt { background: #F5F0FF; color: #6D28D9; }
+.bd { background: #F3F4F6; color: #4B5563; }
+.c-city { font-size: .76rem; color: var(--soft); font-family: var(--font-m); white-space: nowrap; }
+.c-name {
+  font-family: var(--font-d); font-size: 1.22rem; font-weight: 600;
+  color: var(--forest); margin-bottom: 8px; line-height: 1.3;
+}
+.c-addr {
+  font-size: .82rem; color: var(--mid); line-height: 1.6; margin-bottom: 20px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.cf {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 16px; border-top: 1px solid var(--border); gap: 10px;
+}
+.c-ph { font-size: .82rem; color: var(--forest); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+.c-ph svg { width: 13px; height: 13px; flex-shrink: 0; stroke: var(--sage); }
+.c-ph a { color: inherit; transition: color .2s; }
+.c-ph a:hover { color: var(--peach); }
+.c-hrs { font-size: .74rem; color: var(--soft); font-family: var(--font-m); text-align: right; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Load more */
+.lst-foot { text-align: center; margin-top: 52px; }
+.more-btn {
+  background: var(--warm-white); color: var(--forest);
+  border: 2px solid var(--forest); padding: 15px 48px; border-radius: 100px;
+  font-weight: 600; font-size: .92rem;
+  transition: all .35s var(--smooth); position: relative; overflow: hidden;
+}
+.more-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--forest), var(--moss));
+  opacity: 0; transition: opacity .35s var(--ease);
+}
+.more-btn span { position: relative; z-index: 1; transition: color .35s; }
+.more-btn:hover { border-color: transparent; box-shadow: var(--sh-md); transform: translateY(-3px); }
+.more-btn:hover::before { opacity: 1; }
+.more-btn:hover span { color: #fff; }
+
+.no-res { grid-column: 1/-1; text-align: center; padding: 80px 20px; color: var(--mid); }
+.no-res span { font-size: 3rem; display: block; margin-bottom: 16px; }
+.no-res p { font-family: var(--font-d); font-size: 1.1rem; font-style: italic; }
+
+/* ─────────────────────────────────────────
+   SPECIES SECTION
+───────────────────────────────────────── */
+.spec-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.spec-item {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  background: var(--warm-white); border: 1.5px solid var(--border);
+  border-radius: var(--r-md); padding: 26px 28px; min-width: 108px;
+  cursor: default;
+  transition: transform .4s var(--spring), box-shadow .35s, border-color .3s;
+}
+.spec-item:hover { transform: translateY(-8px) scale(1.03); box-shadow: var(--sh-sm); border-color: rgba(76,175,128,.4); }
+.spec-item span { font-size: 2rem; transition: transform .4s var(--spring); display: block; }
+.spec-item:hover span { transform: scale(1.2) rotate(8deg); }
+.spec-item p { font-size: .8rem; font-weight: 600; color: var(--forest); letter-spacing: .01em; }
+
+/* ─────────────────────────────────────────
+   TRUST BAR — social proof strip
+───────────────────────────────────────── */
+.trust-sec {
+  padding: 60px 0;
+  background: linear-gradient(135deg, var(--forest), var(--moss));
+  overflow: hidden;
+}
+.trust-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+.trust-stat { text-align: center; }
+.trust-stat .ts-n {
+  font-family: var(--font-d); font-size: 2.4rem; font-weight: 600;
+  color: #fff; display: block; line-height: 1;
+}
+.trust-stat .ts-l { font-family: var(--font-m); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); display: block; margin-top: 6px; }
+.trust-div { width: 1px; height: 56px; background: rgba(255,255,255,.15); }
+.trust-quote {
+  flex: 1; min-width: 260px;
+  font-family: var(--font-d); font-style: italic; font-size: 1.1rem;
+  color: rgba(255,255,255,.7); text-align: center; line-height: 1.7;
+}
+
+/* ─────────────────────────────────────────
+   CTA SECTION
+───────────────────────────────────────── */
+.cta-sec {
+  padding: 120px 0;
+  background: radial-gradient(ellipse at 60% 50%, #0F2E1C 0%, #091A0F 100%);
+  position: relative; overflow: hidden;
+}
+.cta-sec::before {
+  content: ''; position: absolute; right: -80px; top: 50%; transform: translateY(-50%);
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,168,56,.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 56px; flex-wrap: wrap; position: relative; z-index: 1;
+}
+.cta-t .eyebrow { color: var(--amber); }
+.cta-t h2 {
+  font-family: var(--font-d); font-size: clamp(2rem, 3.5vw, 2.9rem);
+  color: #fff; font-weight: 400; margin: 14px 0 16px; line-height: 1.2;
+}
+.cta-t p { color: rgba(255,255,255,.55); font-size: .97rem; max-width: 420px; line-height: 1.8; }
+.cta-btns { display: flex; gap: 14px; flex-shrink: 0; flex-wrap: wrap; }
+.btn-fill {
+  background: linear-gradient(135deg, var(--peach), #FF6B35);
+  color: #fff; padding: 17px 36px; border-radius: 100px;
+  font-weight: 700; font-size: .92rem; display: inline-block;
+  box-shadow: var(--sh-peach);
+  transition: transform .3s var(--spring), box-shadow .3s;
+}
+.btn-fill:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 16px 48px rgba(255,140,90,.5); }
+.btn-out {
+  border: 1.5px solid rgba(255,255,255,.3); color: rgba(255,255,255,.75);
+  padding: 17px 36px; border-radius: 100px; font-size: .92rem; display: inline-block;
+  transition: border-color .3s, color .3s, background .3s;
+}
+.btn-out:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,.06); }
+
+/* ─────────────────────────────────────────
+   ABOUT
+───────────────────────────────────────── */
+.about-g { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start; }
+.about-t h2 {
+  font-family: var(--font-d); font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 500; color: var(--forest); line-height: 1.18; margin: 14px 0 24px;
+}
+.about-t p { color: var(--mid); line-height: 1.9; margin-bottom: 16px; font-size: .96rem; }
+.about-q {
+  font-family: var(--font-d); font-size: 1.2rem; color: var(--forest);
+  font-style: italic; margin-top: 28px; padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(76,175,128,.06), rgba(232,168,56,.04));
+  border-left: 3px solid var(--sage); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+.pillars { display: flex; flex-direction: column; gap: 20px; }
+.pillar {
+  display: flex; gap: 18px; align-items: flex-start;
+  padding: 22px 24px; background: var(--warm-white); border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  transition: transform .4s var(--spring), box-shadow .35s, border-color .3s;
+}
+.pillar:hover { transform: translateY(-4px) translateX(4px); box-shadow: var(--sh-sm); border-color: rgba(76,175,128,.3); }
+.p-ico { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+.pillar h4 { font-size: .95rem; font-weight: 700; color: var(--forest); margin-bottom: 5px; }
+.pillar p { font-size: .83rem; color: var(--mid); line-height: 1.65; }
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+footer {
+  background: var(--ink); color: rgba(255,255,255,.5);
+  padding: 72px 0 32px;
+}
+.foot-top {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 48px;
+  padding-bottom: 56px; border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 32px;
+}
+.foot-brand { display: flex; flex-direction: column; gap: 14px; }
+.foot-logo { display: flex; align-items: center; gap: 10px; }
+.foot-logo .logo-mark { width: 32px; height: 32px; font-size: .9rem; }
+.foot-logo .logo-name { font-size: 1.15rem; color: #fff; }
+.foot-logo .logo-name em { color: var(--peach); font-style: normal; }
+.foot-brand > p { font-size: .82rem; color: rgba(255,255,255,.35); line-height: 1.7; max-width: 220px; }
+.foot-col h5 { font-size: .78rem; font-family: var(--font-m); letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 18px; }
+.foot-col a { display: block; font-size: .88rem; color: rgba(255,255,255,.5); margin-bottom: 12px; transition: color .2s; }
+.foot-col a:hover { color: #fff; }
+.foot-btm { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.foot-btm p { font-size: .78rem; color: rgba(255,255,255,.25); }
+.foot-btm a { font-size: .78rem; color: rgba(255,255,255,.25); transition: color .2s; }
+.foot-btm a:hover { color: rgba(255,255,255,.6); }
+
+/* ─────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────── */
+.rv {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity .8s var(--smooth), transform .8s var(--smooth);
+}
+.rv.in { opacity: 1; transform: translateY(0); }
+/* Stagger delays for grid children */
+.srv-card.rv:nth-child(1){ transition-delay:.06s }
+.srv-card.rv:nth-child(2){ transition-delay:.13s }
+.srv-card.rv:nth-child(3){ transition-delay:.2s }
+.srv-card.rv:nth-child(4){ transition-delay:.27s }
+.srv-card.rv:nth-child(5){ transition-delay:.34s }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media(max-width:1000px){
+  .srv-grid { grid-template-columns: repeat(3,1fr); }
+  .lst-grid { grid-template-columns: repeat(2,1fr); }
+  .about-g { grid-template-columns: 1fr; gap: 56px; }
+  .foot-top { grid-template-columns: 1fr 1fr; }
+}
+@media(max-width:760px){
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .srv-grid { grid-template-columns: repeat(2,1fr); }
+  .lst-grid { grid-template-columns: 1fr; }
+  .search-box { flex-direction: column; padding: 14px; border-radius: var(--r-lg); gap: 10px; align-items: stretch; }
+  .sdiv { width: 100%; height: 1px; margin: 0; }
+  .sbtn { border-radius: var(--r-md); text-align: center; }
+  .sf-city { width: 100%; flex: unset; }
+  .hstat { padding: 0 20px; }
+  .hstat-n { font-size: 2.2rem; }
+  .trust-inner { justify-content: center; }
+  .trust-div { display: none; }
+  .cta-inner { flex-direction: column; text-align: center; }
+  .cta-btns { justify-content: center; }
+}
+@media(max-width:520px){
+  .srv-grid { grid-template-columns: 1fr; }
+  .foot-top { grid-template-columns: 1fr; gap: 36px; }
+  .foot-btm { flex-direction: column; text-align: center; }
+}
+@media(prefers-reduced-motion:reduce){
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .rv { opacity: 1; transform: none; }
+  .lcard { opacity: 1; transform: none; }
+}
+
+/* ─────────────────────────────────────────
+   MOBILE NAV DRAWER
+───────────────────────────────────────── */
+.mobile-nav {
+  position: fixed; inset: 0; z-index: 190;
+  background: rgba(14,26,16,.55);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  opacity: 0; visibility: hidden;
+  transition: opacity .35s var(--smooth), visibility .35s;
+}
+.mobile-nav.open { opacity: 1; visibility: visible; }
+.mobile-nav-panel {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: min(320px, 88vw);
+  background: var(--cream);
+  padding: 88px 32px 40px;
+  display: flex; flex-direction: column; gap: 4px;
+  transform: translateX(100%);
+  transition: transform .4s var(--spring);
+  box-shadow: -8px 0 48px rgba(14,26,16,.15);
+}
+.mobile-nav.open .mobile-nav-panel { transform: translateX(0); }
+.mobile-nav-panel a {
+  font-size: 1.15rem; font-weight: 500; color: var(--forest);
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+  display: block; transition: color .2s, padding-left .2s;
+}
+.mobile-nav-panel a:hover { color: var(--peach); padding-left: 6px; }
+.mobile-nav-panel a:last-child { border-bottom: none; }
+.mobile-nav-cta {
+  margin-top: 20px !important; border-bottom: none !important;
+  background: linear-gradient(135deg, var(--forest), var(--moss));
+  color: #fff !important; text-align: center;
+  padding: 16px 24px !important; border-radius: var(--r-xl) !important;
+  font-weight: 700 !important;
+}
+.mobile-nav-close {
+  position: absolute; top: 22px; right: 22px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--parchment); border: 1px solid var(--border);
+  display: grid; place-items: center; font-size: 1.1rem;
+  cursor: pointer; transition: background .2s, transform .2s;
+}
+.mobile-nav-close:hover { background: var(--border); transform: rotate(90deg); }
+
+/* Hamburger → X animation */
+.hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ─────────────────────────────────────────
+   MODAL BACKDROP + CONTAINER
+───────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(14,26,16,.5);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; visibility: hidden;
+  transition: opacity .35s var(--smooth), visibility .35s;
+}
+.modal-backdrop.open { opacity: 1; visibility: visible; }
+.modal {
+  background: var(--warm-white);
+  border-radius: var(--r-lg);
+  padding: 48px 44px;
+  width: 100%; max-width: 540px;
+  max-height: 90vh; overflow-y: auto;
+  position: relative;
+  transform: translateY(28px) scale(.97);
+  transition: transform .4s var(--spring);
+  box-shadow: var(--sh-lg);
+}
+.modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+.modal-close {
+  position: absolute; top: 18px; right: 18px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--parchment); border: 1px solid var(--border);
+  display: grid; place-items: center; font-size: 1rem;
+  cursor: pointer; transition: background .2s, transform .25s var(--spring);
+  color: var(--mid);
+}
+.modal-close:hover { background: var(--border); color: var(--forest); transform: rotate(90deg); }
+.modal-eyebrow {
+  font-family: var(--font-m); font-size: .68rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--peach); margin-bottom: 10px; display: block;
+}
+.modal h2 {
+  font-family: var(--font-d); font-size: 1.8rem; font-weight: 600;
+  color: var(--forest); margin-bottom: 8px; line-height: 1.2;
+}
+.modal-sub { font-size: .9rem; color: var(--mid); margin-bottom: 32px; line-height: 1.6; }
+
+/* ── FORM FIELDS ── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-row.full { grid-template-columns: 1fr; }
+.fld { display: flex; flex-direction: column; gap: 6px; }
+.fld label { font-size: .78rem; font-weight: 600; color: var(--forest); letter-spacing: .03em; }
+.fld label span { color: var(--peach); }
+.fld input, .fld select, .fld textarea {
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font-b); font-size: .9rem;
+  color: var(--ink); background: var(--warm-white);
+  transition: border-color .25s, box-shadow .25s;
+  outline: none; width: 100%;
+}
+.fld input::placeholder, .fld textarea::placeholder { color: #C0B8A8; }
+.fld input:focus, .fld select:focus, .fld textarea:focus {
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(76,175,128,.12);
+}
+.fld textarea { resize: vertical; min-height: 90px; }
+.fld select { cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  padding-right: 36px;
+}
+.form-submit {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--forest), var(--moss));
+  color: #fff; border-radius: var(--r-xl);
+  font-weight: 700; font-size: .97rem;
+  margin-top: 8px;
+  transition: transform .25s var(--spring), box-shadow .25s, opacity .2s;
+  box-shadow: 0 6px 24px rgba(27,64,48,.3);
+}
+.form-submit:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 36px rgba(27,64,48,.4); }
+.form-submit:active { transform: scale(.99); }
+.form-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+/* ── FORM SUCCESS STATE ── */
+.form-success {
+  text-align: center; padding: 24px 0;
+  display: none; flex-direction: column; align-items: center; gap: 14px;
+}
+.form-success.show { display: flex; }
+.success-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--mint), rgba(76,175,128,.2));
+  display: grid; place-items: center; font-size: 2rem;
+  animation: popIn .5s var(--spring) both;
+}
+@keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+.form-success h3 { font-family: var(--font-d); font-size: 1.5rem; color: var(--forest); }
+.form-success p { font-size: .9rem; color: var(--mid); max-width: 300px; line-height: 1.6; }
+.form-error { font-size: .8rem; color: #C0392B; margin-top: 10px; display: none; text-align: center; }
+.form-error.show { display: block; }
+
+/* ─────────────────────────────────────────
+   SPECIES PANEL (slide-up from bottom)
+───────────────────────────────────────── */
+.species-panel-backdrop {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(14,26,16,.45);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  opacity: 0; visibility: hidden;
+  transition: opacity .3s var(--smooth), visibility .3s;
+}
+.species-panel-backdrop.open { opacity: 1; visibility: visible; }
+.species-panel {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--warm-white);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 40px 36px 48px;
+  max-width: 680px; margin: 0 auto;
+  transform: translateY(100%);
+  transition: transform .45s var(--spring);
+}
+.species-panel-backdrop.open .species-panel { transform: translateY(0); }
+.sp-handle {
+  width: 40px; height: 4px; border-radius: 2px;
+  background: var(--border); margin: 0 auto 28px;
+}
+.sp-close {
+  position: absolute; top: 16px; right: 20px;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--parchment); border: 1px solid var(--border);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background .2s, transform .25s var(--spring); font-size: .9rem; color: var(--mid);
+}
+.sp-close:hover { background: var(--border); transform: rotate(90deg); }
+.sp-emoji { font-size: 3rem; margin-bottom: 12px; display: block; animation: popIn .4s var(--spring) both; }
+.sp-title { font-family: var(--font-d); font-size: 1.7rem; font-weight: 600; color: var(--forest); margin-bottom: 8px; }
+.sp-body { font-size: .93rem; color: var(--mid); line-height: 1.75; margin-bottom: 24px; max-width: 480px; }
+/* when listings ARE available */
+.sp-has-listings .sp-cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.sp-cta { 
+  padding: 13px 28px; border-radius: var(--r-xl); font-weight: 600; font-size: .9rem;
+  transition: transform .25s var(--spring), box-shadow .25s;
+  display: inline-block; cursor: pointer;
+}
+.sp-cta-primary {
+  background: linear-gradient(135deg, var(--forest), var(--moss));
+  color: #fff; box-shadow: 0 4px 16px rgba(27,64,48,.25);
+}
+.sp-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(27,64,48,.35); }
+.sp-cta-secondary {
+  border: 1.5px solid var(--border); color: var(--forest); background: var(--warm-white);
+}
+.sp-cta-secondary:hover { border-color: var(--sage); background: var(--mint); }
+/* notify chip for species with no listings */
+.sp-notify-form { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.sp-notify-input {
+  flex: 1; min-width: 200px; padding: 12px 16px;
+  border: 1.5px solid var(--border); border-radius: var(--r-xl);
+  font-family: var(--font-b); font-size: .88rem; color: var(--ink);
+  outline: none; transition: border-color .25s, box-shadow .25s;
+}
+.sp-notify-input:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(76,175,128,.1); }
+.sp-notify-btn {
+  padding: 12px 24px; border-radius: var(--r-xl);
+  background: var(--amber); color: var(--ink);
+  font-weight: 700; font-size: .88rem;
+  transition: transform .2s var(--spring), box-shadow .2s;
+  box-shadow: var(--sh-amber); white-space: nowrap;
+}
+.sp-notify-btn:hover { transform: translateY(-1px) scale(1.03); }
+.sp-fact {
+  margin-top: 22px; padding: 16px 18px;
+  background: linear-gradient(135deg, var(--amber-soft), rgba(76,175,128,.06));
+  border-radius: var(--r-md); border-left: 3px solid var(--amber);
+  font-size: .85rem; color: var(--mid); line-height: 1.6; font-style: italic;
+}
+@media(max-width:520px){
+  .modal { padding: 36px 24px; }
+  .form-row { grid-template-columns: 1fr; }
+  .species-panel { padding: 28px 20px 36px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     MOBILE NAV DRAWER
+═══════════════════════════════════════ -->
+<div class="mobile-nav" id="mobileNav" aria-hidden="true">
+  <div class="mobile-nav-panel" role="dialog" aria-label="Navigation menu">
+    <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">✕</button>
+    <a href="#services" class="mobile-nav-link">Services</a>
+    <a href="#listings" class="mobile-nav-link">Find Care</a>
+    <a href="#species"  class="mobile-nav-link">All Species</a>
+    <a href="#about"    class="mobile-nav-link">About</a>
+    <a href="#" class="mobile-nav-link mobile-nav-cta" id="mobileGetListed">Get Listed Free</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SPECIES PANEL
+═══════════════════════════════════════ -->
+<div class="species-panel-backdrop" id="speciesBackdrop" aria-hidden="true">
+  <div class="species-panel" role="dialog" aria-label="Species information" id="speciesPanel">
+    <div class="sp-handle"></div>
+    <button class="sp-close" id="speciesClose" aria-label="Close">✕</button>
+    <span class="sp-emoji" id="spEmoji">🐕</span>
+    <h2 class="sp-title" id="spTitle">Dogs</h2>
+    <p class="sp-body" id="spBody"></p>
+    <div id="spActionArea"></div>
+    <div class="sp-fact" id="spFact"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL: GET LISTED FREE
+═══════════════════════════════════════ -->
+<div class="modal-backdrop" id="modalListed" aria-hidden="true">
+  <div class="modal" role="dialog" aria-label="Get listed form">
+    <button class="modal-close" id="closeModalListed" aria-label="Close">✕</button>
+    <span class="modal-eyebrow">For Pet Care Providers</span>
+    <h2>Get Listed Free</h2>
+    <p class="modal-sub">Add your clinic, salon, shop, or service to Delhi NCR's fastest-growing pet care platform. Free for the first year.</p>
+
+    <div id="listedFormWrap">
+      <div class="form-row">
+        <div class="fld">
+          <label>Business Name <span>*</span></label>
+          <input type="text" id="l_biz" placeholder="e.g. PawsFirst Clinic" required/>
+        </div>
+        <div class="fld">
+          <label>Owner / Contact Name <span>*</span></label>
+          <input type="text" id="l_name" placeholder="Your full name" required/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fld">
+          <label>Phone Number <span>*</span></label>
+          <input type="tel" id="l_phone" placeholder="98100 XXXXX" required/>
+        </div>
+        <div class="fld">
+          <label>Email Address</label>
+          <input type="email" id="l_email" placeholder="you@example.com"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fld">
+          <label>Service Type <span>*</span></label>
+          <select id="l_type" required>
+            <option value="">Select type…</option>
+            <option>Veterinarian</option>
+            <option>Grooming Salon</option>
+            <option>Pet Boarding</option>
+            <option>Pet Shop</option>
+            <option>Dog Trainer</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>City <span>*</span></label>
+          <select id="l_city" required>
+            <option value="">Select city…</option>
+            <option>Gurgaon</option>
+            <option>Delhi</option>
+            <option>Noida</option>
+            <option>Faridabad</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="fld">
+          <label>Full Address</label>
+          <input type="text" id="l_address" placeholder="Shop / clinic address with landmark"/>
+        </div>
+      </div>
+      <div class="form-error" id="listedError">Something went wrong. Please try again or email hello@happypets.in</div>
+      <button class="form-submit" id="listedSubmit">Submit Listing Request →</button>
+    </div>
+
+    <div class="form-success" id="listedSuccess">
+      <div class="success-icon">🎉</div>
+      <h3>You're on the list!</h3>
+      <p>We'll review your details and add your business within 48 hours. We'll call you at the number provided.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL: PARTNER WITH US
+═══════════════════════════════════════ -->
+<div class="modal-backdrop" id="modalPartner" aria-hidden="true">
+  <div class="modal" role="dialog" aria-label="Partner with us form">
+    <button class="modal-close" id="closeModalPartner" aria-label="Close">✕</button>
+    <span class="modal-eyebrow">Business Partnerships</span>
+    <h2>Partner With Us</h2>
+    <p class="modal-sub">Brands, distributors, vets networks, and pet-tech companies — let's build something together for Delhi NCR's pet parents.</p>
+
+    <div id="partnerFormWrap">
+      <div class="form-row">
+        <div class="fld">
+          <label>Company / Organisation <span>*</span></label>
+          <input type="text" id="p_company" placeholder="Company name" required/>
+        </div>
+        <div class="fld">
+          <label>Contact Person <span>*</span></label>
+          <input type="text" id="p_name" placeholder="Your full name" required/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fld">
+          <label>Email <span>*</span></label>
+          <input type="email" id="p_email" placeholder="work@company.com" required/>
+        </div>
+        <div class="fld">
+          <label>Phone</label>
+          <input type="tel" id="p_phone" placeholder="98100 XXXXX"/>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="fld">
+          <label>Partnership Type <span>*</span></label>
+          <select id="p_type" required>
+            <option value="">What are you looking for?</option>
+            <option>Brand / Product Distribution</option>
+            <option>Vet Network Tie-up</option>
+            <option>Pet Insurance Partnership</option>
+            <option>Technology / Platform Integration</option>
+            <option>Investor / Strategic Partnership</option>
+            <option>Media / Content Collaboration</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="fld">
+          <label>Tell us about the opportunity</label>
+          <textarea id="p_message" placeholder="Brief description of what you have in mind…"></textarea>
+        </div>
+      </div>
+      <div class="form-error" id="partnerError">Something went wrong. Please try again or email hello@happypets.in</div>
+      <button class="form-submit" id="partnerSubmit">Send Partnership Enquiry →</button>
+    </div>
+
+    <div class="form-success" id="partnerSuccess">
+      <div class="success-icon">🤝</div>
+      <h3>Got it — we'll be in touch!</h3>
+      <p>Our team will review your enquiry and reach out within 2 business days.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#home" class="logo" data-track="nav_logo">
+      <div class="logo-mark">🐾</div>
+      <div class="logo-name">Happy<em>Pets</em></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services"  data-track="nav_services">Services</a></li>
+      <li><a href="#listings"  data-track="nav_find_care">Find Care</a></li>
+      <li><a href="#about"     data-track="nav_about">About</a></li>
+      <li><a href="#contact"   data-track="nav_list_business" class="nav-cta">List Your Business</a></li>
+    </ul>
+    <button class="hamburger" id="ham" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
+<section class="hero" id="home" data-section="hero">
+  <canvas id="bgCanvas"></canvas>
+  <div class="hero-glow-a"></div>
+  <div class="hero-glow-b"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">Delhi NCR's Premier Pet Care Network</div>
+    <h1 class="hero-h1">
+      Your pet deserves
+      <em>the very best.</em>
+    </h1>
+    <p class="hero-sub">
+      Discover trusted vets, groomers, trainers &amp; more — curated across Gurgaon, Delhi &amp; Noida. Every species, every neighbourhood.
+    </p>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <div class="sf">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="sInput" placeholder="Search vets, groomers, trainers…" autocomplete="off" aria-label="Search providers"/>
+        </div>
+        <div class="sdiv"></div>
+        <div class="sf sf-city">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <select id="sCity" aria-label="Select city">
+            <option value="">All Cities</option>
+            <option value="Gurgaon">Gurgaon</option>
+            <option value="Delhi">Delhi</option>
+            <option value="Noida">Noida</option>
+          </select>
+        </div>
+        <button class="sbtn" id="sBtn" data-track="hero_search">Search</button>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hstat"><span class="hstat-n" data-t="116">0</span><span class="hstat-l">Listings</span></div>
+      <div class="hdiv"></div>
+      <div class="hstat"><span class="hstat-n" data-t="3">0</span><span class="hstat-l">Cities</span></div>
+      <div class="hdiv"></div>
+      <div class="hstat"><span class="hstat-n" data-t="5">0</span><span class="hstat-l">Service Types</span></div>
+      <div class="hdiv"></div>
+      <div class="hstat"><span class="hstat-n" data-t="8">0</span><span class="hstat-l">Species Covered</span></div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SERVICES
+═══════════════════════════════════════ -->
+<section class="sec sec-alt" id="services" data-section="services">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow">What We Offer</div>
+      <h2>Everything your pet needs,<br/><em>in one place.</em></h2>
+      <p>Five service categories, hundreds of providers — all handpicked for quality across Delhi NCR.</p>
+    </div>
+    <div class="srv-grid">
+      <div class="srv-card rv" data-f="vet" data-name="Veterinarians">
+        <span class="srv-ico">🏥</span>
+        <h3>Veterinarians</h3>
+        <p>Qualified vets for check-ups, emergencies, surgery, and specialist care.</p>
+        <span class="srv-link">Browse vets →</span>
+      </div>
+      <div class="srv-card rv" data-f="grooming" data-name="Grooming Salons">
+        <span class="srv-ico">✂️</span>
+        <h3>Grooming Salons</h3>
+        <p>Full grooming, spa baths, haircuts and nail care for all breeds.</p>
+        <span class="srv-link">Browse groomers →</span>
+      </div>
+      <div class="srv-card rv" data-f="boarding" data-name="Boarding & Stays">
+        <span class="srv-ico">🏡</span>
+        <h3>Boarding &amp; Stays</h3>
+        <p>Safe, loving overnight stays and day-care facilities near you.</p>
+        <span class="srv-link">Browse boarding →</span>
+      </div>
+      <div class="srv-card rv" data-f="pet shop" data-name="Pet Shops">
+        <span class="srv-ico">🛍️</span>
+        <h3>Pet Shops</h3>
+        <p>Food, accessories, medicines and everything your pet loves.</p>
+        <span class="srv-link">Browse shops →</span>
+      </div>
+      <div class="srv-card rv" data-f="trainer" data-name="Dog Trainers">
+        <span class="srv-ico">🎓</span>
+        <h3>Dog Trainers</h3>
+        <p>Certified trainers for obedience, behaviour correction, and tricks.</p>
+        <span class="srv-link">Browse trainers →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     LISTINGS
+═══════════════════════════════════════ -->
+<section class="sec sec-warm" id="listings" data-section="listings">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow">Find Care Near You</div>
+      <h2>Trusted providers,<br/><em>vetted for quality.</em></h2>
+    </div>
+    <div class="filter-row rv" id="filterRow">
+      <button class="fbtn on" data-f="all"><span>All</span></button>
+      <button class="fbtn" data-f="vet"><span>🏥 Vets</span></button>
+      <button class="fbtn" data-f="grooming"><span>✂️ Grooming</span></button>
+      <button class="fbtn" data-f="boarding"><span>🏡 Boarding</span></button>
+      <button class="fbtn" data-f="pet shop"><span>🛍️ Pet Shops</span></button>
+      <button class="fbtn" data-f="trainer"><span>🎓 Trainers</span></button>
+    </div>
+    <div class="lst-grid" id="grid"></div>
+    <div class="lst-foot" id="lFoot" style="display:none">
+      <button class="more-btn" id="moreBtn" data-track="load_more"><span>Load More Providers</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SPECIES
+═══════════════════════════════════════ -->
+<section class="sec sec-alt" id="species" data-section="species">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow">All Animals Welcome</div>
+      <h2>Not just dogs &amp; cats —<br/><em>every companion counts.</em></h2>
+      <p>The only pet care platform in Delhi NCR built for every species, not just the popular ones.</p>
+    </div>
+    <div class="spec-row rv">
+      <div class="spec-item" data-species="Dogs"><span>🐕</span><p>Dogs</p></div>
+      <div class="spec-item" data-species="Cats"><span>🐈</span><p>Cats</p></div>
+      <div class="spec-item" data-species="Fish"><span>🐠</span><p>Fish</p></div>
+      <div class="spec-item" data-species="Birds"><span>🦜</span><p>Birds</p></div>
+      <div class="spec-item" data-species="Rabbits"><span>🐇</span><p>Rabbits</p></div>
+      <div class="spec-item" data-species="Reptiles"><span>🦎</span><p>Reptiles</p></div>
+      <div class="spec-item" data-species="Hamsters"><span>🐹</span><p>Hamsters</p></div>
+      <div class="spec-item" data-species="Other"><span>🐾</span><p>&amp; More</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TRUST BAR
+═══════════════════════════════════════ -->
+<div class="trust-sec" data-section="trust_bar">
+  <div class="wrap">
+    <div class="trust-inner">
+      <div class="trust-stat"><span class="ts-n">116+</span><span class="ts-l">Verified Providers</span></div>
+      <div class="trust-div"></div>
+      <div class="trust-stat"><span class="ts-n">3</span><span class="ts-l">Cities Covered</span></div>
+      <div class="trust-div"></div>
+      <div class="trust-quote">"Finding a rabbit vet in Gurgaon used to take days. Now it takes seconds."</div>
+      <div class="trust-div"></div>
+      <div class="trust-stat"><span class="ts-n">8</span><span class="ts-l">Species Supported</span></div>
+      <div class="trust-div"></div>
+      <div class="trust-stat"><span class="ts-n">Free</span><span class="ts-l">to List in 2025</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     CTA
+═══════════════════════════════════════ -->
+<section class="cta-sec" id="contact" data-section="cta">
+  <div class="wrap">
+    <div class="cta-inner rv">
+      <div class="cta-t">
+        <div class="eyebrow">For Businesses</div>
+        <h2>Are you a pet care provider in Delhi NCR?</h2>
+        <p>Join the network pet parents are already using. List your clinic, salon, or shop — completely free for the first year, with no commission on bookings.</p>
+      </div>
+      <div class="cta-btns">
+        <a href="mailto:hello@happypets.in" class="btn-fill" data-track="cta_get_listed">Get Listed Free</a>
+        <a href="mailto:hello@happypets.in" class="btn-out"  data-track="cta_partner">Partner With Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════ -->
+<section class="sec sec-warm" id="about" data-section="about">
+  <div class="wrap">
+    <div class="about-g">
+      <div class="about-t rv">
+        <div class="eyebrow">Our Story</div>
+        <h2>Built for every pet parent in Delhi NCR.</h2>
+        <p>Happy Pets was born from a simple frustration: finding a good vet for your rabbit or a trusted groomer for your indie dog shouldn't require 20 WhatsApp messages.</p>
+        <p>We're mapping the fragmented, brilliant pet care ecosystem of Gurgaon, Delhi, and Noida — street by street — so you always know exactly where to go.</p>
+        <div class="about-q">"Every animal, every neighbourhood, one platform."</div>
+      </div>
+      <div class="pillars rv">
+        <div class="pillar">
+          <span class="p-ico">📍</span>
+          <div>
+            <h4>Hyperlocal Discovery</h4>
+            <p>We surface the hidden gems in your colony, not just the big chains everyone already knows.</p>
+          </div>
+        </div>
+        <div class="pillar">
+          <span class="p-ico">🌿</span>
+          <div>
+            <h4>Every Species Welcome</h4>
+            <p>The only platform built for every animal — from Golden Retrievers to Ball Pythons.</p>
+          </div>
+        </div>
+        <div class="pillar">
+          <span class="p-ico">🔒</span>
+          <div>
+            <h4>Digital Health Records</h4>
+            <p>Coming soon: one secure place for all your pet's medical history, accessible anywhere.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+<footer data-section="footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <div class="foot-logo">
+          <div class="logo-mark">🐾</div>
+          <div class="logo-name">Happy<em>Pets</em></div>
+        </div>
+        <p>Delhi NCR's premium pet care platform. Connecting pet parents with trusted providers since 2025.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Platform</h5>
+        <a href="#services" data-track="footer_services">Services</a>
+        <a href="#listings" data-track="footer_find_care">Find Care</a>
+        <a href="#species"  data-track="footer_species">All Species</a>
+        <a href="#about"    data-track="footer_about">About</a>
+      </div>
+      <div class="foot-col">
+        <h5>For Businesses</h5>
+        <a href="mailto:hello@happypets.in" data-track="footer_get_listed">Get Listed</a>
+        <a href="mailto:hello@happypets.in" data-track="footer_partner">Partner With Us</a>
+        <a href="mailto:hello@happypets.in" data-track="footer_contact">Contact</a>
+      </div>
+    </div>
+    <div class="foot-btm">
+      <p>© 2025 Happy Pets. Made with 🐾 in Gurgaon.</p>
+      <a href="mailto:hello@happypets.in">hello@happypets.in</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ─── CONFIG ───────────────────────────────
+// Point this to your GitHub raw CSV:
+// e.g. 'https://raw.githubusercontent.com/YOUR/REPO/main/data/listings.csv'
+const CSV_URL   = 'data/listings.csv';
+const PAGE_SIZE = 9;
+
+// ─── PET FUN FACTS for loading states ────
+const PET_FACTS = [
+  { emoji: '🐕', fact: 'Dogs can smell up to 100,000 times better than humans. A bloodhound\'s nose has 300 million scent receptors.' },
+  { emoji: '🐈', fact: 'Cats spend 70% of their lives asleep — that\'s about 13–16 hours every single day.' },
+  { emoji: '🐠', fact: 'Fish have been on Earth for more than 500 million years — older than dinosaurs by a wide margin.' },
+  { emoji: '🦜', fact: 'African Grey Parrots can learn over 1,000 words and understand the concept of zero.' },
+  { emoji: '🐇', fact: 'Rabbits can run up to 72 km/h and jump over a metre high. They\'re surprisingly athletic!' },
+  { emoji: '🦎', fact: 'Some gecko species can detach and regenerate their tails as a defence mechanism.' },
+  { emoji: '🐹', fact: 'Hamsters can run up to 8 km in a single night on their exercise wheel.' },
+  { emoji: '🐕', fact: 'The Basenji is the only breed of dog that doesn\'t bark — it yodels instead.' },
+  { emoji: '🐈', fact: 'A group of cats is called a "clowder." A group of kittens is a "kindle."' },
+  { emoji: '🐠', fact: 'Clownfish are all born male. The dominant fish in a group can change sex to become female.' },
+  { emoji: '🦜', fact: 'Parrots are one of the few animals that can mimic human speech by modifying airflow, not just sounds.' },
+  { emoji: '🐇', fact: 'Rabbits eat their own droppings — a practice called cecotrophy — to absorb extra nutrients.' },
+];
+
+// ─── STATE ────────────────────────────────
+let all = [], filtered = [], page = 0;
+let activeF = 'all', searchQ = '', searchC = '';
+let factIdx = 0, factTimer = null;
+
+// ─── SMOOTH NAV SCROLL ────────────────────
+function smoothTo(target) {
+  const el = document.querySelector(target);
+  if (!el) return;
+  const top = el.getBoundingClientRect().top + window.scrollY - 80;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if (href.length > 1) { e.preventDefault(); smoothTo(href); }
+  });
+});
+
+// ─── NAV SCROLL STATE ─────────────────────
+let lastY = 0;
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('nav');
+  nav.classList.toggle('up', scrollY > 60);
+  lastY = scrollY;
+}, { passive: true });
+
+// ─── AMBIENT CANVAS ───────────────────────
+(function() {
+  const c = document.getElementById('bgCanvas');
+  const ctx = c.getContext('2d');
+  let W, H, pts = [];
+
+  function resize() { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  // Two layers: slow large orbs + fast small dots
+  for (let i = 0; i < 60; i++) {
+    pts.push({
+      x: Math.random(), y: Math.random(),
+      r: i < 8 ? (40 + Math.random()*80) : (.8 + Math.random()*2.5),
+      sp: i < 8 ? .04 + Math.random()*.06 : .2 + Math.random()*.5,
+      dr: (Math.random()-.5) * (i < 8 ? .02 : .12),
+      op: i < 8 ? .03 + Math.random()*.05 : .06 + Math.random()*.2,
+      col: i % 3 === 0 ? '82,183,136' : i % 3 === 1 ? '232,168,56' : '255,140,90',
+      ph: Math.random()*Math.PI*2,
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p => {
+      p.y -= p.sp / H * (p.r > 10 ? .5 : 1.8);
+      p.x += p.dr / W;
+      p.ph += .006;
+      const pulse = Math.sin(p.ph) * .25 + .75;
+      if(p.y < -.1) { p.y = 1.05; p.x = Math.random(); }
+      if(p.x < 0) p.x = 1; if(p.x > 1) p.x = 0;
+      ctx.beginPath();
+      ctx.arc(p.x*W, p.y*H, p.r*pulse, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${p.col},${p.op*pulse})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// ─── COUNTER ANIMATION ────────────────────
+let counted = false;
+function countUp() {
+  document.querySelectorAll('.hstat-n').forEach(el => {
+    const target = +el.dataset.t, dur = 1800, t0 = performance.now();
+    (function tick(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      const e = 1 - Math.pow(1-p, 3);
+      el.textContent = Math.round(e * target);
+      if(p < 1) requestAnimationFrame(tick);
+    })(performance.now());
+  });
+}
+new IntersectionObserver(([e]) => {
+  if(e.isIntersecting && !counted) { counted = true; countUp(); }
+}, { threshold: .5 }).observe(document.querySelector('.hero-stats'));
+
+// ─── SCROLL REVEAL ────────────────────────
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
+  });
+}, { threshold: .1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rv').forEach(el => revealObs.observe(el));
+
+// ─── SECTION IMPRESSION TRACKING ─────────
+const sectionObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting && e.intersectionRatio >= .3) {
+      const sec = e.target.dataset.section;
+      if(sec) {
+        HP.track('section_impression', { section_name: sec, scroll_depth: Math.round(scrollY / document.body.scrollHeight * 100) });
+        sectionObs.unobserve(e.target); // fire once
+      }
+    }
+  });
+}, { threshold: .3 });
+document.querySelectorAll('[data-section]').forEach(el => sectionObs.observe(el));
+
+// ─── DATA ATTRIBUTE CLICK TRACKING ────────
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-track]');
+  if(!btn) return;
+  const ev = btn.dataset.track;
+  HP.track('ui_click', {
+    element_id: ev,
+    element_text: btn.textContent?.trim().slice(0,60),
+    element_type: btn.tagName.toLowerCase(),
+    page_section: btn.closest('[data-section]')?.dataset.section || 'unknown',
+  });
+});
+
+// ─── LOADING FACTS ────────────────────────
+function showLoader() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = `
+    <div class="lst-loader" id="loaderEl">
+      <div class="loader-anim">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+      </div>
+      <div class="loader-fact" id="loaderFact">
+        <span class="fact-label">✦ Pet Fact</span>
+        <p id="factText"></p>
+      </div>
+    </div>`;
+  rotateFact();
+  factTimer = setInterval(rotateFact, 2800);
+}
+
+function rotateFact() {
+  const el = document.getElementById('factText');
+  if(!el) { clearInterval(factTimer); return; }
+  const f = PET_FACTS[factIdx % PET_FACTS.length]; factIdx++;
+  el.style.opacity = '0'; el.style.transform = 'translateY(8px)';
+  setTimeout(() => {
+    el.textContent = f.emoji + '  ' + f.fact;
+    el.style.transition = 'opacity .5s var(--smooth), transform .5s var(--smooth)';
+    el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+  }, 250);
+}
+
+function hideLoader() {
+  clearInterval(factTimer);
+}
+
+// ─── CSV PARSER ───────────────────────────
+function parseCSV(txt) {
+  const lines = txt.split('\n').filter(l => l.trim());
+  if(!lines.length) return [];
+  function pl(line) {
+    const f = []; let cur = '', q = false;
+    for(let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if(ch === '"') { if(q && line[i+1] === '"'){cur+='"';i++} else q=!q; }
+      else if(ch === ',' && !q) { f.push(cur.trim()); cur = ''; }
+      else cur += ch;
+    }
+    f.push(cur.trim()); return f;
+  }
+  const hdrs = pl(lines[0]).map(h => h.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,''));
+  return lines.slice(1).map(l => {
+    const v = pl(l); if(v.length < 2) return null;
+    const o = {}; hdrs.forEach((h,i) => o[h] = v[i] || ''); return o;
+  }).filter(Boolean);
+}
+
+// ─── NORMALISE ROW ────────────────────────
+function norm(r) {
+  const pick = (...keys) => {
+    for(const k of keys) { const v = r[k]; if(v && v.trim() && !/^(n\/a|-|na|none)$/i.test(v.trim())) return v.trim(); }
+    return '';
+  };
+  return {
+    name:    pick('name','business_name','clinic_name','shop_name','title'),
+    type:    pick('type','category','service_type','listing_type','service'),
+    address: pick('address','full_address','location','addr'),
+    city:    pick('city','area','locality','district'),
+    phone:   pick('phone','phone_number','contact','mobile','tel'),
+    hours:   pick('hours','timing','timings','working_hours','open_hours','time'),
+  };
+}
+
+// ─── BADGE ────────────────────────────────
+function badge(type) {
+  const t = (type||'').toLowerCase();
+  if(t.includes('vet'))                        return ['bv','Veterinarian'];
+  if(t.includes('groom'))                      return ['bg','Grooming'];
+  if(t.includes('board'))                      return ['bb','Boarding'];
+  if(t.includes('shop')||t.includes('store'))  return ['bs','Pet Shop'];
+  if(t.includes('train'))                      return ['bt','Trainer'];
+  return ['bd', type || 'Pet Service'];
+}
+
+// ─── RENDER LISTING CARD ─────────────────
+let cardImpressionObs = null;
+function mkCard(item, idx, delay) {
+  const n = norm(item);
+  const [bc, bl] = badge(n.type);
+  const el = document.createElement('div');
+  el.className = 'lcard';
+  el.style.animationDelay = delay + 'ms';
+  el.dataset.cardName = n.name;
+  el.dataset.cardType = n.type;
+  el.dataset.cardCity = n.city;
+  el.dataset.cardIdx  = idx;
+
+  // Phone: show last 4 digits masked if not verified
+  const isVerified = OTP.isVerified();
+  const phoneDisplay = n.phone
+    ? (isVerified ? n.phone : maskPhone(n.phone))
+    : '';
+
+  el.innerHTML = `
+    <div class="ch">
+      <span class="badge ${bc}">${bl}</span>
+      ${n.city ? `<span class="c-city">📍 ${n.city}</span>` : ''}
+    </div>
+    <div class="c-name">${n.name || 'Pet Service Provider'}</div>
+    ${n.address
+      ? `<div class="c-addr ${isVerified ? '' : 'addr-locked'}" data-full="${encodeURIComponent(n.address)}">
+           ${isVerified ? n.address : blurAddress(n.address)}
+         </div>`
+      : ''}
+    <div class="cf">
+      ${n.phone
+        ? `<span class="c-ph ${isVerified ? '' : 'ph-locked'}" data-phone="${encodeURIComponent(n.phone)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.1 2.27 2 2 0 012.08.09h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/>
+            </svg>
+            ${isVerified
+              ? `<a href="tel:${n.phone}">${n.phone}</a>`
+              : `<span class="ph-reveal-btn">🔒 ${phoneDisplay} — tap to reveal</span>`}
+          </span>`
+        : '<span></span>'}
+      ${n.hours ? `<span class="c-hrs">${n.hours}</span>` : ''}
+    </div>`;
+
+  // Gate: tapping locked phone or address triggers OTP
+  el.querySelectorAll('.ph-reveal-btn, .addr-locked').forEach(gated => {
+    gated.style.cursor = 'pointer';
+    gated.addEventListener('click', e => {
+      e.stopPropagation();
+      HP.track('contact_reveal_attempt', {
+        provider_name: n.name, provider_type: n.type,
+        provider_city: n.city, field: gated.classList.contains('ph-reveal-btn') ? 'phone' : 'address',
+      });
+      OTP.requestVerification({
+        providerName: n.name, providerCity: n.city,
+        phone: n.phone, address: n.address,
+        onSuccess: () => refreshCardContact(el, n),
+      });
+    });
+  });
+
+  // Verified phone click tracking
+  const phoneLink = el.querySelector('a[href^="tel"]');
+  if (phoneLink) {
+    phoneLink.addEventListener('click', () => {
+      HP.track('card_phone_click', {
+        provider_name: n.name, provider_type: n.type,
+        provider_city: n.city, card_position: idx,
+      });
+    });
+  }
+
+  return el;
+}
+
+// Mask phone: show only last 4 digits
+function maskPhone(ph) {
+  const digits = ph.replace(/\D/g, '');
+  return '••••••' + digits.slice(-4);
+}
+
+// Blur address: show area only, hide specifics
+function blurAddress(addr) {
+  const parts = addr.split(',');
+  if (parts.length <= 2) return parts[0] + ', ••••';
+  return parts.slice(-2).join(',').trim(); // show only broad area
+}
+
+// After OTP success, reveal contact on already-rendered card
+function refreshCardContact(el, n) {
+  const phEl   = el.querySelector('.ph-locked');
+  const addrEl = el.querySelector('.addr-locked');
+  if (phEl) {
+    phEl.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;flex-shrink:0;stroke:var(--sage)">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.1 2.27 2 2 0 012.08.09h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/>
+      </svg>
+      <a href="tel:${n.phone}" style="color:inherit">${n.phone}</a>`;
+    phEl.classList.remove('ph-locked');
+    phEl.addEventListener('click', () => HP.track('card_phone_click', { provider_name: n.name, provider_city: n.city }));
+  }
+  if (addrEl) {
+    addrEl.textContent = n.address;
+    addrEl.classList.remove('addr-locked');
+  }
+}
+
+// ─── CARD IMPRESSION OBSERVER ─────────────
+function observeCardImpressions() {
+  if(cardImpressionObs) cardImpressionObs.disconnect();
+  cardImpressionObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        const c = e.target;
+        HP.track('card_impression', {
+          provider_name: c.dataset.cardName,
+          provider_type: c.dataset.cardType,
+          provider_city: c.dataset.cardCity,
+          card_position: +c.dataset.cardIdx,
+          active_filter: activeF,
+          search_query: searchQ || '(none)',
+        });
+        cardImpressionObs.unobserve(c);
+      }
+    });
+  }, { threshold: .5 });
+  document.querySelectorAll('.lcard').forEach(c => cardImpressionObs.observe(c));
+}
+
+// ─── FILTER & SEARCH ─────────────────────
+function applyF() {
+  const q = searchQ.toLowerCase(), city = searchC.toLowerCase(), ft = activeF;
+  filtered = all.filter(item => {
+    const n = norm(item), t = n.type.toLowerCase();
+    const mF = ft==='all' ||
+      (ft==='vet'      && t.includes('vet'))   ||
+      (ft==='grooming' && t.includes('groom')) ||
+      (ft==='boarding' && t.includes('board')) ||
+      (ft==='pet shop' && (t.includes('shop')||t.includes('store'))) ||
+      (ft==='trainer'  && t.includes('train'));
+    const mQ = !q || [n.name,n.address,n.city,n.type].some(v => v.toLowerCase().includes(q));
+    const mC = !city || n.city.toLowerCase().includes(city);
+    return mF && mQ && mC;
+  });
+}
+
+// ─── RENDER PAGE ─────────────────────────
+function render(reset = false) {
+  const grid = document.getElementById('grid');
+  if(reset) { page = 0; grid.innerHTML = ''; }
+  applyF();
+
+  if(!filtered.length) {
+    grid.innerHTML = '<div class="no-res"><span>🔍</span><p>No providers found. Try a different search or filter.</p></div>';
+    document.getElementById('lFoot').style.display = 'none';
+    return;
+  }
+
+  const slice = filtered.slice(page * PAGE_SIZE, (page+1) * PAGE_SIZE);
+  slice.forEach((item, i) => {
+    const globalIdx = page * PAGE_SIZE + i;
+    const card = mkCard(item, globalIdx, i * 60);
+    grid.appendChild(card);
+  });
+  page++;
+  document.getElementById('lFoot').style.display = page * PAGE_SIZE < filtered.length ? 'block' : 'none';
+  // Re-observe impressions for new cards
+  requestAnimationFrame(observeCardImpressions);
+}
+
+// ─── DEMO DATA ────────────────────────────
+function demo() {
+  return [
+    {name:'PawsFirst Veterinary Clinic',type:'Vet',address:'DLF Phase 2, Sector 25, Gurgaon',city:'Gurgaon',phone:'98100 12345',hours:'9am – 9pm'},
+    {name:'Green Paws Animal Hospital',type:'Vet',address:'Sector 14, Near HUDA City Centre, Gurgaon',city:'Gurgaon',phone:'98100 23456',hours:'8am – 8pm'},
+    {name:'Delhi Pet Care Centre',type:'Vet',address:'South Extension Part II, New Delhi',city:'Delhi',phone:'11-2634 5678',hours:'10am – 7pm'},
+    {name:'Noida Animal Clinic',type:'Vet',address:'Sector 62, Noida',city:'Noida',phone:'98110 34567',hours:'9am – 8pm'},
+    {name:'The Grooming Parlour',type:'Grooming Salon',address:'Sushant Lok Phase 1, Gurgaon',city:'Gurgaon',phone:'98100 45678',hours:'10am – 7pm'},
+    {name:'Fluffy & Co. Pet Spa',type:'Grooming Salon',address:'South City 1, Gurgaon',city:'Gurgaon',phone:'98100 56789',hours:'9am – 6pm'},
+    {name:'Bark & Bath Studio',type:'Grooming Salon',address:'Vasant Kunj, New Delhi',city:'Delhi',phone:'98110 67890',hours:'9am – 7pm'},
+    {name:'Happy Tails Boarding',type:'Boarding',address:'Sector 49, Near Huda Metro, Gurgaon',city:'Gurgaon',phone:'98100 78901',hours:'24 / 7'},
+    {name:'PawHaven Pet Resort',type:'Boarding',address:'Sector 18, Noida',city:'Noida',phone:'98110 89012',hours:'24 / 7'},
+    {name:'PetLand Super Store',type:'Pet Shop',address:'MG Road, Gurgaon',city:'Gurgaon',phone:'98100 90123',hours:'10am – 9pm'},
+    {name:'The Pet Boutique',type:'Pet Shop',address:'Lajpat Nagar Central Market, Delhi',city:'Delhi',phone:'98110 01234',hours:'11am – 9pm'},
+    {name:'Alpha Dog Training Academy',type:'Dog Trainer',address:'Nirvana Country, Sector 50, Gurgaon',city:'Gurgaon',phone:'98100 11234',hours:'By Appointment'},
+    {name:'K9 Professional Trainers',type:'Dog Trainer',address:'Sector 15, Noida',city:'Noida',phone:'98110 22345',hours:'7am – 7pm'},
+    {name:'Reptile & Exotic Vet Clinic',type:'Vet',address:'Hauz Khas, New Delhi',city:'Delhi',phone:'98110 33456',hours:'11am – 6pm'},
+    {name:'Feathers & Fins Pet Store',type:'Pet Shop',address:'Sector 29, Gurgaon',city:'Gurgaon',phone:'98100 44567',hours:'10am – 8pm'},
+  ];
+}
+
+// ─── LOAD CSV ────────────────────────────
+async function load() {
+  showLoader();
+  HP.track('page_load_start', { timestamp: Date.now() });
+  try {
+    const r = await fetch(CSV_URL);
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const txt = await r.text();
+    const rows = parseCSV(txt).filter(r => norm(r).name);
+    if(!rows.length) throw new Error('empty');
+    all = rows;
+    HP.track('listings_loaded', { source: 'csv', count: all.length });
+  } catch(e) {
+    console.info('ℹ️ CSV not found at ' + CSV_URL + ' — using demo data. In production, host your CSV there.');
+    all = demo();
+    HP.track('listings_loaded', { source: 'demo', count: all.length });
+  }
+  hideLoader();
+  render(true);
+}
+
+// ─── FILTER BUTTONS ──────────────────────
+document.querySelectorAll('.fbtn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.fbtn').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    const prev = activeF;
+    activeF = b.dataset.f;
+    HP.track('filter_change', {
+      filter_from: prev, filter_to: activeF,
+      result_count: filtered.length,
+    });
+    render(true);
+    smoothTo('#listings');
+  });
+});
+
+// Service cards filter + scroll
+document.querySelectorAll('.srv-card').forEach(c => {
+  c.addEventListener('click', () => {
+    const f = c.dataset.f, name = c.dataset.name;
+    activeF = f;
+    document.querySelectorAll('.fbtn').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+    HP.track('service_card_click', { service_name: name, filter_applied: f });
+    render(true);
+    smoothTo('#listings');
+  });
+});
+
+// Load more
+document.getElementById('moreBtn').addEventListener('click', () => {
+  HP.track('load_more_click', { page_loaded: page, filter: activeF, results_shown: page * PAGE_SIZE });
+  render(false);
+});
+
+// Species click
+document.querySelectorAll('.spec-item').forEach(el => {
+  el.addEventListener('click', () => {
+    HP.track('species_click', { species: el.dataset.species });
+    openSpeciesPanel(el.dataset.species, el.querySelector('span').textContent);
+  });
+});
+
+// Search
+function doSearch() {
+  const q = document.getElementById('sInput').value.trim();
+  const city = document.getElementById('sCity').value;
+  searchQ = q; searchC = city;
+  HP.track('search_submit', {
+    query: q || '(empty)', city_filter: city || 'all',
+    active_category: activeF,
+  });
+  render(true);
+  smoothTo('#listings');
+}
+document.getElementById('sBtn').addEventListener('click', doSearch);
+document.getElementById('sInput').addEventListener('keydown', e => { if(e.key === 'Enter') doSearch(); });
+
+// Track search input focus (engagement signal)
+document.getElementById('sInput').addEventListener('focus', () => {
+  HP.track('search_focus', { section: 'hero' });
+});
+
+// ═══════════════════════════════════════════════════════
+//  OTP VERIFICATION SYSTEM
+//  Uses EmailJS (free, 200/mo) to send real OTP emails.
+//  Verified state stored in localStorage for 30 days.
+//  No backend needed.
+// ═══════════════════════════════════════════════════════
+
+// ── EMAILJS CONFIG ──────────────────────────────────────
+// Step 1: Sign up free at https://emailjs.com
+// Step 2: Add your Gmail as Email Service → copy Service ID
+// Step 3: Create template with variables {{otp}} {{to_email}} {{provider_name}} → copy Template ID
+// Step 4: Go to Account → copy Public Key
+// Then replace the three values below:
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // e.g. 'service_abc123'
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // e.g. 'template_xyz789'
+const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // e.g. 'AbCdEfGhIjKlMnOp'
+
+// Load EmailJS SDK lazily (only when first OTP needed)
+let emailJSReady = false;
+function loadEmailJS() {
+  return new Promise((resolve) => {
+    if (emailJSReady) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    s.onload = () => {
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+      emailJSReady = true;
+      resolve();
+    };
+    document.head.appendChild(s);
+  });
+}
+
+// ── OTP STATE MACHINE ────────────────────────────────────
+const OTP = (() => {
+  const STORAGE_KEY = 'hp_verified_user';
+  const EXPIRY_DAYS = 30;
+
+  let _otp = null, _otpExpiry = null, _pendingContext = null, _currentEmail = null;
+
+  function isVerified() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const { email, expiry } = JSON.parse(raw);
+      return email && Date.now() < expiry;
+    } catch { return false; }
+  }
+
+  function getVerifiedEmail() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const { email } = JSON.parse(raw);
+      return email || null;
+    } catch { return null; }
+  }
+
+  function saveVerified(email) {
+    const expiry = Date.now() + EXPIRY_DAYS * 864e5;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ email, expiry, verified_at: new Date().toISOString() }));
+    // Log to GA
+    HP.track('user_verified', { method: 'email_otp', email_domain: email.split('@')[1] || 'unknown' });
+    // Log to Google Sheet
+    logVerifiedUser(email);
+  }
+
+  function generate() {
+    _otp = String(Math.floor(1000 + Math.random() * 9000));
+    _otpExpiry = Date.now() + 5 * 60 * 1000; // 5 min
+    return _otp;
+  }
+
+  function validate(input) {
+    if (!_otp) return 'no_otp';
+    if (Date.now() > _otpExpiry) { _otp = null; return 'expired'; }
+    return input.trim() === _otp ? 'ok' : 'wrong';
+  }
+
+  function setPending(ctx) { _pendingContext = ctx; }
+  function getPending()    { return _pendingContext; }
+  function setEmail(e)     { _currentEmail = e; }
+  function getEmail()      { return _currentEmail; }
+  function clear()         { _otp = null; _otpExpiry = null; _pendingContext = null; _currentEmail = null; }
+
+  return { isVerified, getVerifiedEmail, saveVerified, generate, validate, setPending, getPending, setEmail, getEmail, clear };
+})();
+
+// ── LOG VERIFIED USER TO GOOGLE SHEET ───────────────────
+// Same Apps Script URL used by your listing/partner forms.
+// Sends: email, timestamp, which listing they wanted to view.
+const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL'; // paste your deployed Apps Script URL here
+
+function logVerifiedUser(email, providerName = '', providerCity = '') {
+  if (!APPS_SCRIPT_URL.startsWith('http')) return;
+  const data = {
+    sheet: 'verified_users',
+    email, providerName, providerCity,
+    timestamp: new Date().toISOString(),
+    page: window.location.href,
+  };
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  }).catch(() => {});
+}
+
+// ── OTP MODAL HTML (injected once) ──────────────────────
+(function buildOTPModal() {
+  const el = document.createElement('div');
+  el.className = 'modal-backdrop';
+  el.id = 'otpModal';
+  el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = `
+    <div class="modal" style="max-width:440px" role="dialog" aria-label="Verify your email">
+      <button class="modal-close" id="otpClose" aria-label="Close">✕</button>
+
+      <!-- Step 1: enter email -->
+      <div id="otpStep1">
+        <span class="modal-eyebrow">One quick step</span>
+        <h2>Verify your email</h2>
+        <p class="modal-sub" id="otpContext">Enter your email to see contact details for this listing. We'll send a 4-digit code — takes 10 seconds.</p>
+        <div class="fld" style="margin-bottom:16px">
+          <label>Your email address <span style="color:var(--peach)">*</span></label>
+          <input type="email" id="otpEmailInput" placeholder="you@gmail.com" autocomplete="email"/>
+        </div>
+        <p style="font-size:.78rem;color:var(--mid);margin-bottom:16px;line-height:1.55">
+          We'll remember you for 30 days on this device. Your email is only used to show contact info — we don't spam.
+        </p>
+        <div class="form-error" id="otpEmailError"></div>
+        <button class="form-submit" id="otpSendBtn">Send Code →</button>
+      </div>
+
+      <!-- Step 2: enter OTP -->
+      <div id="otpStep2" style="display:none">
+        <span class="modal-eyebrow">Check your inbox</span>
+        <h2>Enter the 4-digit code</h2>
+        <p class="modal-sub">We sent a code to <strong id="otpEmailDisplay"></strong>. It expires in 5 minutes.</p>
+        <div class="otp-boxes">
+          <input class="otp-box" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]"/>
+          <input class="otp-box" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]"/>
+          <input class="otp-box" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]"/>
+          <input class="otp-box" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]"/>
+        </div>
+        <div class="form-error" id="otpCodeError"></div>
+        <button class="form-submit" id="otpVerifyBtn" style="margin-top:16px">Verify →</button>
+        <p style="text-align:center;margin-top:14px;font-size:.8rem;color:var(--mid)">
+          Wrong email? <button onclick="resetOTPToStep1()" style="color:var(--sage);font-weight:600;text-decoration:underline">Change it</button>
+          &nbsp;·&nbsp;
+          <button id="otpResendBtn" style="color:var(--sage);font-weight:600;text-decoration:underline">Resend code</button>
+        </p>
+      </div>
+
+      <!-- Step 3: success -->
+      <div class="form-success" id="otpSuccess">
+        <div class="success-icon">✅</div>
+        <h3>You're verified!</h3>
+        <p>Contact details are now visible on all listings for the next 30 days.</p>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+
+  // OTP box auto-advance
+  el.querySelectorAll('.otp-box').forEach((box, i, boxes) => {
+    box.addEventListener('input', () => {
+      box.value = box.value.replace(/\D/g, '').slice(-1);
+      if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+    });
+    box.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+    });
+    box.addEventListener('paste', e => {
+      const txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+      boxes.forEach((b, j) => { b.value = txt[j] || ''; });
+      boxes[Math.min(txt.length, boxes.length - 1)].focus();
+      e.preventDefault();
+    });
+  });
+})();
+
+// ── OTP STYLES (injected once) ───────────────────────────
+(function injectOTPStyles() {
+  const s = document.createElement('style');
+  s.textContent = `
+    .otp-boxes { display:flex; gap:12px; justify-content:center; margin:24px 0 4px; }
+    .otp-box {
+      width:58px; height:64px; border-radius:14px;
+      border:2px solid var(--border); font-size:1.8rem; font-weight:700;
+      text-align:center; color:var(--forest); background:var(--cream);
+      transition:border-color .2s, box-shadow .2s; outline:none;
+      font-family:var(--font-d);
+    }
+    .otp-box:focus { border-color:var(--sage); box-shadow:0 0 0 3px rgba(76,175,128,.15); }
+    .otp-box.error { border-color:#E74C3C; box-shadow:0 0 0 3px rgba(231,76,60,.15); animation:shake .35s var(--spring); }
+    .ph-reveal-btn {
+      color:var(--mid); font-size:.82rem; font-weight:500;
+      display:flex; align-items:center; gap:6px;
+      padding:3px 10px; background:var(--parchment);
+      border-radius:20px; border:1px dashed var(--border);
+      transition:background .2s, border-color .2s;
+      white-space:nowrap;
+    }
+    .ph-reveal-btn:hover { background:var(--amber-soft); border-color:var(--amber); }
+    .addr-locked { filter:blur(3.5px); pointer-events:all; user-select:none; transition:filter .3s; }
+    .addr-locked:hover { filter:blur(2px); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+    .otp-sending { opacity:.6; pointer-events:none; }
+  `;
+  document.head.appendChild(s);
+})();
+
+// ── OTP FLOW FUNCTIONS ───────────────────────────────────
+function openOTPModal(context) {
+  OTP.setPending(context);
+  const modal = document.getElementById('otpModal');
+  document.getElementById('otpStep1').style.display = '';
+  document.getElementById('otpStep2').style.display = 'none';
+  document.getElementById('otpSuccess').style.display = 'none';
+  document.getElementById('otpSuccess').classList.remove('show');
+  document.getElementById('otpContext').textContent =
+    `Enter your email to see contact details for ${context.providerName} in ${context.providerCity}.`;
+  document.getElementById('otpEmailInput').value = '';
+  document.getElementById('otpEmailError').textContent = '';
+  document.getElementById('otpEmailError').classList.remove('show');
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  setTimeout(() => document.getElementById('otpEmailInput').focus(), 350);
+  HP.track('otp_modal_open', { provider_name: context.providerName, provider_city: context.providerCity });
+}
+
+function closeOTPModal() {
+  const modal = document.getElementById('otpModal');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  OTP.clear();
+}
+
+function resetOTPToStep1() {
+  document.getElementById('otpStep1').style.display = '';
+  document.getElementById('otpStep2').style.display = 'none';
+  document.getElementById('otpEmailError').textContent = '';
+}
+
+async function sendOTP() {
+  const emailInput = document.getElementById('otpEmailInput');
+  const email = emailInput.value.trim().toLowerCase();
+  const errEl  = document.getElementById('otpEmailError');
+  errEl.classList.remove('show');
+
+  // Basic email validation
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    errEl.textContent = 'Please enter a valid email address.';
+    errEl.classList.add('show');
+    emailInput.focus();
+    HP.track('otp_email_invalid', { email_domain: email.split('@')[1] || 'none' });
+    return;
+  }
+
+  // Block obvious throwaway domains
+  const burnerDomains = ['mailinator.com','guerrillamail.com','tempmail.com','throwam.com','yopmail.com','sharklasers.com','trashmail.com','fakeinbox.com'];
+  const domain = email.split('@')[1];
+  if (burnerDomains.includes(domain)) {
+    errEl.textContent = 'Please use your real email address — temporary emails aren\'t accepted.';
+    errEl.classList.add('show');
+    HP.track('otp_burner_blocked', { domain });
+    return;
+  }
+
+  const btn = document.getElementById('otpSendBtn');
+  btn.textContent = 'Sending…'; btn.classList.add('otp-sending');
+
+  try {
+    await loadEmailJS();
+    const code = OTP.generate();
+    OTP.setEmail(email);
+
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: email,
+      otp: code,
+      provider_name: OTP.getPending()?.providerName || 'a listing',
+      expiry_mins: '5',
+    });
+
+    // Move to step 2
+    document.getElementById('otpStep1').style.display = 'none';
+    document.getElementById('otpStep2').style.display = '';
+    document.getElementById('otpEmailDisplay').textContent = email;
+    document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; b.classList.remove('error'); });
+    document.querySelectorAll('.otp-box')[0].focus();
+    HP.track('otp_sent', { email_domain: domain });
+  } catch (err) {
+    // If EmailJS not configured yet, show setup instructions in console, still work in demo
+    console.warn('[HappyPets OTP] EmailJS not configured yet. To enable:\n1. Sign up at emailjs.com (free)\n2. Create a Gmail service\n3. Create a template with {{otp}}, {{to_email}}, {{provider_name}}\n4. Replace EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY in the script');
+
+    // DEMO MODE: auto-fill with generated OTP shown in console
+    const code = OTP.generate(); OTP.setEmail(email);
+    console.info(`[HappyPets OTP] Demo mode — your OTP is: ${code}`);
+    document.getElementById('otpStep1').style.display = 'none';
+    document.getElementById('otpStep2').style.display = '';
+    document.getElementById('otpEmailDisplay').textContent = email;
+    document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; b.classList.remove('error'); });
+    document.querySelectorAll('.otp-box')[0].focus();
+    HP.track('otp_demo_mode', { reason: 'emailjs_not_configured' });
+  } finally {
+    btn.textContent = 'Send Code →'; btn.classList.remove('otp-sending');
+  }
+}
+
+function verifyOTP() {
+  const boxes  = document.querySelectorAll('.otp-box');
+  const input  = Array.from(boxes).map(b => b.value).join('').trim();
+  const errEl  = document.getElementById('otpCodeError');
+  errEl.classList.remove('show');
+
+  if (input.length < 4) {
+    errEl.textContent = 'Please enter the full 4-digit code.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  const result = OTP.validate(input);
+  if (result === 'ok') {
+    const email = OTP.getEmail();
+    OTP.saveVerified(email);
+    const ctx = OTP.getPending();
+    logVerifiedUser(email, ctx?.providerName, ctx?.providerCity);
+
+    // Show success then close and reveal
+    document.getElementById('otpStep2').style.display = 'none';
+    const successEl = document.getElementById('otpSuccess');
+    successEl.style.display = 'flex'; successEl.classList.add('show');
+    HP.track('otp_verified', { email_domain: email.split('@')[1] });
+
+    setTimeout(() => {
+      closeOTPModal();
+      if (ctx?.onSuccess) ctx.onSuccess();
+      // Refresh all cards to reveal contact info
+      document.querySelectorAll('.lcard').forEach(card => {
+        const ph = card.querySelector('.ph-locked');
+        const addr = card.querySelector('.addr-locked');
+        if (ph || addr) card.click(); // simplest: just rerender; but we use targeted refresh below
+      });
+      rerender();
+    }, 1400);
+  } else if (result === 'expired') {
+    errEl.textContent = 'This code has expired. Please request a new one.';
+    errEl.classList.add('show');
+    boxes.forEach(b => b.classList.add('error'));
+    HP.track('otp_expired');
+  } else {
+    errEl.textContent = 'That code doesn\'t match. Double-check and try again.';
+    errEl.classList.add('show');
+    boxes.forEach(b => b.classList.add('error'));
+    HP.track('otp_wrong_code');
+    setTimeout(() => boxes.forEach(b => b.classList.remove('error')), 600);
+  }
+}
+
+// Re-render all visible cards so locked ones become revealed
+function rerender() { render(true); }
+
+// ── OTP modal event wiring ───────────────────────────────
+document.getElementById('otpSendBtn').addEventListener('click', sendOTP);
+document.getElementById('otpVerifyBtn').addEventListener('click', verifyOTP);
+document.getElementById('otpClose').addEventListener('click', closeOTPModal);
+document.getElementById('otpResendBtn').addEventListener('click', () => {
+  document.querySelectorAll('.otp-box').forEach(b => b.value = '');
+  HP.track('otp_resend_click');
+  resetOTPToStep1();
+  setTimeout(sendOTP, 50);
+});
+document.getElementById('otpModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeOTPModal();
+});
+// Enter key on OTP boxes
+document.getElementById('otpModal').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('otpStep1').style.display !== 'none') sendOTP();
+    else if (document.getElementById('otpStep2').style.display !== 'none') verifyOTP();
+  }
+  if (e.key === 'Escape') closeOTPModal();
+});
+
+// ── HOOK INTO OTP.requestVerification ───────────────────
+OTP.requestVerification = function(context) {
+  if (OTP.isVerified()) {
+    // Already verified — just call success immediately
+    if (context.onSuccess) context.onSuccess();
+  } else {
+    openOTPModal(context);
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+//  HAMBURGER / MOBILE NAV
+// ═══════════════════════════════════════════════════════
+const ham        = document.getElementById('ham');
+const mobileNav  = document.getElementById('mobileNav');
+const mNavClose  = document.getElementById('mobileNavClose');
+
+function openMobileNav()  { mobileNav.classList.add('open'); mobileNav.setAttribute('aria-hidden','false'); ham.classList.add('active'); document.body.style.overflow='hidden'; }
+function closeMobileNav() { mobileNav.classList.remove('open'); mobileNav.setAttribute('aria-hidden','true'); ham.classList.remove('active'); document.body.style.overflow=''; }
+
+ham.addEventListener('click', () => {
+  HP.track('mobile_nav_toggle', { action: mobileNav.classList.contains('open') ? 'close' : 'open' });
+  mobileNav.classList.contains('open') ? closeMobileNav() : openMobileNav();
+});
+mNavClose.addEventListener('click', closeMobileNav);
+mobileNav.addEventListener('click', e => { if(e.target === mobileNav) closeMobileNav(); });
+document.querySelectorAll('.mobile-nav-link:not(.mobile-nav-cta)').forEach(a => {
+  a.addEventListener('click', () => {
+    closeMobileNav();
+    HP.track('mobile_nav_link', { label: a.textContent.trim() });
+  });
+});
+document.getElementById('mobileGetListed').addEventListener('click', e => {
+  e.preventDefault(); closeMobileNav();
+  setTimeout(() => openModal('modalListed', 'get_listed'), 300);
+});
+
+// ═══════════════════════════════════════════════════════
+//  SPECIES PANEL
+// ═══════════════════════════════════════════════════════
+const SPECIES_DATA = {
+  Dogs:     { emoji:'🐕', filter:'vet', available:true,  fact:'Dogs have been companions to humans for over 15,000 years — the oldest domesticated animal.' },
+  Cats:     { emoji:'🐈', filter:'vet', available:true,  fact:'Cats can make over 100 distinct sounds. Dogs can only make about 10.' },
+  Fish:     { emoji:'🐠', filter:null,  available:false, fact:'Fish have been on Earth for 500 million years — predating the dinosaurs by a wide margin.' },
+  Birds:    { emoji:'🦜', filter:null,  available:false, fact:'African Grey Parrots can learn over 1,000 words and understand the concept of zero.' },
+  Rabbits:  { emoji:'🐇', filter:null,  available:false, fact:'Rabbits can run up to 72 km/h — surprisingly athletic little creatures.' },
+  Reptiles: { emoji:'🦎', filter:null,  available:false, fact:'Geckos can walk on glass thanks to millions of microscopic hairs that create van der Waals forces.' },
+  Hamsters: { emoji:'🐹', filter:null,  available:false, fact:'Hamsters can run up to 8 km in a single night on their wheel.' },
+  Other:    { emoji:'🐾', filter:null,  available:false, fact:'India has over 30 million pet animals — and 70% of them aren\'t dogs or cats.' },
+};
+
+function openSpeciesPanel(species, emoji) {
+  const data = SPECIES_DATA[species] || SPECIES_DATA['Other'];
+  const backdrop = document.getElementById('speciesBackdrop');
+  document.getElementById('spEmoji').textContent  = data.emoji || emoji;
+  document.getElementById('spTitle').textContent  = species;
+  document.getElementById('spFact').textContent   = `💡 Did you know? ${data.fact}`;
+
+  const bodyEl   = document.getElementById('spBody');
+  const actionEl = document.getElementById('spActionArea');
+
+  if (data.available) {
+    bodyEl.textContent = `We have vetted vets, groomers, and care providers for ${species} across Gurgaon, Delhi, and Noida. Browse listings below — all verified, all local.`;
+    actionEl.innerHTML = `
+      <div class="sp-cta-row" style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="sp-cta sp-cta-primary" id="spViewListings">Browse ${species} Care →</button>
+        <button class="sp-cta sp-cta-secondary" id="spNotifySpecies" style="display:none">Notify me when available</button>
+      </div>`;
+    document.getElementById('spViewListings').addEventListener('click', () => {
+      closeSpeciesPanel();
+      HP.track('species_browse_click', { species, has_listings: true });
+      smoothTo('#listings');
+    });
+  } else {
+    bodyEl.innerHTML = `We're actively adding ${species} specialists to Happy Pets. We don't have dedicated listings yet — but we're working on it! Drop your email and we'll let you know the moment they go live.`;
+    actionEl.innerHTML = `
+      <div class="sp-notify-form">
+        <input class="sp-notify-input" type="email" id="spNotifyEmail" placeholder="your@email.com" autocomplete="email"/>
+        <button class="sp-notify-btn" id="spNotifySubmit">Notify Me 🔔</button>
+      </div>
+      <p id="spNotifyMsg" style="font-size:.82rem;color:var(--sage);margin-top:10px;display:none;font-weight:600">✓ Done! We'll let you know as soon as ${species} listings go live.</p>`;
+
+    document.getElementById('spNotifySubmit').addEventListener('click', () => {
+      const email = document.getElementById('spNotifyEmail').value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        document.getElementById('spNotifyEmail').style.borderColor = '#E74C3C';
+        setTimeout(() => document.getElementById('spNotifyEmail').style.borderColor = '', 1500);
+        return;
+      }
+      // Log to Google Sheet
+      if (APPS_SCRIPT_URL.startsWith('http')) {
+        fetch(APPS_SCRIPT_URL, {
+          method:'POST', mode:'no-cors',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ sheet:'species_waitlist', email, species, timestamp: new Date().toISOString() }),
+        }).catch(()=>{});
+      }
+      HP.track('species_notify_signup', { species, email_domain: email.split('@')[1] });
+      document.getElementById('spNotifyEmail').style.display    = 'none';
+      document.getElementById('spNotifySubmit').style.display   = 'none';
+      document.getElementById('spNotifyMsg').style.display = 'block';
+    });
+  }
+
+  backdrop.classList.add('open');
+  backdrop.setAttribute('aria-hidden', 'false');
+  HP.track('species_panel_open', { species, has_listings: data.available });
+}
+
+function closeSpeciesPanel() {
+  const backdrop = document.getElementById('speciesBackdrop');
+  backdrop.classList.remove('open');
+  backdrop.setAttribute('aria-hidden', 'true');
+}
+
+document.getElementById('speciesClose').addEventListener('click', closeSpeciesPanel);
+document.getElementById('speciesBackdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeSpeciesPanel();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeSpeciesPanel(); closeOTPModal(); closeMobileNav(); }
+});
+
+// ═══════════════════════════════════════════════════════
+//  MODAL SYSTEM (Get Listed + Partner)
+// ═══════════════════════════════════════════════════════
+function openModal(id, trackLabel) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('open'); el.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+  HP.track('modal_open', { modal: trackLabel });
+}
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('open'); el.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+
+// Wire CTA buttons to modals
+document.querySelectorAll('[data-track="cta_get_listed"], [data-track="footer_get_listed"], [data-track="nav_list_business"]').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); openModal('modalListed', 'get_listed'); });
+});
+document.querySelectorAll('[data-track="cta_partner"], [data-track="footer_partner"]').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); openModal('modalPartner', 'partner'); });
+});
+
+// Close buttons and backdrops
+document.getElementById('closeModalListed').addEventListener('click',  () => closeModal('modalListed'));
+document.getElementById('closeModalPartner').addEventListener('click', () => closeModal('modalPartner'));
+document.getElementById('modalListed').addEventListener('click',  e => { if(e.target === e.currentTarget) closeModal('modalListed'); });
+document.getElementById('modalPartner').addEventListener('click', e => { if(e.target === e.currentTarget) closeModal('modalPartner'); });
+
+// ── FORM SUBMISSION → GOOGLE SHEETS ─────────────────────
+// Google Apps Script setup (one-time, ~5 min):
+// 1. Go to sheet.new → create a Google Sheet
+// 2. Extensions → Apps Script → paste the script from SETUP.md
+// 3. Deploy → New deployment → Web app → Anyone → Deploy
+// 4. Copy the Web App URL and paste as APPS_SCRIPT_URL above
+async function submitToSheet(sheetName, data, submitBtn, wrapId, successId, errorId) {
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting…';
+
+  HP.track('form_submit_attempt', { form: sheetName, city: data.city || '' });
+
+  if (!APPS_SCRIPT_URL.startsWith('http')) {
+    // No URL configured — show success anyway so form UX works during dev
+    console.info('[HappyPets] Set APPS_SCRIPT_URL to enable sheet logging. Data:', data);
+    showFormSuccess(wrapId, successId, submitBtn, sheetName);
+    return;
+  }
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sheet: sheetName, ...data, timestamp: new Date().toISOString() }),
+    });
+    showFormSuccess(wrapId, successId, submitBtn, sheetName);
+  } catch {
+    document.getElementById(errorId).textContent = 'Something went wrong. Please try again or email hello@happypets.in';
+    document.getElementById(errorId).classList.add('show');
+    submitBtn.disabled = false; submitBtn.textContent = 'Try Again';
+    HP.track('form_submit_error', { form: sheetName });
+  }
+}
+
+function showFormSuccess(wrapId, successId, btn, formName) {
+  document.getElementById(wrapId).style.display = 'none';
+  const s = document.getElementById(successId); s.style.display = 'flex'; s.classList.add('show');
+  HP.track('form_submit_success', { form: formName });
+  btn.disabled = false;
+}
+
+function validateRequired(fields) {
+  return fields.every(id => {
+    const el = document.getElementById(id);
+    const ok = el && el.value.trim();
+    if (el) el.style.borderColor = ok ? '' : '#E74C3C';
+    return ok;
+  });
+}
+
+// Get Listed form
+document.getElementById('listedSubmit').addEventListener('click', () => {
+  if (!validateRequired(['l_biz','l_name','l_phone','l_type','l_city'])) {
+    document.getElementById('listedError').textContent = 'Please fill in all required fields.';
+    document.getElementById('listedError').classList.add('show'); return;
+  }
+  document.getElementById('listedError').classList.remove('show');
+  submitToSheet('get_listed', {
+    business_name: document.getElementById('l_biz').value.trim(),
+    owner_name:    document.getElementById('l_name').value.trim(),
+    phone:         document.getElementById('l_phone').value.trim(),
+    email:         document.getElementById('l_email').value.trim(),
+    service_type:  document.getElementById('l_type').value,
+    city:          document.getElementById('l_city').value,
+    address:       document.getElementById('l_address').value.trim(),
+  }, document.getElementById('listedSubmit'), 'listedFormWrap', 'listedSuccess', 'listedError');
+});
+
+// Partner form
+document.getElementById('partnerSubmit').addEventListener('click', () => {
+  if (!validateRequired(['p_company','p_name','p_email','p_type'])) {
+    document.getElementById('partnerError').textContent = 'Please fill in all required fields.';
+    document.getElementById('partnerError').classList.add('show'); return;
+  }
+  document.getElementById('partnerError').classList.remove('show');
+  submitToSheet('partner_enquiry', {
+    company:          document.getElementById('p_company').value.trim(),
+    contact_name:     document.getElementById('p_name').value.trim(),
+    email:            document.getElementById('p_email').value.trim(),
+    phone:            document.getElementById('p_phone').value.trim(),
+    partnership_type: document.getElementById('p_type').value,
+    message:          document.getElementById('p_message').value.trim(),
+  }, document.getElementById('partnerSubmit'), 'partnerFormWrap', 'partnerSuccess', 'partnerError');
+});
+
+// ─── INIT ─────────────────────────────────
+load();
+
+</script>
+</body>
+</html>
