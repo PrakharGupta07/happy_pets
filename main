@@ -1242,7 +1242,7 @@ footer {
       <div class="trust-div"></div>
       <div class="trust-stat"><span class="ts-n">8</span><span class="ts-l">Species Supported</span></div>
       <div class="trust-div"></div>
-      <div class="trust-stat"><span class="ts-n">Free</span><span class="ts-l">to List in 2025</span></div>
+      <div class="trust-stat"><span class="ts-n">Free</span><span class="ts-l">to List in 2026</span></div>
     </div>
   </div>
 </div>
@@ -1259,8 +1259,8 @@ footer {
         <p>Join the network pet parents are already using. List your clinic, salon, or shop — completely free for the first year, with no commission on bookings.</p>
       </div>
       <div class="cta-btns">
-        <a href="mailto:hello@happypets.in" class="btn-fill" data-track="cta_get_listed">Get Listed Free</a>
-        <a href="mailto:hello@happypets.in" class="btn-out"  data-track="cta_partner">Partner With Us</a>
+        <a href="#" class="btn-fill" data-track="cta_get_listed">Get Listed Free</a>
+        <a href="#" class="btn-out"  data-track="cta_partner">Partner With Us</a>
       </div>
     </div>
   </div>
@@ -1317,7 +1317,7 @@ footer {
           <div class="logo-mark">🐾</div>
           <div class="logo-name">Happy<em>Pets</em></div>
         </div>
-        <p>Delhi NCR's premium pet care platform. Connecting pet parents with trusted providers since 2025.</p>
+        <p>Delhi NCR's premium pet care platform. Connecting pet parents with trusted providers since 2026.</p>
       </div>
       <div class="foot-col">
         <h5>Platform</h5>
@@ -1328,13 +1328,13 @@ footer {
       </div>
       <div class="foot-col">
         <h5>For Businesses</h5>
-        <a href="mailto:hello@happypets.in" data-track="footer_get_listed">Get Listed</a>
-        <a href="mailto:hello@happypets.in" data-track="footer_partner">Partner With Us</a>
+        <a href="#" data-track="footer_get_listed">Get Listed</a>
+        <a href="#" data-track="footer_partner">Partner With Us</a>
         <a href="mailto:hello@happypets.in" data-track="footer_contact">Contact</a>
       </div>
     </div>
     <div class="foot-btm">
-      <p>© 2025 Happy Pets. Made with 🐾 in Gurgaon.</p>
+      <p>© 2026 Happy Pets. Made with 🐾 in Gurgaon.</p>
       <a href="mailto:hello@happypets.in">hello@happypets.in</a>
     </div>
   </div>
@@ -1847,511 +1847,217 @@ document.getElementById('sInput').addEventListener('focus', () => {
 });
 
 // ═══════════════════════════════════════════════════════
-//  OTP VERIFICATION SYSTEM
-//  Uses EmailJS (free, 200/mo) to send real OTP emails.
-//  Verified state stored in localStorage for 30 days.
-//  No backend needed.
+//  EMAIL CAPTURE SYSTEM
+//  When a user taps a locked phone/address on a card,
+//  we ask for their email before revealing it.
+//  Email saved to localStorage (30 days) + Google Sheets.
+//  Only asked once — then contact details always visible.
 // ═══════════════════════════════════════════════════════
 
-// ── EMAILJS CONFIG ──────────────────────────────────────
-// Step 1: Sign up free at https://emailjs.com
-// Step 2: Add your Gmail as Email Service → copy Service ID
-// Step 3: Create template with variables {{otp}} {{to_email}} {{provider_name}} → copy Template ID
-// Step 4: Go to Account → copy Public Key
-// Then replace the three values below:
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // e.g. 'service_abc123'
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // e.g. 'template_xyz789'
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // e.g. 'AbCdEfGhIjKlMnOp'
-
-// Load EmailJS SDK lazily (only when first OTP needed)
-let emailJSReady = false;
-function loadEmailJS() {
-  return new Promise((resolve) => {
-    if (emailJSReady) { resolve(); return; }
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-    s.onload = () => {
-      emailjs.init(EMAILJS_PUBLIC_KEY);
-      emailJSReady = true;
-      resolve();
-    };
-    document.head.appendChild(s);
-  });
-}
-
-// ── OTP STATE MACHINE ────────────────────────────────────
+// ── VERIFIED STATE (localStorage, 30-day expiry) ────────
 const OTP = (() => {
-  const STORAGE_KEY = 'hp_verified_user';
-  const EXPIRY_DAYS = 30;
-
-  let _otp = null, _otpExpiry = null, _pendingContext = null, _currentEmail = null;
+  const KEY = 'hp_verified_user';
+  const DAYS = 30;
 
   function isVerified() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(KEY);
       if (!raw) return false;
       const { email, expiry } = JSON.parse(raw);
-      return email && Date.now() < expiry;
+      return !!(email && Date.now() < expiry);
     } catch { return false; }
   }
+  function getEmail() {
+    try { return JSON.parse(localStorage.getItem(KEY) || '{}').email || null; } catch { return null; }
+  }
+  function save(email) {
+    const expiry = Date.now() + DAYS * 864e5;
+    localStorage.setItem(KEY, JSON.stringify({ email, expiry, saved_at: new Date().toISOString() }));
+  }
+  function clear() { localStorage.removeItem(KEY); }
 
-  function getVerifiedEmail() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
-      const { email } = JSON.parse(raw);
-      return email || null;
-    } catch { return null; }
+  let _pending = null;
+  function setPending(ctx) { _pending = ctx; }
+  function getPending()    { return _pending; }
+
+  // Called by card gating code
+  function requestVerification(context) {
+    if (isVerified()) {
+      if (context.onSuccess) context.onSuccess();
+    } else {
+      setPending(context);
+      openEmailCaptureModal(context);
+    }
   }
 
-  function saveVerified(email) {
-    const expiry = Date.now() + EXPIRY_DAYS * 864e5;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ email, expiry, verified_at: new Date().toISOString() }));
-    // Log to GA
-    HP.track('user_verified', { method: 'email_otp', email_domain: email.split('@')[1] || 'unknown' });
-    // Log to Google Sheet
-    logVerifiedUser(email);
-  }
-
-  function generate() {
-    _otp = String(Math.floor(1000 + Math.random() * 9000));
-    _otpExpiry = Date.now() + 5 * 60 * 1000; // 5 min
-    return _otp;
-  }
-
-  function validate(input) {
-    if (!_otp) return 'no_otp';
-    if (Date.now() > _otpExpiry) { _otp = null; return 'expired'; }
-    return input.trim() === _otp ? 'ok' : 'wrong';
-  }
-
-  function setPending(ctx) { _pendingContext = ctx; }
-  function getPending()    { return _pendingContext; }
-  function setEmail(e)     { _currentEmail = e; }
-  function getEmail()      { return _currentEmail; }
-  function clear()         { _otp = null; _otpExpiry = null; _pendingContext = null; _currentEmail = null; }
-
-  return { isVerified, getVerifiedEmail, saveVerified, generate, validate, setPending, getPending, setEmail, getEmail, clear };
+  return { isVerified, getEmail, save, clear, setPending, getPending, requestVerification };
 })();
 
-// ── LOG VERIFIED USER TO GOOGLE SHEET ───────────────────
-// Same Apps Script URL used by your listing/partner forms.
-// Sends: email, timestamp, which listing they wanted to view.
-const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL'; // paste your deployed Apps Script URL here
+// ── EMAIL CAPTURE MODAL (built once, reused) ─────────────
+(function buildEmailModal() {
+  // Inject styles
+  const style = document.createElement('style');
+  style.textContent = `
+    .ph-reveal-btn {
+      color: var(--mid); font-size: .82rem; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; background: var(--parchment);
+      border-radius: 20px; border: 1px dashed var(--border);
+      transition: background .2s, border-color .2s; cursor: pointer; white-space: nowrap;
+    }
+    .ph-reveal-btn:hover { background: var(--amber-soft, #FFF8E1); border-color: var(--amber, #F5B800); }
+    .addr-locked { filter: blur(4px); pointer-events: all; user-select: none; cursor: pointer; transition: filter .3s; }
+    .addr-locked:hover { filter: blur(2.5px); }
+    .ec-step { transition: opacity .3s, transform .3s; }
+    .ec-step.hidden { display: none; }
+  `;
+  document.head.appendChild(style);
 
-function logVerifiedUser(email, providerName = '', providerCity = '') {
-  if (!APPS_SCRIPT_URL.startsWith('http')) return;
-  const data = {
-    sheet: 'verified_users',
-    email, providerName, providerCity,
-    timestamp: new Date().toISOString(),
-    page: window.location.href,
-  };
-  fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  }).catch(() => {});
-}
-
-// ── OTP MODAL HTML (injected once) ──────────────────────
-(function buildOTPModal() {
+  // Build modal HTML
   const el = document.createElement('div');
   el.className = 'modal-backdrop';
-  el.id = 'otpModal';
+  el.id = 'emailCaptureModal';
   el.setAttribute('aria-hidden', 'true');
   el.innerHTML = `
-    <div class="modal" style="max-width:440px" role="dialog" aria-label="Verify your email">
-      <button class="modal-close" id="otpClose" aria-label="Close">✕</button>
+    <div class="modal" style="max-width:460px" role="dialog" aria-label="Enter your email to view contact">
 
-      <!-- Step 1: enter email -->
-      <div id="otpStep1">
-        <span class="modal-eyebrow">One quick step</span>
-        <h2>Verify your email</h2>
-        <p class="modal-sub" id="otpContext">Enter your email to see contact details for this listing. We'll send a 4-digit code — takes 10 seconds.</p>
-        <div class="fld" style="margin-bottom:16px">
-          <label>Your email address <span style="color:var(--peach)">*</span></label>
-          <input type="email" id="otpEmailInput" placeholder="you@gmail.com" autocomplete="email"/>
+      <!-- Step 1: email entry -->
+      <div id="ecStep1" class="ec-step">
+        <button class="modal-close" id="ecClose" aria-label="Close">✕</button>
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:2.5rem;margin-bottom:12px">📋</div>
+          <span class="modal-eyebrow">One quick step</span>
+          <h2 style="font-size:1.65rem">See contact details</h2>
+          <p class="modal-sub" id="ecContext" style="margin-bottom:0">
+            Drop your email to unlock the phone number and address. We won't spam you.
+          </p>
         </div>
-        <p style="font-size:.78rem;color:var(--mid);margin-bottom:16px;line-height:1.55">
-          We'll remember you for 30 days on this device. Your email is only used to show contact info — we don't spam.
-        </p>
-        <div class="form-error" id="otpEmailError"></div>
-        <button class="form-submit" id="otpSendBtn">Send Code →</button>
-      </div>
-
-      <!-- Step 2: enter OTP -->
-      <div id="otpStep2" style="display:none">
-        <span class="modal-eyebrow">Check your inbox</span>
-        <h2>Enter the 4-digit code</h2>
-        <p class="modal-sub">We sent a code to <strong id="otpEmailDisplay"></strong>. It expires in 5 minutes.</p>
-        <div class="otp-boxes">
-          <input class="otp-box" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]"/>
-          <input class="otp-box" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]"/>
-          <input class="otp-box" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]"/>
-          <input class="otp-box" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]"/>
+        <div class="fld" style="margin-bottom:14px">
+          <label>Your email address <span style="color:var(--peach, #E8855A)">*</span></label>
+          <input type="email" id="ecEmailInput" placeholder="you@gmail.com" autocomplete="email"/>
         </div>
-        <div class="form-error" id="otpCodeError"></div>
-        <button class="form-submit" id="otpVerifyBtn" style="margin-top:16px">Verify →</button>
-        <p style="text-align:center;margin-top:14px;font-size:.8rem;color:var(--mid)">
-          Wrong email? <button onclick="resetOTPToStep1()" style="color:var(--sage);font-weight:600;text-decoration:underline">Change it</button>
-          &nbsp;·&nbsp;
-          <button id="otpResendBtn" style="color:var(--sage);font-weight:600;text-decoration:underline">Resend code</button>
+        <p style="font-size:.75rem;color:var(--mid);margin-bottom:18px;line-height:1.55;text-align:center">
+          We'll remember you for 30 days on this device. No spam, ever.
         </p>
+        <div class="form-error" id="ecEmailError"></div>
+        <button class="form-submit" id="ecSubmitBtn">Unlock Contact Details →</button>
       </div>
 
-      <!-- Step 3: success -->
-      <div class="form-success" id="otpSuccess">
-        <div class="success-icon">✅</div>
-        <h3>You're verified!</h3>
-        <p>Contact details are now visible on all listings for the next 30 days.</p>
+      <!-- Step 2: success -->
+      <div id="ecStep2" class="ec-step hidden">
+        <div class="form-success show" style="padding:12px 0">
+          <div class="success-icon">✅</div>
+          <h3>You're all set!</h3>
+          <p id="ecSuccessMsg">Contact details are now visible. We've noted your email — we'll only reach out with useful updates.</p>
+        </div>
       </div>
+
     </div>`;
   document.body.appendChild(el);
 
-  // OTP box auto-advance
-  el.querySelectorAll('.otp-box').forEach((box, i, boxes) => {
-    box.addEventListener('input', () => {
-      box.value = box.value.replace(/\D/g, '').slice(-1);
-      if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
-    });
-    box.addEventListener('keydown', e => {
-      if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
-    });
-    box.addEventListener('paste', e => {
-      const txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
-      boxes.forEach((b, j) => { b.value = txt[j] || ''; });
-      boxes[Math.min(txt.length, boxes.length - 1)].focus();
-      e.preventDefault();
-    });
+  // Close handlers
+  document.getElementById('ecClose').addEventListener('click', closeEmailCaptureModal);
+  el.addEventListener('click', e => { if (e.target === el) closeEmailCaptureModal(); });
+
+  // Submit
+  document.getElementById('ecSubmitBtn').addEventListener('click', submitEmailCapture);
+  document.getElementById('ecEmailInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitEmailCapture();
   });
 })();
 
-// ── OTP STYLES (injected once) ───────────────────────────
-(function injectOTPStyles() {
-  const s = document.createElement('style');
-  s.textContent = `
-    .otp-boxes { display:flex; gap:12px; justify-content:center; margin:24px 0 4px; }
-    .otp-box {
-      width:58px; height:64px; border-radius:14px;
-      border:2px solid var(--border); font-size:1.8rem; font-weight:700;
-      text-align:center; color:var(--forest); background:var(--cream);
-      transition:border-color .2s, box-shadow .2s; outline:none;
-      font-family:var(--font-d);
-    }
-    .otp-box:focus { border-color:var(--sage); box-shadow:0 0 0 3px rgba(76,175,128,.15); }
-    .otp-box.error { border-color:#E74C3C; box-shadow:0 0 0 3px rgba(231,76,60,.15); animation:shake .35s var(--spring); }
-    .ph-reveal-btn {
-      color:var(--mid); font-size:.82rem; font-weight:500;
-      display:flex; align-items:center; gap:6px;
-      padding:3px 10px; background:var(--parchment);
-      border-radius:20px; border:1px dashed var(--border);
-      transition:background .2s, border-color .2s;
-      white-space:nowrap;
-    }
-    .ph-reveal-btn:hover { background:var(--amber-soft); border-color:var(--amber); }
-    .addr-locked { filter:blur(3.5px); pointer-events:all; user-select:none; transition:filter .3s; }
-    .addr-locked:hover { filter:blur(2px); }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-    .otp-sending { opacity:.6; pointer-events:none; }
-  `;
-  document.head.appendChild(s);
-})();
-
-// ── OTP FLOW FUNCTIONS ───────────────────────────────────
-function openOTPModal(context) {
-  OTP.setPending(context);
-  const modal = document.getElementById('otpModal');
-  document.getElementById('otpStep1').style.display = '';
-  document.getElementById('otpStep2').style.display = 'none';
-  document.getElementById('otpSuccess').style.display = 'none';
-  document.getElementById('otpSuccess').classList.remove('show');
-  document.getElementById('otpContext').textContent =
-    `Enter your email to see contact details for ${context.providerName} in ${context.providerCity}.`;
-  document.getElementById('otpEmailInput').value = '';
-  document.getElementById('otpEmailError').textContent = '';
-  document.getElementById('otpEmailError').classList.remove('show');
+function openEmailCaptureModal(context) {
+  const modal = document.getElementById('emailCaptureModal');
+  document.getElementById('ecStep1').classList.remove('hidden');
+  document.getElementById('ecStep2').classList.add('hidden');
+  document.getElementById('ecEmailInput').value = OTP.getEmail() || '';
+  document.getElementById('ecEmailError').textContent = '';
+  document.getElementById('ecEmailError').classList.remove('show');
+  if (context?.providerName) {
+    document.getElementById('ecContext').textContent =
+      `Drop your email to unlock the contact details for ${context.providerName}.`;
+  }
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
-  setTimeout(() => document.getElementById('otpEmailInput').focus(), 350);
-  HP.track('otp_modal_open', { provider_name: context.providerName, provider_city: context.providerCity });
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('ecEmailInput').focus(), 350);
+  HP.track('email_capture_modal_open', {
+    provider_name: context?.providerName || '',
+    provider_city: context?.providerCity || '',
+  });
 }
 
-function closeOTPModal() {
-  const modal = document.getElementById('otpModal');
+function closeEmailCaptureModal() {
+  const modal = document.getElementById('emailCaptureModal');
   modal.classList.remove('open');
   modal.setAttribute('aria-hidden', 'true');
-  OTP.clear();
+  document.body.style.overflow = '';
 }
 
-function resetOTPToStep1() {
-  document.getElementById('otpStep1').style.display = '';
-  document.getElementById('otpStep2').style.display = 'none';
-  document.getElementById('otpEmailError').textContent = '';
-}
-
-async function sendOTP() {
-  const emailInput = document.getElementById('otpEmailInput');
+function submitEmailCapture() {
+  const emailInput = document.getElementById('ecEmailInput');
   const email = emailInput.value.trim().toLowerCase();
-  const errEl  = document.getElementById('otpEmailError');
+  const errEl = document.getElementById('ecEmailError');
   errEl.classList.remove('show');
 
-  // Basic email validation
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+  // Validate — basic but catches obvious junk
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  if (!valid) {
     errEl.textContent = 'Please enter a valid email address.';
     errEl.classList.add('show');
-    emailInput.focus();
-    HP.track('otp_email_invalid', { email_domain: email.split('@')[1] || 'none' });
+    emailInput.style.borderColor = '#E74C3C';
+    setTimeout(() => emailInput.style.borderColor = '', 1800);
     return;
   }
 
-  // Block obvious throwaway domains
-  const burnerDomains = ['mailinator.com','guerrillamail.com','tempmail.com','throwam.com','yopmail.com','sharklasers.com','trashmail.com','fakeinbox.com'];
-  const domain = email.split('@')[1];
-  if (burnerDomains.includes(domain)) {
-    errEl.textContent = 'Please use your real email address — temporary emails aren\'t accepted.';
-    errEl.classList.add('show');
-    HP.track('otp_burner_blocked', { domain });
-    return;
-  }
+  // Save locally
+  OTP.save(email);
 
-  const btn = document.getElementById('otpSendBtn');
-  btn.textContent = 'Sending…'; btn.classList.add('otp-sending');
-
-  try {
-    await loadEmailJS();
-    const code = OTP.generate();
-    OTP.setEmail(email);
-
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email: email,
-      otp: code,
-      provider_name: OTP.getPending()?.providerName || 'a listing',
-      expiry_mins: '5',
+  // Save to Google Sheet (non-blocking)
+  const ctx = OTP.getPending();
+  if (APPS_SCRIPT_URL.startsWith('http')) {
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sheet: 'user_leads',
+        email,
+        provider_name: ctx?.providerName || '',
+        provider_city: ctx?.providerCity || '',
+        provider_type: ctx?.providerType || '',
+        timestamp: new Date().toISOString(),
+        page: window.location.href,
+      }),
+    }).catch(() => {});
+  } else {
+    // Log to console during dev so you can see what would be saved
+    console.info('[HappyPets] Lead captured (set APPS_SCRIPT_URL to save to Sheets):', {
+      email, provider: ctx?.providerName, city: ctx?.providerCity,
     });
-
-    // Move to step 2
-    document.getElementById('otpStep1').style.display = 'none';
-    document.getElementById('otpStep2').style.display = '';
-    document.getElementById('otpEmailDisplay').textContent = email;
-    document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; b.classList.remove('error'); });
-    document.querySelectorAll('.otp-box')[0].focus();
-    HP.track('otp_sent', { email_domain: domain });
-  } catch (err) {
-    // If EmailJS not configured yet, show setup instructions in console, still work in demo
-    console.warn('[HappyPets OTP] EmailJS not configured yet. To enable:\n1. Sign up at emailjs.com (free)\n2. Create a Gmail service\n3. Create a template with {{otp}}, {{to_email}}, {{provider_name}}\n4. Replace EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY in the script');
-
-    // DEMO MODE: auto-fill with generated OTP shown in console
-    const code = OTP.generate(); OTP.setEmail(email);
-    console.info(`[HappyPets OTP] Demo mode — your OTP is: ${code}`);
-    document.getElementById('otpStep1').style.display = 'none';
-    document.getElementById('otpStep2').style.display = '';
-    document.getElementById('otpEmailDisplay').textContent = email;
-    document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; b.classList.remove('error'); });
-    document.querySelectorAll('.otp-box')[0].focus();
-    HP.track('otp_demo_mode', { reason: 'emailjs_not_configured' });
-  } finally {
-    btn.textContent = 'Send Code →'; btn.classList.remove('otp-sending');
-  }
-}
-
-function verifyOTP() {
-  const boxes  = document.querySelectorAll('.otp-box');
-  const input  = Array.from(boxes).map(b => b.value).join('').trim();
-  const errEl  = document.getElementById('otpCodeError');
-  errEl.classList.remove('show');
-
-  if (input.length < 4) {
-    errEl.textContent = 'Please enter the full 4-digit code.';
-    errEl.classList.add('show');
-    return;
   }
 
-  const result = OTP.validate(input);
-  if (result === 'ok') {
-    const email = OTP.getEmail();
-    OTP.saveVerified(email);
-    const ctx = OTP.getPending();
-    logVerifiedUser(email, ctx?.providerName, ctx?.providerCity);
-
-    // Show success then close and reveal
-    document.getElementById('otpStep2').style.display = 'none';
-    const successEl = document.getElementById('otpSuccess');
-    successEl.style.display = 'flex'; successEl.classList.add('show');
-    HP.track('otp_verified', { email_domain: email.split('@')[1] });
-
-    setTimeout(() => {
-      closeOTPModal();
-      if (ctx?.onSuccess) ctx.onSuccess();
-      // Refresh all cards to reveal contact info
-      document.querySelectorAll('.lcard').forEach(card => {
-        const ph = card.querySelector('.ph-locked');
-        const addr = card.querySelector('.addr-locked');
-        if (ph || addr) card.click(); // simplest: just rerender; but we use targeted refresh below
-      });
-      rerender();
-    }, 1400);
-  } else if (result === 'expired') {
-    errEl.textContent = 'This code has expired. Please request a new one.';
-    errEl.classList.add('show');
-    boxes.forEach(b => b.classList.add('error'));
-    HP.track('otp_expired');
-  } else {
-    errEl.textContent = 'That code doesn\'t match. Double-check and try again.';
-    errEl.classList.add('show');
-    boxes.forEach(b => b.classList.add('error'));
-    HP.track('otp_wrong_code');
-    setTimeout(() => boxes.forEach(b => b.classList.remove('error')), 600);
-  }
-}
-
-// Re-render all visible cards so locked ones become revealed
-function rerender() { render(true); }
-
-// ── OTP modal event wiring ───────────────────────────────
-document.getElementById('otpSendBtn').addEventListener('click', sendOTP);
-document.getElementById('otpVerifyBtn').addEventListener('click', verifyOTP);
-document.getElementById('otpClose').addEventListener('click', closeOTPModal);
-document.getElementById('otpResendBtn').addEventListener('click', () => {
-  document.querySelectorAll('.otp-box').forEach(b => b.value = '');
-  HP.track('otp_resend_click');
-  resetOTPToStep1();
-  setTimeout(sendOTP, 50);
-});
-document.getElementById('otpModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeOTPModal();
-});
-// Enter key on OTP boxes
-document.getElementById('otpModal').addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    if (document.getElementById('otpStep1').style.display !== 'none') sendOTP();
-    else if (document.getElementById('otpStep2').style.display !== 'none') verifyOTP();
-  }
-  if (e.key === 'Escape') closeOTPModal();
-});
-
-// ── HOOK INTO OTP.requestVerification ───────────────────
-OTP.requestVerification = function(context) {
-  if (OTP.isVerified()) {
-    // Already verified — just call success immediately
-    if (context.onSuccess) context.onSuccess();
-  } else {
-    openOTPModal(context);
-  }
-};
-
-// ═══════════════════════════════════════════════════════
-//  HAMBURGER / MOBILE NAV
-// ═══════════════════════════════════════════════════════
-const ham        = document.getElementById('ham');
-const mobileNav  = document.getElementById('mobileNav');
-const mNavClose  = document.getElementById('mobileNavClose');
-
-function openMobileNav()  { mobileNav.classList.add('open'); mobileNav.setAttribute('aria-hidden','false'); ham.classList.add('active'); document.body.style.overflow='hidden'; }
-function closeMobileNav() { mobileNav.classList.remove('open'); mobileNav.setAttribute('aria-hidden','true'); ham.classList.remove('active'); document.body.style.overflow=''; }
-
-ham.addEventListener('click', () => {
-  HP.track('mobile_nav_toggle', { action: mobileNav.classList.contains('open') ? 'close' : 'open' });
-  mobileNav.classList.contains('open') ? closeMobileNav() : openMobileNav();
-});
-mNavClose.addEventListener('click', closeMobileNav);
-mobileNav.addEventListener('click', e => { if(e.target === mobileNav) closeMobileNav(); });
-document.querySelectorAll('.mobile-nav-link:not(.mobile-nav-cta)').forEach(a => {
-  a.addEventListener('click', () => {
-    closeMobileNav();
-    HP.track('mobile_nav_link', { label: a.textContent.trim() });
+  HP.track('email_captured', {
+    email_domain: email.split('@')[1] || 'unknown',
+    provider_name: ctx?.providerName || '',
+    provider_city: ctx?.providerCity || '',
   });
-});
-document.getElementById('mobileGetListed').addEventListener('click', e => {
-  e.preventDefault(); closeMobileNav();
-  setTimeout(() => openModal('modalListed', 'get_listed'), 300);
-});
 
-// ═══════════════════════════════════════════════════════
-//  SPECIES PANEL
-// ═══════════════════════════════════════════════════════
-const SPECIES_DATA = {
-  Dogs:     { emoji:'🐕', filter:'vet', available:true,  fact:'Dogs have been companions to humans for over 15,000 years — the oldest domesticated animal.' },
-  Cats:     { emoji:'🐈', filter:'vet', available:true,  fact:'Cats can make over 100 distinct sounds. Dogs can only make about 10.' },
-  Fish:     { emoji:'🐠', filter:null,  available:false, fact:'Fish have been on Earth for 500 million years — predating the dinosaurs by a wide margin.' },
-  Birds:    { emoji:'🦜', filter:null,  available:false, fact:'African Grey Parrots can learn over 1,000 words and understand the concept of zero.' },
-  Rabbits:  { emoji:'🐇', filter:null,  available:false, fact:'Rabbits can run up to 72 km/h — surprisingly athletic little creatures.' },
-  Reptiles: { emoji:'🦎', filter:null,  available:false, fact:'Geckos can walk on glass thanks to millions of microscopic hairs that create van der Waals forces.' },
-  Hamsters: { emoji:'🐹', filter:null,  available:false, fact:'Hamsters can run up to 8 km in a single night on their wheel.' },
-  Other:    { emoji:'🐾', filter:null,  available:false, fact:'India has over 30 million pet animals — and 70% of them aren\'t dogs or cats.' },
-};
+  // Show success step briefly, then close and reveal
+  document.getElementById('ecStep1').classList.add('hidden');
+  document.getElementById('ecStep2').classList.remove('hidden');
 
-function openSpeciesPanel(species, emoji) {
-  const data = SPECIES_DATA[species] || SPECIES_DATA['Other'];
-  const backdrop = document.getElementById('speciesBackdrop');
-  document.getElementById('spEmoji').textContent  = data.emoji || emoji;
-  document.getElementById('spTitle').textContent  = species;
-  document.getElementById('spFact').textContent   = `💡 Did you know? ${data.fact}`;
-
-  const bodyEl   = document.getElementById('spBody');
-  const actionEl = document.getElementById('spActionArea');
-
-  if (data.available) {
-    bodyEl.textContent = `We have vetted vets, groomers, and care providers for ${species} across Gurgaon, Delhi, and Noida. Browse listings below — all verified, all local.`;
-    actionEl.innerHTML = `
-      <div class="sp-cta-row" style="display:flex;gap:12px;flex-wrap:wrap">
-        <button class="sp-cta sp-cta-primary" id="spViewListings">Browse ${species} Care →</button>
-        <button class="sp-cta sp-cta-secondary" id="spNotifySpecies" style="display:none">Notify me when available</button>
-      </div>`;
-    document.getElementById('spViewListings').addEventListener('click', () => {
-      closeSpeciesPanel();
-      HP.track('species_browse_click', { species, has_listings: true });
-      smoothTo('#listings');
-    });
-  } else {
-    bodyEl.innerHTML = `We're actively adding ${species} specialists to Happy Pets. We don't have dedicated listings yet — but we're working on it! Drop your email and we'll let you know the moment they go live.`;
-    actionEl.innerHTML = `
-      <div class="sp-notify-form">
-        <input class="sp-notify-input" type="email" id="spNotifyEmail" placeholder="your@email.com" autocomplete="email"/>
-        <button class="sp-notify-btn" id="spNotifySubmit">Notify Me 🔔</button>
-      </div>
-      <p id="spNotifyMsg" style="font-size:.82rem;color:var(--sage);margin-top:10px;display:none;font-weight:600">✓ Done! We'll let you know as soon as ${species} listings go live.</p>`;
-
-    document.getElementById('spNotifySubmit').addEventListener('click', () => {
-      const email = document.getElementById('spNotifyEmail').value.trim();
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-        document.getElementById('spNotifyEmail').style.borderColor = '#E74C3C';
-        setTimeout(() => document.getElementById('spNotifyEmail').style.borderColor = '', 1500);
-        return;
-      }
-      // Log to Google Sheet
-      if (APPS_SCRIPT_URL.startsWith('http')) {
-        fetch(APPS_SCRIPT_URL, {
-          method:'POST', mode:'no-cors',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ sheet:'species_waitlist', email, species, timestamp: new Date().toISOString() }),
-        }).catch(()=>{});
-      }
-      HP.track('species_notify_signup', { species, email_domain: email.split('@')[1] });
-      document.getElementById('spNotifyEmail').style.display    = 'none';
-      document.getElementById('spNotifySubmit').style.display   = 'none';
-      document.getElementById('spNotifyMsg').style.display = 'block';
-    });
-  }
-
-  backdrop.classList.add('open');
-  backdrop.setAttribute('aria-hidden', 'false');
-  HP.track('species_panel_open', { species, has_listings: data.available });
+  setTimeout(() => {
+    closeEmailCaptureModal();
+    // Trigger the pending card reveal
+    if (ctx?.onSuccess) ctx.onSuccess();
+  }, 1400);
 }
 
-function closeSpeciesPanel() {
-  const backdrop = document.getElementById('speciesBackdrop');
-  backdrop.classList.remove('open');
-  backdrop.setAttribute('aria-hidden', 'true');
-}
-
-document.getElementById('speciesClose').addEventListener('click', closeSpeciesPanel);
-document.getElementById('speciesBackdrop').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeSpeciesPanel();
-});
+// ── ESCAPE KEY HANDLER ────────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeSpeciesPanel(); closeOTPModal(); closeMobileNav(); }
+  if (e.key === 'Escape') { closeSpeciesPanel(); closeEmailCaptureModal(); closeMobileNav(); }
+});
+
 });
 
 // ═══════════════════════════════════════════════════════
