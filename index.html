@@ -5,1216 +5,532 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Happy Pets — Premium Pet Care, Delhi NCR</title>
 
-<!-- Google Analytics 4 -->
+<!-- GA4: replace G-X4ESQQY1YG with your Measurement ID -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-X4ESQQY1YG"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-X4ESQQY1YG', {
-    page_title: 'Happy Pets Home',
-    page_location: window.location.href,
-    send_page_view: true
-  });
-  // Central tracking helper — wraps gtag so we never throw if blocked
-  window.HP = window.HP || {};
-  HP.track = function(eventName, params) {
-    try {
-      gtag('event', eventName, Object.assign({ platform: 'happy_pets_web', city_context: 'delhi_ncr' }, params));
-    } catch(e) {}
-  };
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());
+gtag('config','G-X4ESQQY1YG',{page_title:'Happy Pets Home',page_location:window.location.href,send_page_view:false});
+window.HP={track:function(name,params){var p=Object.assign({platform:'happy_pets_web',city_context:'delhi_ncr'},params||{});if(window.gtag)gtag('event',name,p);if(location.hostname==='localhost'||!location.hostname.includes('happypets'))console.log('[GA]',name,p);}};
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 
 <style>
-/* ─────────────────────────────────────────
-   DESIGN TOKENS — Warm, inviting palette
-   Signature: amber-green duotone glow + 
-   rounded everything + warm shadow tints
-───────────────────────────────────────── */
-:root {
-  /* Core palette */
-  --ink:       #0E1A10;
-  --forest:    #1B4030;
-  --moss:      #2A6048;
-  --sage:      #4CAF80;
-  --mint:      #C8F0D8;
-  --amber:     #E8A838;
-  --amber-soft:#FFF0C8;
-  --peach:     #FF8C5A;
-  --peach-soft:#FFE8D8;
-  --cream:     #FDFAF4;
-  --warm-white:#FFFFFF;
-  --parchment: #F5EFE4;
-  --border:    #E8DFD0;
-  --mid:       #7A7060;
-  --soft:      #A89880;
+/* ── TOKENS ── */
+:root{
+  --forest:#1B4332;--moss:#2D6A4F;--sage:#52B788;--mint:#D8F3DC;
+  --amber:#F59E0B;--amber-soft:#FEF3C7;--peach:#E8855A;--coral:#E76F51;
+  --ink:#1C1917;--warm:#FDFAF4;--parch:#F5EFE4;--cream:#FBF7EF;
+  --white:#FFFFFF;--border:#E8E0D0;--mid:#78716C;
+  --sh-sm:0 4px 16px rgba(28,25,23,.07);
+  --sh-md:0 12px 40px rgba(28,25,23,.11);
+  --sh-lg:0 28px 80px rgba(28,25,23,.16);
+  --r-sm:10px;--r-md:18px;--r-lg:28px;--r-xl:999px;
+  --smooth:cubic-bezier(.4,0,.2,1);--spring:cubic-bezier(.22,1,.36,1);--bounce:cubic-bezier(.34,1.56,.64,1);
+  --fd:'Lora',Georgia,serif;--fb:'Plus Jakarta Sans',system-ui,sans-serif;--fm:'DM Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--fb);background:var(--warm);color:var(--ink);line-height:1.65;overflow-x:hidden}
+a{text-decoration:none;color:inherit}ul{list-style:none}
+button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}
+input,select{font:inherit;border:none;background:none;outline:none;cursor:pointer;color:inherit}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--parch)}::-webkit-scrollbar-thumb{background:var(--sage);border-radius:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
 
-  /* Warm shadows — tinted, not grey */
-  --sh-xs: 0 2px 8px rgba(30,60,40,.06);
-  --sh-sm: 0 4px 20px rgba(30,60,40,.09);
-  --sh-md: 0 12px 48px rgba(30,60,40,.13);
-  --sh-lg: 0 32px 96px rgba(30,60,40,.18);
-  --sh-amber: 0 8px 32px rgba(232,168,56,.25);
-  --sh-peach: 0 8px 32px rgba(255,140,90,.3);
+/* ── PAGE OVERLAY ── */
+#pageOverlay{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,var(--forest),var(--moss));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .6s var(--spring),visibility .6s}
+#pageOverlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.ov-paw{font-size:3rem;animation:pawBounce 1.2s ease-in-out infinite}
+@keyframes pawBounce{0%,100%{transform:scale(1) rotate(-5deg);opacity:.7}50%{transform:scale(1.2) rotate(5deg);opacity:1}}
+.ov-fact{font-family:var(--fd);font-style:italic;font-size:1.05rem;color:rgba(255,255,255,.85);text-align:center;max-width:340px;line-height:1.65;padding:0 24px}
 
-  /* Radius — rounder = friendlier */
-  --r-xs: 8px;
-  --r-sm: 14px;
-  --r-md: 22px;
-  --r-lg: 32px;
-  --r-xl: 60px;
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 0;transition:background .45s var(--smooth),box-shadow .45s var(--smooth),padding .35s var(--smooth)}
+nav.scrolled{background:rgba(253,250,244,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 1px 0 var(--border),var(--sh-sm);padding:11px 0}
+.nav-inner{max-width:1180px;margin:0 auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--amber),var(--peach));display:grid;place-items:center;font-size:1.1rem;box-shadow:0 3px 12px rgba(232,133,90,.35);transition:transform .3s var(--bounce),box-shadow .3s;flex-shrink:0}
+.logo:hover .logo-icon{transform:rotate(-8deg) scale(1.08)}
+.logo-name{font-family:var(--fd);font-size:1.3rem;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.logo-name b{color:var(--forest)}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{font-size:.875rem;font-weight:500;color:var(--mid);transition:color .2s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;right:100%;height:1.5px;background:var(--peach);transition:right .3s var(--spring)}
+.nav-links a:hover{color:var(--ink)}.nav-links a:hover::after{right:0}
+.nav-cta{background:linear-gradient(135deg,var(--forest),var(--moss))!important;color:var(--white)!important;padding:10px 22px;border-radius:var(--r-xl);font-size:.83rem!important;font-weight:600!important;transition:transform .25s var(--bounce),box-shadow .25s!important;box-shadow:0 4px 14px rgba(27,67,50,.3)}
+.nav-cta::after{display:none!important}.nav-cta:hover{transform:translateY(-2px) scale(1.03)!important;box-shadow:0 8px 24px rgba(27,67,50,.4)!important}
+.hamburger{display:none;flex-direction:column;gap:5px;padding:4px}
+.hamburger span{width:22px;height:2px;background:var(--ink);border-radius:2px;transition:.3s var(--smooth);display:block}
+.hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.active span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hamburger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
-  /* Typography */
-  --font-d: 'Lora', Georgia, serif;
-  --font-b: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-m: 'DM Mono', monospace;
+/* ── MOBILE NAV ── */
+.mobile-nav{position:fixed;inset:0;z-index:190;background:rgba(14,26,16,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .35s var(--smooth),visibility .35s}
+.mobile-nav.open{opacity:1;visibility:visible}
+.mobile-nav-panel{position:absolute;top:0;right:0;bottom:0;width:min(320px,88vw);background:var(--cream);padding:84px 32px 40px;display:flex;flex-direction:column;gap:4px;transform:translateX(100%);transition:transform .4s var(--spring);box-shadow:-8px 0 48px rgba(14,26,16,.15)}
+.mobile-nav.open .mobile-nav-panel{transform:translateX(0)}
+.mobile-nav-panel a{font-size:1.1rem;font-weight:500;color:var(--forest);padding:14px 0;border-bottom:1px solid var(--border);display:block;transition:color .2s,padding-left .2s}
+.mobile-nav-panel a:hover{color:var(--peach);padding-left:6px}
+.mnav-cta{margin-top:20px!important;border-bottom:none!important;background:linear-gradient(135deg,var(--forest),var(--moss));color:#fff!important;text-align:center;padding:15px 24px!important;border-radius:var(--r-xl)!important;font-weight:700!important}
+.mobile-nav-close{position:absolute;top:22px;right:22px;width:36px;height:36px;border-radius:50%;background:var(--parch);border:1px solid var(--border);display:grid;place-items:center;font-size:1rem;cursor:pointer;transition:background .2s,transform .25s var(--spring);color:var(--mid)}
+.mobile-nav-close:hover{background:var(--border);transform:rotate(90deg)}
 
-  /* Easing */
-  --ease:   cubic-bezier(.4,0,.2,1);
-  --spring: cubic-bezier(.34,1.56,.64,1);
-  --smooth: cubic-bezier(.25,.46,.45,.94);
+/* ── HERO ── */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:120px 28px 80px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0;animation:heroBg 14s ease-in-out infinite alternate}
+@keyframes heroBg{
+  0%  {background:linear-gradient(155deg,#FFF8E7 0%,#FDE8D8 40%,#E8F5EE 75%,#F7F0E8 100%)}
+  33% {background:linear-gradient(155deg,#FEF3C7 0%,#FCE7F3 40%,#D1FAE5 75%,#FFF7ED 100%)}
+  66% {background:linear-gradient(155deg,#ECFDF5 0%,#FEF3C7 40%,#FDE8D8 75%,#E8F5EE 100%)}
+  100%{background:linear-gradient(155deg,#FFF1F2 0%,#F0FDF4 40%,#FEF9C3 75%,#FDE8D8 100%)}
 }
-
-/* ── RESET & BASE ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html {
-  scroll-behavior: smooth;
-  font-size: 16px;
-  /* Smooth overscroll feel */
-  -webkit-overflow-scrolling: touch;
-}
-body {
-  font-family: var(--font-b);
-  background: var(--cream);
-  color: var(--ink);
-  line-height: 1.65;
-  overflow-x: hidden;
-  /* Prevent layout shift during font load */
-  font-display: swap;
-}
-a { text-decoration: none; color: inherit; }
-ul { list-style: none; }
-button { cursor: pointer; border: none; background: none; font: inherit; }
-select, input { font: inherit; border: none; background: none; outline: none; }
-img { max-width: 100%; display: block; }
-
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: var(--parchment); }
-::-webkit-scrollbar-thumb { background: linear-gradient(var(--sage), var(--amber)); border-radius: 3px; }
-
-/* ── CONTAINER ── */
-.wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
-
-/* ─────────────────────────────────────────
-   NAVIGATION
-───────────────────────────────────────── */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-  padding: 20px 0;
-  transition: all .5s var(--smooth);
-}
-.nav.up {
-  background: rgba(253,250,244,.96);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 1px 0 var(--border), var(--sh-xs);
-  padding: 14px 0;
-}
-.nav-inner {
-  max-width: 1200px; margin: 0 auto; padding: 0 32px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.logo { display: flex; align-items: center; gap: 11px; }
-.logo-mark {
-  width: 38px; height: 38px;
-  background: linear-gradient(135deg, var(--forest), var(--moss));
-  border-radius: 12px;
-  display: grid; place-items: center; font-size: 1.1rem;
-  box-shadow: var(--sh-sm);
-  transition: transform .4s var(--spring), box-shadow .3s;
-  flex-shrink: 0;
-}
-.logo-mark:hover { transform: rotate(-10deg) scale(1.08); box-shadow: var(--sh-md); }
-.logo-name {
-  font-family: var(--font-d); font-size: 1.32rem; font-weight: 600;
-  color: var(--forest); letter-spacing: -.01em;
-}
-.logo-name em { font-style: normal; color: var(--peach); }
-.nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-links a {
-  font-size: .875rem; font-weight: 500; color: var(--forest);
-  transition: color .2s; position: relative; letter-spacing: .01em;
-}
-.nav-links a::after {
-  content: ''; position: absolute; bottom: -3px; left: 0; right: 0; height: 2px;
-  background: var(--peach); border-radius: 2px;
-  transform: scaleX(0); transition: transform .3s var(--spring);
-  transform-origin: left;
-}
-.nav-links a:hover::after { transform: scaleX(1); }
-.nav-links a:hover { color: var(--peach); }
-.nav-cta {
-  background: linear-gradient(135deg, var(--forest), var(--moss)) !important;
-  color: #fff !important; padding: 11px 24px; border-radius: var(--r-xl);
-  font-size: .83rem !important; font-weight: 600 !important;
-  box-shadow: var(--sh-sm); transition: transform .3s var(--spring), box-shadow .3s !important;
-}
-.nav-cta::after { display: none !important; }
-.nav-cta:hover { transform: translateY(-2px) !important; box-shadow: var(--sh-md) !important; }
-.hamburger { display: none; flex-direction: column; gap: 5px; padding: 4px; }
-.hamburger span { width: 22px; height: 2px; background: var(--forest); border-radius: 2px; transition: .35s var(--smooth); display: block; }
-
-/* ─────────────────────────────────────────
-   HERO
-───────────────────────────────────────── */
-.hero {
-  position: relative; min-height: 100vh;
-  background: radial-gradient(ellipse at 30% 50%, #0F2E1C 0%, #091A0F 60%, #0B2218 100%);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden; padding: 130px 32px 90px;
-}
-/* Breathing dual glow — the signature element */
-.hero-glow-a {
-  position: absolute; width: 700px; height: 700px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(76,175,128,.15) 0%, transparent 65%);
-  top: 50%; left: 35%; transform: translate(-50%,-50%);
-  animation: glowA 6s ease-in-out infinite; pointer-events: none;
-}
-.hero-glow-b {
-  position: absolute; width: 500px; height: 500px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(232,168,56,.1) 0%, transparent 65%);
-  top: 35%; right: 10%; transform: translateY(-50%);
-  animation: glowB 8s ease-in-out infinite 1s; pointer-events: none;
-}
-@keyframes glowA { 0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)} }
-@keyframes glowB { 0%,100%{opacity:.4;transform:translateY(-50%) scale(1)} 50%{opacity:.8;transform:translateY(-55%) scale(1.1)} }
-#bgCanvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
-
-.hero-content { position: relative; z-index: 2; max-width: 820px; text-align: center; }
-
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: var(--font-m); font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--amber); background: rgba(232,168,56,.12);
-  border: 1px solid rgba(232,168,56,.28); padding: 8px 20px; border-radius: 100px;
-  margin-bottom: 36px;
-  animation: riseIn .9s var(--smooth) .1s both;
-}
-.hero-badge::before { content: '✦'; font-size: .6rem; opacity: .8; }
-
-.hero-h1 {
-  font-family: var(--font-d);
-  font-size: clamp(2.8rem, 7.5vw, 5.8rem);
-  font-weight: 500; color: #fff; line-height: 1.04;
-  letter-spacing: -.03em; margin-bottom: 26px;
-  animation: riseIn .9s var(--smooth) .28s both;
-}
-.hero-h1 em {
-  font-style: italic; display: block;
-  background: linear-gradient(90deg, var(--sage), var(--amber));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero-sub {
-  font-size: clamp(.95rem, 2vw, 1.15rem);
-  color: rgba(255,255,255,.58); max-width: 520px; margin: 0 auto 52px;
-  line-height: 1.8; animation: riseIn .9s var(--smooth) .44s both;
-}
-@keyframes riseIn { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+.hero-blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:blobDrift 18s ease-in-out infinite alternate}
+.blob1{width:480px;height:480px;background:rgba(245,158,11,.16);top:-80px;right:-80px}
+.blob2{width:380px;height:380px;background:rgba(52,183,136,.12);bottom:-60px;left:-60px;animation-delay:-6s}
+.blob3{width:280px;height:280px;background:rgba(232,133,90,.13);top:45%;left:35%;animation-delay:-3s}
+@keyframes blobDrift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(28px,-18px) scale(1.05)}100%{transform:translate(-18px,28px) scale(.96)}}
+#pawCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.hero-content{position:relative;z-index:2;max-width:780px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--fm);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);border:1.5px solid rgba(27,67,50,.2);background:rgba(27,67,50,.07);padding:7px 18px;border-radius:var(--r-xl);margin-bottom:28px;opacity:0;transform:translateY(18px);animation:slideUp .7s var(--spring) .1s forwards}
+.hero-badge::before{content:'✦';font-size:.6rem;color:var(--amber)}
+.hero-h1{font-family:var(--fd);font-size:clamp(2.8rem,7vw,5.4rem);font-weight:400;line-height:1.08;letter-spacing:-.03em;color:var(--ink);margin-bottom:20px;opacity:0;transform:translateY(22px);animation:slideUp .8s var(--spring) .25s forwards}
+.hero-h1 em{font-style:italic;background:linear-gradient(135deg,var(--peach),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:clamp(.95rem,2vw,1.13rem);color:var(--mid);max-width:510px;margin:0 auto 44px;line-height:1.8;opacity:0;transform:translateY(18px);animation:slideUp .8s var(--spring) .4s forwards}
+@keyframes slideUp{to{opacity:1;transform:translateY(0)}}
 
 /* ── SEARCH ── */
-.search-wrap { animation: riseIn .9s var(--smooth) .58s both; margin-bottom: 56px; }
-.search-box {
-  display: flex; align-items: center;
-  background: rgba(255,255,255,.97);
-  border-radius: var(--r-xl); padding: 7px 7px 7px 24px;
-  box-shadow: var(--sh-lg), 0 0 0 1px rgba(255,255,255,.1);
-  max-width: 680px; margin: 0 auto;
-  transition: box-shadow .3s var(--ease), transform .3s var(--spring);
-}
-.search-box:focus-within { box-shadow: var(--sh-lg), 0 0 0 3px rgba(76,175,128,.35); transform: translateY(-2px); }
-.sf { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-.sf svg { width: 17px; height: 17px; color: var(--soft); flex-shrink: 0; }
-.sf input, .sf select {
-  width: 100%; font-size: .92rem; color: var(--ink);
-  background: transparent;
-}
-.sf input::placeholder { color: #B0A090; }
-.sf select option { background: #fff; color: var(--ink); }
-.sdiv { width: 1px; height: 24px; background: var(--border); margin: 0 16px; flex-shrink: 0; }
-.sf-city { flex: 0 0 140px; }
-.sbtn {
-  background: linear-gradient(135deg, var(--peach), #FF6B35);
-  color: #fff; padding: 14px 32px; border-radius: 100px;
-  font-weight: 700; font-size: .9rem; flex-shrink: 0;
-  box-shadow: var(--sh-peach);
-  transition: transform .25s var(--spring), box-shadow .25s;
-  white-space: nowrap;
-}
-.sbtn:hover { transform: scale(1.05) translateY(-1px); box-shadow: 0 12px 40px rgba(255,140,90,.45); }
-.sbtn:active { transform: scale(.98); }
+.search-wrap{opacity:0;transform:translateY(16px);animation:slideUp .8s var(--spring) .55s forwards;margin-bottom:48px}
+.search-box{display:flex;align-items:center;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:6px 6px 6px 22px;box-shadow:var(--sh-lg);max-width:660px;margin:0 auto;transition:box-shadow .3s,border-color .3s}
+.search-box:focus-within{border-color:rgba(52,183,136,.4);box-shadow:0 0 0 3px rgba(52,183,136,.1),var(--sh-lg)}
+.sf{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.sf svg{width:16px;height:16px;color:var(--mid);flex-shrink:0}
+.sf input,.sf select{width:100%;font-size:.92rem;color:var(--ink)}
+.sf input::placeholder{color:#B5ADA3}
+.sdiv{width:1px;height:26px;background:var(--border);margin:0 14px;flex-shrink:0}
+.sf-city{flex:0 0 auto}
+.sbtn{background:linear-gradient(135deg,var(--forest),var(--moss));color:#fff;padding:13px 30px;border-radius:var(--r-xl);font-weight:600;font-size:.9rem;flex-shrink:0;transition:transform .2s var(--bounce),box-shadow .2s;box-shadow:0 4px 14px rgba(27,67,50,.3);white-space:nowrap}
+.sbtn:hover{transform:scale(1.04) translateY(-1px);box-shadow:0 8px 24px rgba(27,67,50,.4)}
+.sbtn:active{transform:scale(.98)}
 
-/* ── HERO STATS ── */
-.hero-stats {
-  display: flex; align-items: center; justify-content: center;
-  animation: riseIn .9s var(--smooth) .72s both;
-}
-.hstat { text-align: center; padding: 0 36px; }
-.hstat-n {
-  display: block; font-family: var(--font-d); font-size: 2.8rem;
-  font-weight: 600; color: #fff; line-height: 1; margin-bottom: 6px;
-}
-.hstat-l { font-family: var(--font-m); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.4); }
-.hdiv { width: 1px; height: 44px; background: rgba(255,255,255,.12); }
-.hero-scroll-hint {
-  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  color: rgba(255,255,255,.3); font-family: var(--font-m); font-size: .66rem;
-  letter-spacing: .13em; text-transform: uppercase;
-}
-.scroll-line {
-  width: 1px; height: 40px;
-  background: linear-gradient(to bottom, rgba(255,255,255,.4), transparent);
-  animation: scrollLine 2s ease-in-out infinite;
-}
-@keyframes scrollLine { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+/* ── STATS ── */
+.hero-stats{display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(14px);animation:slideUp .8s var(--spring) .7s forwards}
+.hst{text-align:center;padding:0 32px}
+.hst-n{display:block;font-family:var(--fd);font-size:2.4rem;font-weight:700;background:linear-gradient(135deg,var(--forest),var(--peach));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:5px}
+.hst-l{font-family:var(--fm);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
+.hdv{width:1px;height:42px;background:var(--border)}
+.hero-scroll{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--mid);font-family:var(--fm);font-size:.67rem;letter-spacing:.12em;text-transform:uppercase;animation:slideUp 1s var(--spring) 1.2s both}
+.scroll-dot{width:6px;height:6px;border-radius:50%;background:var(--peach);animation:scrollBounce 2s ease-in-out infinite}
+@keyframes scrollBounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(6px);opacity:1}}
 
-/* ─────────────────────────────────────────
-   SHARED SECTION STYLES
-───────────────────────────────────────── */
-.sec { padding: 120px 0; }
-.sec-alt { background: var(--warm-white); }
-.sec-warm { background: var(--parchment); }
-.sec-head { text-align: center; margin-bottom: 72px; }
-.eyebrow {
-  display: inline-block; font-family: var(--font-m); font-size: .7rem;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--peach);
-  margin-bottom: 14px;
-}
-.sec-head h2 {
-  font-family: var(--font-d); font-size: clamp(2rem, 4.5vw, 3.4rem);
-  font-weight: 500; color: var(--forest); line-height: 1.15; letter-spacing: -.02em;
-}
-.sec-head h2 em { font-style: italic; color: var(--peach); }
-.sec-head p { color: var(--mid); font-size: 1.05rem; margin-top: 14px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.75; }
+/* ── SECTION COMMON ── */
+.sec-hd{text-align:center;margin-bottom:64px}
+.eyebrow{display:inline-block;font-family:var(--fm);font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--coral);margin-bottom:14px}
+.sec-hd h2{font-family:var(--fd);font-size:clamp(2rem,4.5vw,3.2rem);font-weight:400;color:var(--ink);line-height:1.18;letter-spacing:-.02em}
+.sec-hd h2 em{font-style:italic;color:var(--forest)}
 
-/* ─────────────────────────────────────────
-   SERVICES
-───────────────────────────────────────── */
-.srv-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px;
-}
-.srv-card {
-  background: var(--cream); border: 1.5px solid var(--border);
-  border-radius: var(--r-lg); padding: 38px 22px 30px; text-align: center;
-  cursor: pointer; position: relative; overflow: hidden;
-  transition: transform .45s var(--spring), box-shadow .4s var(--ease), border-color .3s;
-  /* GPU layer for smooth transform */
-  will-change: transform;
-}
-.srv-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(76,175,128,.07), rgba(232,168,56,.05));
-  opacity: 0; transition: opacity .4s var(--ease);
-  border-radius: inherit;
-}
-.srv-card:hover { transform: translateY(-10px); box-shadow: var(--sh-md); border-color: rgba(76,175,128,.4); }
-.srv-card:hover::before { opacity: 1; }
-.srv-ico {
-  font-size: 2.6rem; margin-bottom: 18px; display: block;
-  transition: transform .5s var(--spring);
-}
-.srv-card:hover .srv-ico { transform: scale(1.18) rotate(-6deg); }
-.srv-card h3 {
-  font-family: var(--font-d); font-size: 1.1rem; font-weight: 600;
-  color: var(--forest); margin-bottom: 10px;
-}
-.srv-card p { font-size: .82rem; color: var(--mid); line-height: 1.7; margin-bottom: 22px; }
-.srv-link {
-  font-size: .8rem; font-weight: 600; color: var(--sage); letter-spacing: .02em;
-  transition: color .25s, letter-spacing .25s;
-  display: inline-block;
-}
-.srv-card:hover .srv-link { color: var(--forest); letter-spacing: .04em; }
+/* ── SERVICES ── */
+.srv-sec{padding:110px 0;background:var(--white)}
+.srv-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.srv-card{background:var(--cream);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:36px 20px 28px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:transform .35s var(--bounce),box-shadow .35s var(--smooth),border-color .3s;will-change:transform}
+.srv-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(52,183,136,.06));opacity:0;transition:opacity .3s}
+.srv-card:hover{transform:translateY(-9px) scale(1.02);box-shadow:var(--sh-md);border-color:rgba(52,183,136,.35)}.srv-card:hover::before{opacity:1}
+.srv-ico{font-size:2.4rem;margin-bottom:18px;display:block;transition:transform .35s var(--bounce)}
+.srv-card:hover .srv-ico{transform:scale(1.18) rotate(-6deg)}
+.srv-card h3{font-family:var(--fd);font-size:1.1rem;font-weight:600;color:var(--ink);margin-bottom:9px}
+.srv-card p{font-size:.82rem;color:var(--mid);line-height:1.65;margin-bottom:20px}
+.srv-lnk{font-size:.8rem;font-weight:600;color:var(--sage);letter-spacing:.02em;transition:color .2s}
+.srv-card:hover .srv-lnk{color:var(--forest)}
 
-/* ─────────────────────────────────────────
-   LISTINGS
-───────────────────────────────────────── */
-.filter-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 56px; }
-.fbtn {
-  padding: 11px 26px; border-radius: 100px;
-  border: 1.5px solid var(--border); font-size: .855rem; font-weight: 500;
-  color: var(--mid); background: var(--warm-white);
-  transition: all .3s var(--ease); position: relative; overflow: hidden;
-}
-.fbtn::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, var(--forest), var(--moss));
-  opacity: 0; transition: opacity .3s var(--ease); border-radius: inherit;
-}
-.fbtn span { position: relative; z-index: 1; transition: color .3s; }
-.fbtn:hover { border-color: var(--sage); color: var(--forest); transform: translateY(-1px); box-shadow: var(--sh-xs); }
-.fbtn.on { border-color: transparent; color: #fff; box-shadow: 0 4px 18px rgba(27,64,48,.22); }
-.fbtn.on::before { opacity: 1; }
-.fbtn.on span { color: #fff; }
+/* ── LISTINGS ── */
+.lst-sec{padding:110px 0;background:var(--parch)}
+.filter-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:52px}
+.fbtn{padding:10px 24px;border-radius:var(--r-xl);border:1.5px solid var(--border);font-size:.85rem;font-weight:500;color:var(--mid);background:var(--white);transition:all .22s var(--smooth);will-change:transform}
+.fbtn:hover{border-color:var(--sage);color:var(--forest);transform:translateY(-1px)}
+.fbtn.on{background:linear-gradient(135deg,var(--forest),var(--moss));color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(27,67,50,.22);transform:translateY(-1px)}
+.lst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;min-height:280px;align-items:start}
 
-.lst-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-  min-height: 300px;
-}
+/* loader */
+.lst-loader{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:0}
+.l-animal{font-size:3rem;animation:ldrBounce 1.2s ease-in-out infinite;margin-bottom:20px}
+@keyframes ldrBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.08)}}
+.l-fact{font-family:var(--fd);font-style:italic;font-size:1.05rem;color:var(--forest);text-align:center;max-width:360px;line-height:1.65;margin-bottom:8px;transition:opacity .3s}
+.l-label{font-family:var(--fm);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
+.no-res{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--mid)}
+.no-res span{font-size:3rem;display:block;margin-bottom:14px}
 
-/* ── LOADER with fun facts ── */
-.lst-loader {
-  grid-column: 1 / -1;
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 0; padding: 80px 20px;
-}
-.loader-anim {
-  display: flex; gap: 8px; margin-bottom: 28px;
-}
-.loader-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--sage);
-  animation: dotBounce 1.4s ease-in-out infinite;
-}
-.loader-dot:nth-child(1) { animation-delay: 0s; background: var(--sage); }
-.loader-dot:nth-child(2) { animation-delay: .2s; background: var(--amber); }
-.loader-dot:nth-child(3) { animation-delay: .4s; background: var(--peach); }
-@keyframes dotBounce {
-  0%,80%,100% { transform: scale(.6); opacity: .4; }
-  40% { transform: scale(1.2); opacity: 1; }
-}
-.loader-fact {
-  text-align: center; max-width: 380px;
-  animation: factFade 1s var(--ease) both;
-}
-.loader-fact .fact-label {
-  font-family: var(--font-m); font-size: .68rem; letter-spacing: .14em;
-  text-transform: uppercase; color: var(--peach); margin-bottom: 8px; display: block;
-}
-.loader-fact p {
-  font-family: var(--font-d); font-size: 1.05rem; font-style: italic;
-  color: var(--forest); line-height: 1.65;
-}
-@keyframes factFade { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+/* card */
+.lcard{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px;opacity:0;transform:translateY(16px) scale(.98);animation:cardIn .5s var(--spring) forwards;transition:transform .35s var(--bounce),box-shadow .35s var(--smooth),border-color .3s;will-change:transform,opacity}
+@keyframes cardIn{to{opacity:1;transform:translateY(0) scale(1)}}
+.lcard:hover{transform:translateY(-6px);box-shadow:var(--sh-md);border-color:rgba(52,183,136,.2)}
+.ch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px}
+.badge{font-family:var(--fm);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:var(--r-xl);font-weight:500;flex-shrink:0}
+.bv{background:#DCFCE7;color:#166534}.bg{background:#FEF3C7;color:#92400E}
+.bb{background:#EFF6FF;color:#1D4ED8}.bs{background:#FDF4FF;color:#7E22CE}
+.bt{background:#FFF1F2;color:#BE123C}.bd{background:#F1F5F9;color:#475569}
+.c-city{font-size:.75rem;color:var(--mid);font-family:var(--fm);white-space:nowrap}
+.c-name{font-family:var(--fd);font-size:1.2rem;font-weight:600;color:var(--ink);margin-bottom:7px;line-height:1.3}
+.c-addr{font-size:.82rem;color:var(--mid);line-height:1.55;margin-bottom:18px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cf{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border);gap:10px}
 
-/* ── LISTING CARD ── */
-.lcard {
-  background: var(--warm-white); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 28px;
-  transition: transform .45s var(--spring), box-shadow .35s var(--ease), border-color .3s;
-  opacity: 0; transform: translateY(20px);
-  animation: cardIn .5s var(--smooth) forwards;
-  will-change: transform;
-  position: relative; overflow: hidden;
-}
-.lcard::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--sage), var(--amber));
-  transform: scaleX(0); transform-origin: left;
-  transition: transform .4s var(--ease); border-radius: 0 0 var(--r-lg) var(--r-lg);
-}
-.lcard:hover { transform: translateY(-6px); box-shadow: var(--sh-md); border-color: rgba(76,175,128,.25); }
-.lcard:hover::after { transform: scaleX(1); }
-@keyframes cardIn { to{opacity:1;transform:translateY(0)} }
+/* locked contact reveal */
+.ph-reveal-btn{color:var(--mid);font-size:.82rem;font-weight:500;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:var(--parch);border-radius:var(--r-xl);border:1px dashed var(--border);transition:background .2s,border-color .2s;cursor:pointer;white-space:nowrap}
+.ph-reveal-btn:hover{background:var(--amber-soft);border-color:var(--amber)}
+.c-ph{font-size:.82rem;color:var(--forest);font-weight:600;display:flex;align-items:center;gap:6px}
+.c-ph svg{width:13px;height:13px;flex-shrink:0}
+.c-ph a{color:inherit;transition:color .2s}.c-ph a:hover{color:var(--coral)}
+.addr-locked{filter:blur(4px);pointer-events:all;user-select:none;cursor:pointer;transition:filter .3s;display:block}
+.addr-locked:hover{filter:blur(2.5px)}
+.c-hrs{font-size:.73rem;color:var(--mid);font-family:var(--fm);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
 
-.ch { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; gap: 8px; }
-.badge {
-  font-family: var(--font-m); font-size: .63rem; letter-spacing: .1em;
-  text-transform: uppercase; padding: 5px 12px; border-radius: 100px;
-  font-weight: 500; white-space: nowrap; flex-shrink: 0;
-}
-.bv { background: #E6F4EC; color: #1A6B40; }
-.bg { background: #FFF0E8; color: #B04020; }
-.bb { background: #EEF0FF; color: #3730A3; }
-.bs { background: #FFFBEB; color: #92400E; }
-.bt { background: #F5F0FF; color: #6D28D9; }
-.bd { background: #F3F4F6; color: #4B5563; }
-.c-city { font-size: .76rem; color: var(--soft); font-family: var(--font-m); white-space: nowrap; }
-.c-name {
-  font-family: var(--font-d); font-size: 1.22rem; font-weight: 600;
-  color: var(--forest); margin-bottom: 8px; line-height: 1.3;
-}
-.c-addr {
-  font-size: .82rem; color: var(--mid); line-height: 1.6; margin-bottom: 20px;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.cf {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 16px; border-top: 1px solid var(--border); gap: 10px;
-}
-.c-ph { font-size: .82rem; color: var(--forest); font-weight: 500; display: flex; align-items: center; gap: 6px; }
-.c-ph svg { width: 13px; height: 13px; flex-shrink: 0; stroke: var(--sage); }
-.c-ph a { color: inherit; transition: color .2s; }
-.c-ph a:hover { color: var(--peach); }
-.c-hrs { font-size: .74rem; color: var(--soft); font-family: var(--font-m); text-align: right; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lst-foot{text-align:center;margin-top:48px}
+.more-btn{background:var(--white);color:var(--forest);border:2px solid var(--forest);padding:14px 46px;border-radius:var(--r-xl);font-weight:700;font-size:.92rem;transition:all .28s var(--smooth);box-shadow:var(--sh-sm)}
+.more-btn:hover{background:var(--forest);color:#fff;transform:translateY(-2px);box-shadow:var(--sh-md)}
 
-/* Load more */
-.lst-foot { text-align: center; margin-top: 52px; }
-.more-btn {
-  background: var(--warm-white); color: var(--forest);
-  border: 2px solid var(--forest); padding: 15px 48px; border-radius: 100px;
-  font-weight: 600; font-size: .92rem;
-  transition: all .35s var(--smooth); position: relative; overflow: hidden;
-}
-.more-btn::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, var(--forest), var(--moss));
-  opacity: 0; transition: opacity .35s var(--ease);
-}
-.more-btn span { position: relative; z-index: 1; transition: color .35s; }
-.more-btn:hover { border-color: transparent; box-shadow: var(--sh-md); transform: translateY(-3px); }
-.more-btn:hover::before { opacity: 1; }
-.more-btn:hover span { color: #fff; }
+/* ── SPECIES ── */
+.spec-sec{padding:100px 0;background:var(--white)}
+.spec-row{display:flex;flex-wrap:wrap;justify-content:center;gap:14px}
+.spec-item{display:flex;flex-direction:column;align-items:center;gap:9px;background:var(--cream);border:1.5px solid var(--border);border-radius:var(--r-md);padding:24px;min-width:105px;cursor:pointer;transition:transform .35s var(--bounce),box-shadow .3s,border-color .3s,background .3s;will-change:transform}
+.spec-item:hover{transform:translateY(-7px) scale(1.04);box-shadow:var(--sh-sm);border-color:rgba(52,183,136,.3);background:var(--mint)}
+.spec-item span{font-size:2rem;transition:transform .3s var(--bounce)}.spec-item:hover span{transform:scale(1.2) rotate(-5deg)}
+.spec-item p{font-size:.78rem;font-weight:600;color:var(--ink);letter-spacing:.01em}
 
-.no-res { grid-column: 1/-1; text-align: center; padding: 80px 20px; color: var(--mid); }
-.no-res span { font-size: 3rem; display: block; margin-bottom: 16px; }
-.no-res p { font-family: var(--font-d); font-size: 1.1rem; font-style: italic; }
+/* ── SPECIES PANEL ── */
+.sp-backdrop{position:fixed;inset:0;z-index:400;background:rgba(14,26,16,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .3s var(--smooth),visibility .3s;display:flex;align-items:flex-end;justify-content:center}
+.sp-backdrop.open{opacity:1;visibility:visible}
+.sp-panel{width:100%;max-width:680px;background:var(--white);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:40px 36px 52px;transform:translateY(100%);transition:transform .45s var(--spring);position:relative}
+.sp-backdrop.open .sp-panel{transform:translateY(0)}
+.sp-handle{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 24px}
+.sp-close{position:absolute;top:16px;right:20px;width:34px;height:34px;border-radius:50%;background:var(--parch);border:1px solid var(--border);display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .25s var(--spring);font-size:.9rem;color:var(--mid)}
+.sp-close:hover{background:var(--border);transform:rotate(90deg)}
+.sp-emoji{font-size:2.8rem;display:block;margin-bottom:10px;animation:popIn .4s var(--spring) both}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.sp-title{font-family:var(--fd);font-size:1.75rem;font-weight:600;color:var(--forest);margin-bottom:8px}
+.sp-body{font-size:.93rem;color:var(--mid);line-height:1.8;margin-bottom:22px;max-width:500px}
+.sp-cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.sp-cta{padding:13px 28px;border-radius:var(--r-xl);font-weight:600;font-size:.9rem;transition:transform .25s var(--spring),box-shadow .25s;cursor:pointer;border:none}
+.sp-cta-p{background:linear-gradient(135deg,var(--forest),var(--moss));color:#fff;box-shadow:0 4px 16px rgba(27,67,50,.25)}
+.sp-cta-p:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(27,67,50,.35)}
+.sp-cta-s{border:1.5px solid var(--border);color:var(--forest);background:var(--white)}
+.sp-cta-s:hover{border-color:var(--sage);background:var(--mint)}
+.sp-notify-form{display:flex;gap:10px;flex-wrap:wrap}
+.sp-notify-input{flex:1;min-width:200px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--r-xl);font-family:var(--fb);font-size:.88rem;color:var(--ink);outline:none;transition:border-color .25s,box-shadow .25s}
+.sp-notify-input:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(52,183,136,.1)}
+.sp-notify-btn{padding:12px 24px;border-radius:var(--r-xl);background:var(--amber);color:var(--ink);font-weight:700;font-size:.88rem;border:none;cursor:pointer;transition:transform .2s var(--spring),box-shadow .2s;box-shadow:0 3px 12px rgba(245,158,11,.3);white-space:nowrap}
+.sp-notify-btn:hover{transform:translateY(-1px) scale(1.03);box-shadow:0 6px 20px rgba(245,158,11,.4)}
+.sp-fact{margin-top:22px;padding:16px 18px;background:linear-gradient(135deg,var(--amber-soft),rgba(52,183,136,.06));border-radius:var(--r-md);border-left:3px solid var(--amber);font-size:.85rem;color:var(--mid);line-height:1.65;font-style:italic}
 
-/* ─────────────────────────────────────────
-   SPECIES SECTION
-───────────────────────────────────────── */
-.spec-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
-.spec-item {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  background: var(--warm-white); border: 1.5px solid var(--border);
-  border-radius: var(--r-md); padding: 26px 28px; min-width: 108px;
-  cursor: default;
-  transition: transform .4s var(--spring), box-shadow .35s, border-color .3s;
-}
-.spec-item:hover { transform: translateY(-8px) scale(1.03); box-shadow: var(--sh-sm); border-color: rgba(76,175,128,.4); }
-.spec-item span { font-size: 2rem; transition: transform .4s var(--spring); display: block; }
-.spec-item:hover span { transform: scale(1.2) rotate(8deg); }
-.spec-item p { font-size: .8rem; font-weight: 600; color: var(--forest); letter-spacing: .01em; }
+/* ── CTA ── */
+.cta-sec{padding:110px 0;background:linear-gradient(150deg,var(--forest) 0%,#0D2B1A 100%);position:relative;overflow:hidden}
+.cta-sec::before{content:'';position:absolute;right:-120px;top:-120px;width:480px;height:480px;background:radial-gradient(circle,rgba(245,158,11,.15) 0%,transparent 70%);pointer-events:none}
+.cta-inner{display:flex;align-items:center;justify-content:space-between;gap:52px;flex-wrap:wrap;position:relative;z-index:1}
+.cta-t .eyebrow{color:var(--amber)}
+.cta-t h2{font-family:var(--fd);font-size:clamp(2rem,3.5vw,2.8rem);color:#fff;font-weight:400;margin-bottom:14px;line-height:1.2}
+.cta-t p{color:rgba(255,255,255,.65);font-size:.97rem;max-width:400px;line-height:1.8}
+.cta-btns{display:flex;gap:14px;flex-shrink:0;flex-wrap:wrap}
+.btn-fill{background:linear-gradient(135deg,var(--amber),var(--peach));color:var(--ink);padding:16px 34px;border-radius:var(--r-xl);font-weight:700;font-size:.92rem;display:inline-block;transition:transform .25s var(--bounce),box-shadow .25s;box-shadow:0 4px 20px rgba(245,158,11,.35);cursor:pointer;border:none}
+.btn-fill:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 10px 30px rgba(245,158,11,.5)}
+.btn-out{border:1.5px solid rgba(255,255,255,.4);color:rgba(255,255,255,.85);padding:16px 34px;border-radius:var(--r-xl);font-size:.92rem;display:inline-block;transition:border-color .2s,color .2s,background .2s;cursor:pointer;background:none;font-family:var(--fb)}
+.btn-out:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.08)}
 
-/* ─────────────────────────────────────────
-   TRUST BAR — social proof strip
-───────────────────────────────────────── */
-.trust-sec {
-  padding: 60px 0;
-  background: linear-gradient(135deg, var(--forest), var(--moss));
-  overflow: hidden;
-}
-.trust-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
-.trust-stat { text-align: center; }
-.trust-stat .ts-n {
-  font-family: var(--font-d); font-size: 2.4rem; font-weight: 600;
-  color: #fff; display: block; line-height: 1;
-}
-.trust-stat .ts-l { font-family: var(--font-m); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); display: block; margin-top: 6px; }
-.trust-div { width: 1px; height: 56px; background: rgba(255,255,255,.15); }
-.trust-quote {
-  flex: 1; min-width: 260px;
-  font-family: var(--font-d); font-style: italic; font-size: 1.1rem;
-  color: rgba(255,255,255,.7); text-align: center; line-height: 1.7;
-}
+/* ── ABOUT ── */
+.about-sec{padding:110px 0;background:var(--parch)}
+.about-g{display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:start}
+.about-t h2{font-family:var(--fd);font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--ink);line-height:1.2;margin:12px 0 24px}
+.about-t p{color:var(--mid);line-height:1.85;margin-bottom:16px;font-size:.95rem}
+.about-q{font-family:var(--fd);font-size:1.2rem;color:var(--forest);font-style:italic;margin-top:28px;padding:20px 22px;background:rgba(52,183,136,.07);border-left:3px solid var(--sage);border-radius:0 var(--r-sm) var(--r-sm) 0;line-height:1.5}
+.pillars{display:flex;flex-direction:column;gap:20px}
+.pillar{display:flex;gap:18px;align-items:flex-start;padding:22px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);transition:transform .3s var(--bounce),box-shadow .3s,border-color .3s;will-change:transform}
+.pillar:hover{transform:translateY(-4px);box-shadow:var(--sh-sm);border-color:rgba(52,183,136,.25)}
+.p-ico{font-size:1.5rem;flex-shrink:0;margin-top:2px}
+.pillar h4{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:5px}
+.pillar p{font-size:.83rem;color:var(--mid);line-height:1.6}
 
-/* ─────────────────────────────────────────
-   CTA SECTION
-───────────────────────────────────────── */
-.cta-sec {
-  padding: 120px 0;
-  background: radial-gradient(ellipse at 60% 50%, #0F2E1C 0%, #091A0F 100%);
-  position: relative; overflow: hidden;
-}
-.cta-sec::before {
-  content: ''; position: absolute; right: -80px; top: 50%; transform: translateY(-50%);
-  width: 600px; height: 600px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(232,168,56,.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-.cta-inner {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 56px; flex-wrap: wrap; position: relative; z-index: 1;
-}
-.cta-t .eyebrow { color: var(--amber); }
-.cta-t h2 {
-  font-family: var(--font-d); font-size: clamp(2rem, 3.5vw, 2.9rem);
-  color: #fff; font-weight: 400; margin: 14px 0 16px; line-height: 1.2;
-}
-.cta-t p { color: rgba(255,255,255,.55); font-size: .97rem; max-width: 420px; line-height: 1.8; }
-.cta-btns { display: flex; gap: 14px; flex-shrink: 0; flex-wrap: wrap; }
-.btn-fill {
-  background: linear-gradient(135deg, var(--peach), #FF6B35);
-  color: #fff; padding: 17px 36px; border-radius: 100px;
-  font-weight: 700; font-size: .92rem; display: inline-block;
-  box-shadow: var(--sh-peach);
-  transition: transform .3s var(--spring), box-shadow .3s;
-}
-.btn-fill:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 16px 48px rgba(255,140,90,.5); }
-.btn-out {
-  border: 1.5px solid rgba(255,255,255,.3); color: rgba(255,255,255,.75);
-  padding: 17px 36px; border-radius: 100px; font-size: .92rem; display: inline-block;
-  transition: border-color .3s, color .3s, background .3s;
-}
-.btn-out:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,.06); }
+/* ── FOOTER ── */
+footer{background:var(--ink);color:rgba(255,255,255,.5);padding:64px 0 28px}
+.foot-in{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;margin-bottom:48px}
+.f-brand{display:flex;flex-direction:column;gap:12px}
+.f-logo{display:flex;align-items:center;gap:10px}
+.f-logo .logo-name{color:#fff;font-size:1.1rem}.f-logo .logo-name b{color:var(--amber)}
+.f-tagline{font-size:.82rem;color:rgba(255,255,255,.35);line-height:1.6;max-width:220px}
+.f-links{display:flex;gap:26px;flex-wrap:wrap;align-items:center}
+.f-links a{font-size:.85rem;transition:color .2s}.f-links a:hover{color:#fff}
+.foot-btm{border-top:1px solid rgba(255,255,255,.08);padding-top:24px;text-align:center;font-size:.78rem;color:rgba(255,255,255,.25)}
 
-/* ─────────────────────────────────────────
-   ABOUT
-───────────────────────────────────────── */
-.about-g { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start; }
-.about-t h2 {
-  font-family: var(--font-d); font-size: clamp(2rem, 3.5vw, 3rem);
-  font-weight: 500; color: var(--forest); line-height: 1.18; margin: 14px 0 24px;
-}
-.about-t p { color: var(--mid); line-height: 1.9; margin-bottom: 16px; font-size: .96rem; }
-.about-q {
-  font-family: var(--font-d); font-size: 1.2rem; color: var(--forest);
-  font-style: italic; margin-top: 28px; padding: 20px 24px;
-  background: linear-gradient(135deg, rgba(76,175,128,.06), rgba(232,168,56,.04));
-  border-left: 3px solid var(--sage); border-radius: 0 var(--r-sm) var(--r-sm) 0;
-}
-.pillars { display: flex; flex-direction: column; gap: 20px; }
-.pillar {
-  display: flex; gap: 18px; align-items: flex-start;
-  padding: 22px 24px; background: var(--warm-white); border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  transition: transform .4s var(--spring), box-shadow .35s, border-color .3s;
-}
-.pillar:hover { transform: translateY(-4px) translateX(4px); box-shadow: var(--sh-sm); border-color: rgba(76,175,128,.3); }
-.p-ico { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
-.pillar h4 { font-size: .95rem; font-weight: 700; color: var(--forest); margin-bottom: 5px; }
-.pillar p { font-size: .83rem; color: var(--mid); line-height: 1.65; }
+/* ── MODALS ── */
+.modal-backdrop{position:fixed;inset:0;z-index:500;background:rgba(14,26,16,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .35s var(--smooth),visibility .35s}
+.modal-backdrop.open{opacity:1;visibility:visible}
+.modal{background:var(--white);border-radius:var(--r-lg);padding:44px 40px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;position:relative;transform:translateY(28px) scale(.97);transition:transform .4s var(--spring);box-shadow:var(--sh-lg)}
+.modal-backdrop.open .modal{transform:translateY(0) scale(1)}
+.modal-close{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;background:var(--parch);border:1px solid var(--border);display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .25s var(--spring);color:var(--mid);font-size:.95rem}
+.modal-close:hover{background:var(--border);transform:rotate(90deg)}
+.modal-ey{font-family:var(--fm);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--coral);margin-bottom:8px;display:block}
+.modal h2{font-family:var(--fd);font-size:1.75rem;font-weight:600;color:var(--forest);margin-bottom:8px;line-height:1.2}
+.modal-sub{font-size:.9rem;color:var(--mid);margin-bottom:28px;line-height:1.6}
+/* form */
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.f-row.full{grid-template-columns:1fr}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld label{font-size:.77rem;font-weight:600;color:var(--forest);letter-spacing:.03em}
+.fld label span{color:var(--coral)}
+.fld input,.fld select,.fld textarea{padding:12px 15px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--fb);font-size:.9rem;color:var(--ink);background:var(--white);transition:border-color .25s,box-shadow .25s;outline:none;width:100%}
+.fld input::placeholder,.fld textarea::placeholder{color:#C0B8A8}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(52,183,136,.1)}
+.fld textarea{resize:vertical;min-height:88px}
+.fld select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+.f-submit{width:100%;padding:15px;background:linear-gradient(135deg,var(--forest),var(--moss));color:#fff;border-radius:var(--r-xl);font-weight:700;font-size:.95rem;margin-top:8px;transition:transform .25s var(--spring),box-shadow .25s,opacity .2s;box-shadow:0 6px 24px rgba(27,67,50,.28);border:none;cursor:pointer}
+.f-submit:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 12px 36px rgba(27,67,50,.38)}
+.f-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.f-err{font-size:.8rem;color:#C0392B;margin-top:10px;display:none;text-align:center}
+.f-err.show{display:block}
+.f-success{text-align:center;padding:16px 0;display:none;flex-direction:column;align-items:center;gap:12px}
+.f-success.show{display:flex}
+.suc-ico{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--mint),rgba(52,183,136,.2));display:grid;place-items:center;font-size:1.9rem;animation:popIn .5s var(--spring) both}
+.f-success h3{font-family:var(--fd);font-size:1.45rem;color:var(--forest)}
+.f-success p{font-size:.9rem;color:var(--mid);max-width:300px;line-height:1.6}
 
-/* ─────────────────────────────────────────
-   FOOTER
-───────────────────────────────────────── */
-footer {
-  background: var(--ink); color: rgba(255,255,255,.5);
-  padding: 72px 0 32px;
-}
-.foot-top {
-  display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 48px;
-  padding-bottom: 56px; border-bottom: 1px solid rgba(255,255,255,.08);
-  margin-bottom: 32px;
-}
-.foot-brand { display: flex; flex-direction: column; gap: 14px; }
-.foot-logo { display: flex; align-items: center; gap: 10px; }
-.foot-logo .logo-mark { width: 32px; height: 32px; font-size: .9rem; }
-.foot-logo .logo-name { font-size: 1.15rem; color: #fff; }
-.foot-logo .logo-name em { color: var(--peach); font-style: normal; }
-.foot-brand > p { font-size: .82rem; color: rgba(255,255,255,.35); line-height: 1.7; max-width: 220px; }
-.foot-col h5 { font-size: .78rem; font-family: var(--font-m); letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 18px; }
-.foot-col a { display: block; font-size: .88rem; color: rgba(255,255,255,.5); margin-bottom: 12px; transition: color .2s; }
-.foot-col a:hover { color: #fff; }
-.foot-btm { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-.foot-btm p { font-size: .78rem; color: rgba(255,255,255,.25); }
-.foot-btm a { font-size: .78rem; color: rgba(255,255,255,.25); transition: color .2s; }
-.foot-btm a:hover { color: rgba(255,255,255,.6); }
+/* ── EMAIL CAPTURE MODAL ── */
+#ecModal{z-index:600}
 
-/* ─────────────────────────────────────────
-   SCROLL REVEAL
-───────────────────────────────────────── */
-.rv {
-  opacity: 0; transform: translateY(28px);
-  transition: opacity .8s var(--smooth), transform .8s var(--smooth);
-}
-.rv.in { opacity: 1; transform: translateY(0); }
-/* Stagger delays for grid children */
-.srv-card.rv:nth-child(1){ transition-delay:.06s }
-.srv-card.rv:nth-child(2){ transition-delay:.13s }
-.srv-card.rv:nth-child(3){ transition-delay:.2s }
-.srv-card.rv:nth-child(4){ transition-delay:.27s }
-.srv-card.rv:nth-child(5){ transition-delay:.34s }
+/* ── REVEAL ── */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .75s var(--spring),transform .75s var(--spring);will-change:transform,opacity}
+.rv.in{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}.d4{transition-delay:.28s}.d5{transition-delay:.35s}
 
-/* ─────────────────────────────────────────
-   RESPONSIVE
-───────────────────────────────────────── */
-@media(max-width:1000px){
-  .srv-grid { grid-template-columns: repeat(3,1fr); }
-  .lst-grid { grid-template-columns: repeat(2,1fr); }
-  .about-g { grid-template-columns: 1fr; gap: 56px; }
-  .foot-top { grid-template-columns: 1fr 1fr; }
+/* ── RESPONSIVE ── */
+@media(max-width:980px){.srv-grid{grid-template-columns:repeat(3,1fr)}.lst-grid{grid-template-columns:repeat(2,1fr)}.about-g{grid-template-columns:1fr;gap:52px}}
+@media(max-width:720px){
+  .nav-links{display:none}.hamburger{display:flex}
+  .srv-grid{grid-template-columns:repeat(2,1fr)}.lst-grid{grid-template-columns:1fr}
+  .search-box{flex-direction:column;border-radius:var(--r-lg);padding:14px;gap:10px;align-items:stretch}
+  .sdiv{width:100%;height:1px;margin:0}.sbtn,.sf-city{width:100%;border-radius:var(--r-md)}
+  .hst{padding:0 18px}.hst-n{font-size:2rem}
+  .cta-inner{flex-direction:column;text-align:center}.cta-btns{justify-content:center}
+  .sp-panel{padding:28px 20px 40px}
 }
-@media(max-width:760px){
-  .nav-links { display: none; }
-  .hamburger { display: flex; }
-  .srv-grid { grid-template-columns: repeat(2,1fr); }
-  .lst-grid { grid-template-columns: 1fr; }
-  .search-box { flex-direction: column; padding: 14px; border-radius: var(--r-lg); gap: 10px; align-items: stretch; }
-  .sdiv { width: 100%; height: 1px; margin: 0; }
-  .sbtn { border-radius: var(--r-md); text-align: center; }
-  .sf-city { width: 100%; flex: unset; }
-  .hstat { padding: 0 20px; }
-  .hstat-n { font-size: 2.2rem; }
-  .trust-inner { justify-content: center; }
-  .trust-div { display: none; }
-  .cta-inner { flex-direction: column; text-align: center; }
-  .cta-btns { justify-content: center; }
-}
-@media(max-width:520px){
-  .srv-grid { grid-template-columns: 1fr; }
-  .foot-top { grid-template-columns: 1fr; gap: 36px; }
-  .foot-btm { flex-direction: column; text-align: center; }
-}
-@media(prefers-reduced-motion:reduce){
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  .rv { opacity: 1; transform: none; }
-  .lcard { opacity: 1; transform: none; }
-}
-
-/* ─────────────────────────────────────────
-   MOBILE NAV DRAWER
-───────────────────────────────────────── */
-.mobile-nav {
-  position: fixed; inset: 0; z-index: 190;
-  background: rgba(14,26,16,.55);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  opacity: 0; visibility: hidden;
-  transition: opacity .35s var(--smooth), visibility .35s;
-}
-.mobile-nav.open { opacity: 1; visibility: visible; }
-.mobile-nav-panel {
-  position: absolute; top: 0; right: 0; bottom: 0;
-  width: min(320px, 88vw);
-  background: var(--cream);
-  padding: 88px 32px 40px;
-  display: flex; flex-direction: column; gap: 4px;
-  transform: translateX(100%);
-  transition: transform .4s var(--spring);
-  box-shadow: -8px 0 48px rgba(14,26,16,.15);
-}
-.mobile-nav.open .mobile-nav-panel { transform: translateX(0); }
-.mobile-nav-panel a {
-  font-size: 1.15rem; font-weight: 500; color: var(--forest);
-  padding: 14px 0; border-bottom: 1px solid var(--border);
-  display: block; transition: color .2s, padding-left .2s;
-}
-.mobile-nav-panel a:hover { color: var(--peach); padding-left: 6px; }
-.mobile-nav-panel a:last-child { border-bottom: none; }
-.mobile-nav-cta {
-  margin-top: 20px !important; border-bottom: none !important;
-  background: linear-gradient(135deg, var(--forest), var(--moss));
-  color: #fff !important; text-align: center;
-  padding: 16px 24px !important; border-radius: var(--r-xl) !important;
-  font-weight: 700 !important;
-}
-.mobile-nav-close {
-  position: absolute; top: 22px; right: 22px;
-  width: 38px; height: 38px; border-radius: 50%;
-  background: var(--parchment); border: 1px solid var(--border);
-  display: grid; place-items: center; font-size: 1.1rem;
-  cursor: pointer; transition: background .2s, transform .2s;
-}
-.mobile-nav-close:hover { background: var(--border); transform: rotate(90deg); }
-
-/* Hamburger → X animation */
-.hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-/* ─────────────────────────────────────────
-   MODAL BACKDROP + CONTAINER
-───────────────────────────────────────── */
-.modal-backdrop {
-  position: fixed; inset: 0; z-index: 500;
-  background: rgba(14,26,16,.5);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-  opacity: 0; visibility: hidden;
-  transition: opacity .35s var(--smooth), visibility .35s;
-}
-.modal-backdrop.open { opacity: 1; visibility: visible; }
-.modal {
-  background: var(--warm-white);
-  border-radius: var(--r-lg);
-  padding: 48px 44px;
-  width: 100%; max-width: 540px;
-  max-height: 90vh; overflow-y: auto;
-  position: relative;
-  transform: translateY(28px) scale(.97);
-  transition: transform .4s var(--spring);
-  box-shadow: var(--sh-lg);
-}
-.modal-backdrop.open .modal { transform: translateY(0) scale(1); }
-.modal-close {
-  position: absolute; top: 18px; right: 18px;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--parchment); border: 1px solid var(--border);
-  display: grid; place-items: center; font-size: 1rem;
-  cursor: pointer; transition: background .2s, transform .25s var(--spring);
-  color: var(--mid);
-}
-.modal-close:hover { background: var(--border); color: var(--forest); transform: rotate(90deg); }
-.modal-eyebrow {
-  font-family: var(--font-m); font-size: .68rem; letter-spacing: .14em;
-  text-transform: uppercase; color: var(--peach); margin-bottom: 10px; display: block;
-}
-.modal h2 {
-  font-family: var(--font-d); font-size: 1.8rem; font-weight: 600;
-  color: var(--forest); margin-bottom: 8px; line-height: 1.2;
-}
-.modal-sub { font-size: .9rem; color: var(--mid); margin-bottom: 32px; line-height: 1.6; }
-
-/* ── FORM FIELDS ── */
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-.form-row.full { grid-template-columns: 1fr; }
-.fld { display: flex; flex-direction: column; gap: 6px; }
-.fld label { font-size: .78rem; font-weight: 600; color: var(--forest); letter-spacing: .03em; }
-.fld label span { color: var(--peach); }
-.fld input, .fld select, .fld textarea {
-  padding: 13px 16px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-sm);
-  font-family: var(--font-b); font-size: .9rem;
-  color: var(--ink); background: var(--warm-white);
-  transition: border-color .25s, box-shadow .25s;
-  outline: none; width: 100%;
-}
-.fld input::placeholder, .fld textarea::placeholder { color: #C0B8A8; }
-.fld input:focus, .fld select:focus, .fld textarea:focus {
-  border-color: var(--sage);
-  box-shadow: 0 0 0 3px rgba(76,175,128,.12);
-}
-.fld textarea { resize: vertical; min-height: 90px; }
-.fld select { cursor: pointer; appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center;
-  padding-right: 36px;
-}
-.form-submit {
-  width: 100%; padding: 16px;
-  background: linear-gradient(135deg, var(--forest), var(--moss));
-  color: #fff; border-radius: var(--r-xl);
-  font-weight: 700; font-size: .97rem;
-  margin-top: 8px;
-  transition: transform .25s var(--spring), box-shadow .25s, opacity .2s;
-  box-shadow: 0 6px 24px rgba(27,64,48,.3);
-}
-.form-submit:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 36px rgba(27,64,48,.4); }
-.form-submit:active { transform: scale(.99); }
-.form-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
-
-/* ── FORM SUCCESS STATE ── */
-.form-success {
-  text-align: center; padding: 24px 0;
-  display: none; flex-direction: column; align-items: center; gap: 14px;
-}
-.form-success.show { display: flex; }
-.success-icon {
-  width: 72px; height: 72px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--mint), rgba(76,175,128,.2));
-  display: grid; place-items: center; font-size: 2rem;
-  animation: popIn .5s var(--spring) both;
-}
-@keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
-.form-success h3 { font-family: var(--font-d); font-size: 1.5rem; color: var(--forest); }
-.form-success p { font-size: .9rem; color: var(--mid); max-width: 300px; line-height: 1.6; }
-.form-error { font-size: .8rem; color: #C0392B; margin-top: 10px; display: none; text-align: center; }
-.form-error.show { display: block; }
-
-/* ─────────────────────────────────────────
-   SPECIES PANEL (slide-up from bottom)
-───────────────────────────────────────── */
-.species-panel-backdrop {
-  position: fixed; inset: 0; z-index: 400;
-  background: rgba(14,26,16,.45);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  opacity: 0; visibility: hidden;
-  transition: opacity .3s var(--smooth), visibility .3s;
-}
-.species-panel-backdrop.open { opacity: 1; visibility: visible; }
-.species-panel {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  background: var(--warm-white);
-  border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 40px 36px 48px;
-  max-width: 680px; margin: 0 auto;
-  transform: translateY(100%);
-  transition: transform .45s var(--spring);
-}
-.species-panel-backdrop.open .species-panel { transform: translateY(0); }
-.sp-handle {
-  width: 40px; height: 4px; border-radius: 2px;
-  background: var(--border); margin: 0 auto 28px;
-}
-.sp-close {
-  position: absolute; top: 16px; right: 20px;
-  width: 34px; height: 34px; border-radius: 50%;
-  background: var(--parchment); border: 1px solid var(--border);
-  display: grid; place-items: center; cursor: pointer;
-  transition: background .2s, transform .25s var(--spring); font-size: .9rem; color: var(--mid);
-}
-.sp-close:hover { background: var(--border); transform: rotate(90deg); }
-.sp-emoji { font-size: 3rem; margin-bottom: 12px; display: block; animation: popIn .4s var(--spring) both; }
-.sp-title { font-family: var(--font-d); font-size: 1.7rem; font-weight: 600; color: var(--forest); margin-bottom: 8px; }
-.sp-body { font-size: .93rem; color: var(--mid); line-height: 1.75; margin-bottom: 24px; max-width: 480px; }
-/* when listings ARE available */
-.sp-has-listings .sp-cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
-.sp-cta { 
-  padding: 13px 28px; border-radius: var(--r-xl); font-weight: 600; font-size: .9rem;
-  transition: transform .25s var(--spring), box-shadow .25s;
-  display: inline-block; cursor: pointer;
-}
-.sp-cta-primary {
-  background: linear-gradient(135deg, var(--forest), var(--moss));
-  color: #fff; box-shadow: 0 4px 16px rgba(27,64,48,.25);
-}
-.sp-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(27,64,48,.35); }
-.sp-cta-secondary {
-  border: 1.5px solid var(--border); color: var(--forest); background: var(--warm-white);
-}
-.sp-cta-secondary:hover { border-color: var(--sage); background: var(--mint); }
-/* notify chip for species with no listings */
-.sp-notify-form { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
-.sp-notify-input {
-  flex: 1; min-width: 200px; padding: 12px 16px;
-  border: 1.5px solid var(--border); border-radius: var(--r-xl);
-  font-family: var(--font-b); font-size: .88rem; color: var(--ink);
-  outline: none; transition: border-color .25s, box-shadow .25s;
-}
-.sp-notify-input:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(76,175,128,.1); }
-.sp-notify-btn {
-  padding: 12px 24px; border-radius: var(--r-xl);
-  background: var(--amber); color: var(--ink);
-  font-weight: 700; font-size: .88rem;
-  transition: transform .2s var(--spring), box-shadow .2s;
-  box-shadow: var(--sh-amber); white-space: nowrap;
-}
-.sp-notify-btn:hover { transform: translateY(-1px) scale(1.03); }
-.sp-fact {
-  margin-top: 22px; padding: 16px 18px;
-  background: linear-gradient(135deg, var(--amber-soft), rgba(76,175,128,.06));
-  border-radius: var(--r-md); border-left: 3px solid var(--amber);
-  font-size: .85rem; color: var(--mid); line-height: 1.6; font-style: italic;
-}
-@media(max-width:520px){
-  .modal { padding: 36px 24px; }
-  .form-row { grid-template-columns: 1fr; }
-  .species-panel { padding: 28px 20px 36px; }
-}
+@media(max-width:520px){.srv-grid{grid-template-columns:1fr}.modal{padding:36px 22px}.f-row{grid-template-columns:1fr}.foot-in{flex-direction:column}.f-links{justify-content:center}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.lcard{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════
-     MOBILE NAV DRAWER
-═══════════════════════════════════════ -->
+<!-- PAGE OVERLAY -->
+<div id="pageOverlay">
+  <div class="ov-paw" id="ovPaw">🐾</div>
+  <div class="ov-fact" id="ovFact"></div>
+</div>
+
+<!-- MOBILE NAV -->
 <div class="mobile-nav" id="mobileNav" aria-hidden="true">
-  <div class="mobile-nav-panel" role="dialog" aria-label="Navigation menu">
-    <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">✕</button>
+  <div class="mobile-nav-panel">
+    <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close">✕</button>
     <a href="#services" class="mobile-nav-link">Services</a>
     <a href="#listings" class="mobile-nav-link">Find Care</a>
     <a href="#species"  class="mobile-nav-link">All Species</a>
     <a href="#about"    class="mobile-nav-link">About</a>
-    <a href="#" class="mobile-nav-link mobile-nav-cta" id="mobileGetListed">Get Listed Free</a>
+    <a href="#" class="mobile-nav-link mnav-cta" data-track="nav_list_business">Get Listed Free</a>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     SPECIES PANEL
-═══════════════════════════════════════ -->
-<div class="species-panel-backdrop" id="speciesBackdrop" aria-hidden="true">
-  <div class="species-panel" role="dialog" aria-label="Species information" id="speciesPanel">
+<!-- SPECIES PANEL -->
+<div class="sp-backdrop" id="spBackdrop" aria-hidden="true">
+  <div class="sp-panel" id="spPanel">
     <div class="sp-handle"></div>
-    <button class="sp-close" id="speciesClose" aria-label="Close">✕</button>
-    <span class="sp-emoji" id="spEmoji">🐕</span>
-    <h2 class="sp-title" id="spTitle">Dogs</h2>
+    <button class="sp-close" id="spClose" aria-label="Close">✕</button>
+    <span class="sp-emoji" id="spEmoji"></span>
+    <h2 class="sp-title" id="spTitle"></h2>
     <p class="sp-body" id="spBody"></p>
-    <div id="spActionArea"></div>
+    <div id="spAction"></div>
     <div class="sp-fact" id="spFact"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     MODAL: GET LISTED FREE
-═══════════════════════════════════════ -->
+<!-- MODAL: GET LISTED -->
 <div class="modal-backdrop" id="modalListed" aria-hidden="true">
-  <div class="modal" role="dialog" aria-label="Get listed form">
-    <button class="modal-close" id="closeModalListed" aria-label="Close">✕</button>
-    <span class="modal-eyebrow">For Pet Care Providers</span>
+  <div class="modal">
+    <button class="modal-close" id="closeListed" aria-label="Close">✕</button>
+    <span class="modal-ey">For Pet Care Providers</span>
     <h2>Get Listed Free</h2>
-    <p class="modal-sub">Add your clinic, salon, shop, or service to Delhi NCR's fastest-growing pet care platform. Free for the first year.</p>
-
+    <p class="modal-sub">Add your clinic, salon, or shop to Delhi NCR's fastest-growing pet care platform. Free for the first year.</p>
     <div id="listedFormWrap">
-      <div class="form-row">
-        <div class="fld">
-          <label>Business Name <span>*</span></label>
-          <input type="text" id="l_biz" placeholder="e.g. PawsFirst Clinic" required/>
+      <div class="f-row">
+        <div class="fld"><label>Business Name <span>*</span></label><input type="text" id="l_biz" placeholder="e.g. PawsFirst Clinic"/></div>
+        <div class="fld"><label>Owner Name <span>*</span></label><input type="text" id="l_name" placeholder="Your full name"/></div>
+      </div>
+      <div class="f-row">
+        <div class="fld"><label>Phone <span>*</span></label><input type="tel" id="l_phone" placeholder="98100 XXXXX"/></div>
+        <div class="fld"><label>Email</label><input type="email" id="l_email" placeholder="you@example.com"/></div>
+      </div>
+      <div class="f-row">
+        <div class="fld"><label>Service Type <span>*</span></label>
+          <select id="l_type"><option value="">Select…</option><option>Veterinarian</option><option>Grooming Salon</option><option>Pet Boarding</option><option>Pet Shop</option><option>Dog Trainer</option><option>Other</option></select>
         </div>
-        <div class="fld">
-          <label>Owner / Contact Name <span>*</span></label>
-          <input type="text" id="l_name" placeholder="Your full name" required/>
+        <div class="fld"><label>City <span>*</span></label>
+          <select id="l_city"><option value="">Select…</option><option>Gurgaon</option><option>Delhi</option><option>Noida</option><option>Faridabad</option><option>Other</option></select>
         </div>
       </div>
-      <div class="form-row">
-        <div class="fld">
-          <label>Phone Number <span>*</span></label>
-          <input type="tel" id="l_phone" placeholder="98100 XXXXX" required/>
-        </div>
-        <div class="fld">
-          <label>Email Address</label>
-          <input type="email" id="l_email" placeholder="you@example.com"/>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="fld">
-          <label>Service Type <span>*</span></label>
-          <select id="l_type" required>
-            <option value="">Select type…</option>
-            <option>Veterinarian</option>
-            <option>Grooming Salon</option>
-            <option>Pet Boarding</option>
-            <option>Pet Shop</option>
-            <option>Dog Trainer</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="fld">
-          <label>City <span>*</span></label>
-          <select id="l_city" required>
-            <option value="">Select city…</option>
-            <option>Gurgaon</option>
-            <option>Delhi</option>
-            <option>Noida</option>
-            <option>Faridabad</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row full">
-        <div class="fld">
-          <label>Full Address</label>
-          <input type="text" id="l_address" placeholder="Shop / clinic address with landmark"/>
-        </div>
-      </div>
-      <div class="form-error" id="listedError">Something went wrong. Please try again or email hello@happypets.in</div>
-      <button class="form-submit" id="listedSubmit">Submit Listing Request →</button>
+      <div class="f-row full"><div class="fld"><label>Full Address</label><input type="text" id="l_addr" placeholder="Shop / clinic address with landmark"/></div></div>
+      <div class="f-err" id="listedErr">Something went wrong. Please try again or email hello@happypets.in</div>
+      <button class="f-submit" id="listedSubmit">Submit Listing Request →</button>
     </div>
-
-    <div class="form-success" id="listedSuccess">
-      <div class="success-icon">🎉</div>
+    <div class="f-success" id="listedSuccess">
+      <div class="suc-ico">🎉</div>
       <h3>You're on the list!</h3>
       <p>We'll review your details and add your business within 48 hours. We'll call you at the number provided.</p>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     MODAL: PARTNER WITH US
-═══════════════════════════════════════ -->
+<!-- MODAL: PARTNER -->
 <div class="modal-backdrop" id="modalPartner" aria-hidden="true">
-  <div class="modal" role="dialog" aria-label="Partner with us form">
-    <button class="modal-close" id="closeModalPartner" aria-label="Close">✕</button>
-    <span class="modal-eyebrow">Business Partnerships</span>
+  <div class="modal">
+    <button class="modal-close" id="closePartner" aria-label="Close">✕</button>
+    <span class="modal-ey">Business Partnerships</span>
     <h2>Partner With Us</h2>
-    <p class="modal-sub">Brands, distributors, vets networks, and pet-tech companies — let's build something together for Delhi NCR's pet parents.</p>
-
+    <p class="modal-sub">Brands, vet networks, and pet-tech companies — let's build something together for Delhi NCR's pet parents.</p>
     <div id="partnerFormWrap">
-      <div class="form-row">
-        <div class="fld">
-          <label>Company / Organisation <span>*</span></label>
-          <input type="text" id="p_company" placeholder="Company name" required/>
-        </div>
-        <div class="fld">
-          <label>Contact Person <span>*</span></label>
-          <input type="text" id="p_name" placeholder="Your full name" required/>
-        </div>
+      <div class="f-row">
+        <div class="fld"><label>Company <span>*</span></label><input type="text" id="p_company" placeholder="Company name"/></div>
+        <div class="fld"><label>Contact Person <span>*</span></label><input type="text" id="p_name" placeholder="Your full name"/></div>
       </div>
-      <div class="form-row">
-        <div class="fld">
-          <label>Email <span>*</span></label>
-          <input type="email" id="p_email" placeholder="work@company.com" required/>
-        </div>
-        <div class="fld">
-          <label>Phone</label>
-          <input type="tel" id="p_phone" placeholder="98100 XXXXX"/>
-        </div>
+      <div class="f-row">
+        <div class="fld"><label>Email <span>*</span></label><input type="email" id="p_email" placeholder="work@company.com"/></div>
+        <div class="fld"><label>Phone</label><input type="tel" id="p_phone" placeholder="98100 XXXXX"/></div>
       </div>
-      <div class="form-row full">
-        <div class="fld">
-          <label>Partnership Type <span>*</span></label>
-          <select id="p_type" required>
-            <option value="">What are you looking for?</option>
-            <option>Brand / Product Distribution</option>
-            <option>Vet Network Tie-up</option>
-            <option>Pet Insurance Partnership</option>
-            <option>Technology / Platform Integration</option>
-            <option>Investor / Strategic Partnership</option>
-            <option>Media / Content Collaboration</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row full">
-        <div class="fld">
-          <label>Tell us about the opportunity</label>
-          <textarea id="p_message" placeholder="Brief description of what you have in mind…"></textarea>
-        </div>
-      </div>
-      <div class="form-error" id="partnerError">Something went wrong. Please try again or email hello@happypets.in</div>
-      <button class="form-submit" id="partnerSubmit">Send Partnership Enquiry →</button>
+      <div class="f-row full"><div class="fld"><label>Partnership Type <span>*</span></label>
+        <select id="p_type"><option value="">What are you looking for?</option><option>Brand / Product Distribution</option><option>Vet Network Tie-up</option><option>Pet Insurance Partnership</option><option>Technology / Platform Integration</option><option>Investor / Strategic Partnership</option><option>Media / Content Collaboration</option><option>Other</option></select>
+      </div></div>
+      <div class="f-row full"><div class="fld"><label>Tell us about the opportunity</label><textarea id="p_msg" placeholder="Brief description of what you have in mind…"></textarea></div></div>
+      <div class="f-err" id="partnerErr">Something went wrong. Please try again or email hello@happypets.in</div>
+      <button class="f-submit" id="partnerSubmit">Send Partnership Enquiry →</button>
     </div>
-
-    <div class="form-success" id="partnerSuccess">
-      <div class="success-icon">🤝</div>
+    <div class="f-success" id="partnerSuccess">
+      <div class="suc-ico">🤝</div>
       <h3>Got it — we'll be in touch!</h3>
       <p>Our team will review your enquiry and reach out within 2 business days.</p>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     NAVIGATION
-═══════════════════════════════════════ -->
-<nav class="nav" id="nav">
+<!-- EMAIL CAPTURE MODAL -->
+<div class="modal-backdrop" id="ecModal" aria-hidden="true">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" id="ecClose" aria-label="Close">✕</button>
+    <div id="ecStep1">
+      <div style="text-align:center;margin-bottom:22px">
+        <div style="font-size:2.4rem;margin-bottom:10px">📋</div>
+        <span class="modal-ey">One quick step</span>
+        <h2 style="font-size:1.6rem">See contact details</h2>
+        <p class="modal-sub" id="ecCtx" style="margin-bottom:0">Drop your email to unlock the phone number and address. No spam, ever.</p>
+      </div>
+      <div class="fld" style="margin-bottom:12px"><label>Your email <span style="color:var(--coral)">*</span></label><input type="email" id="ecEmail" placeholder="you@gmail.com" autocomplete="email"/></div>
+      <p style="font-size:.75rem;color:var(--mid);margin-bottom:16px;text-align:center;line-height:1.55">Remembered for 30 days on this device.</p>
+      <div class="f-err" id="ecErr"></div>
+      <button class="f-submit" id="ecSubmit">Unlock Contact Details →</button>
+    </div>
+    <div class="f-success" id="ecStep2">
+      <div class="suc-ico">✅</div>
+      <h3>You're all set!</h3>
+      <p>Contact details are now visible on all listings for 30 days.</p>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
   <div class="nav-inner">
-    <a href="#home" class="logo" data-track="nav_logo">
-      <div class="logo-mark">🐾</div>
-      <div class="logo-name">Happy<em>Pets</em></div>
+    <a href="#home" class="logo" onclick="HP.track('nav_logo_click',{section:'nav'})">
+      <div class="logo-icon">🐾</div>
+      <div class="logo-name">Happy<b>Pets</b></div>
     </a>
     <ul class="nav-links">
-      <li><a href="#services"  data-track="nav_services">Services</a></li>
-      <li><a href="#listings"  data-track="nav_find_care">Find Care</a></li>
-      <li><a href="#about"     data-track="nav_about">About</a></li>
-      <li><a href="#contact"   data-track="nav_list_business" class="nav-cta">List Your Business</a></li>
+      <li><a href="#services" onclick="HP.track('nav_link_click',{label:'Services'})">Services</a></li>
+      <li><a href="#listings" onclick="HP.track('nav_link_click',{label:'Find Care'})">Find Care</a></li>
+      <li><a href="#about"    onclick="HP.track('nav_link_click',{label:'About'})">About</a></li>
+      <li><a href="#" class="nav-cta" data-track="nav_list_business" onclick="HP.track('nav_cta_click',{label:'List Your Business'})">List Your Business</a></li>
     </ul>
-    <button class="hamburger" id="ham" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="hamburger" id="ham" aria-label="Open menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════════
-     HERO
-═══════════════════════════════════════ -->
-<section class="hero" id="home" data-section="hero">
-  <canvas id="bgCanvas"></canvas>
-  <div class="hero-glow-a"></div>
-  <div class="hero-glow-b"></div>
-
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-blob blob1"></div>
+  <div class="hero-blob blob2"></div>
+  <div class="hero-blob blob3"></div>
+  <canvas id="pawCanvas"></canvas>
   <div class="hero-content">
     <div class="hero-badge">Delhi NCR's Premier Pet Care Network</div>
-    <h1 class="hero-h1">
-      Your pet deserves
-      <em>the very best.</em>
-    </h1>
-    <p class="hero-sub">
-      Discover trusted vets, groomers, trainers &amp; more — curated across Gurgaon, Delhi &amp; Noida. Every species, every neighbourhood.
-    </p>
-
+    <h1 class="hero-h1">Every pet deserves<br/><em>the very best.</em></h1>
+    <p class="hero-sub">Discover trusted vets, groomers, trainers &amp; more — in your neighbourhood. All species, all of Gurgaon, Delhi &amp; Noida.</p>
     <div class="search-wrap">
       <div class="search-box">
         <div class="sf">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="text" id="sInput" placeholder="Search vets, groomers, trainers…" autocomplete="off" aria-label="Search providers"/>
+          <input type="text" id="sInput" placeholder="Search vets, groomers, trainers…" autocomplete="off"/>
         </div>
         <div class="sdiv"></div>
         <div class="sf sf-city">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <select id="sCity" aria-label="Select city">
-            <option value="">All Cities</option>
-            <option value="Gurgaon">Gurgaon</option>
-            <option value="Delhi">Delhi</option>
-            <option value="Noida">Noida</option>
-          </select>
+          <select id="sCity"><option value="">All Cities</option><option>Gurgaon</option><option>Delhi</option><option>Noida</option></select>
         </div>
-        <button class="sbtn" id="sBtn" data-track="hero_search">Search</button>
+        <button class="sbtn" id="sBtn">Find Care</button>
       </div>
     </div>
-
     <div class="hero-stats">
-      <div class="hstat"><span class="hstat-n" data-t="116">0</span><span class="hstat-l">Listings</span></div>
-      <div class="hdiv"></div>
-      <div class="hstat"><span class="hstat-n" data-t="3">0</span><span class="hstat-l">Cities</span></div>
-      <div class="hdiv"></div>
-      <div class="hstat"><span class="hstat-n" data-t="5">0</span><span class="hstat-l">Service Types</span></div>
-      <div class="hdiv"></div>
-      <div class="hstat"><span class="hstat-n" data-t="8">0</span><span class="hstat-l">Species Covered</span></div>
+      <div class="hst"><span class="hst-n" data-t="116">0</span><span class="hst-l">Listings</span></div>
+      <div class="hdv"></div>
+      <div class="hst"><span class="hst-n" data-t="3">0</span><span class="hst-l">Cities</span></div>
+      <div class="hdv"></div>
+      <div class="hst"><span class="hst-n" data-t="5">0</span><span class="hst-l">Service Types</span></div>
     </div>
   </div>
-
-  <div class="hero-scroll-hint">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
-  </div>
+  <div class="hero-scroll"><span>Scroll</span><div class="scroll-dot"></div></div>
 </section>
 
-<!-- ═══════════════════════════════════════
-     SERVICES
-═══════════════════════════════════════ -->
-<section class="sec sec-alt" id="services" data-section="services">
+<!-- SERVICES -->
+<section class="srv-sec" id="services">
   <div class="wrap">
-    <div class="sec-head rv">
-      <div class="eyebrow">What We Offer</div>
-      <h2>Everything your pet needs,<br/><em>in one place.</em></h2>
-      <p>Five service categories, hundreds of providers — all handpicked for quality across Delhi NCR.</p>
-    </div>
+    <div class="sec-hd rv"><div class="eyebrow">What We Offer</div><h2>All the care your pet needs,<br/><em>in one place.</em></h2></div>
     <div class="srv-grid">
-      <div class="srv-card rv" data-f="vet" data-name="Veterinarians">
-        <span class="srv-ico">🏥</span>
-        <h3>Veterinarians</h3>
-        <p>Qualified vets for check-ups, emergencies, surgery, and specialist care.</p>
-        <span class="srv-link">Browse vets →</span>
-      </div>
-      <div class="srv-card rv" data-f="grooming" data-name="Grooming Salons">
-        <span class="srv-ico">✂️</span>
-        <h3>Grooming Salons</h3>
-        <p>Full grooming, spa baths, haircuts and nail care for all breeds.</p>
-        <span class="srv-link">Browse groomers →</span>
-      </div>
-      <div class="srv-card rv" data-f="boarding" data-name="Boarding & Stays">
-        <span class="srv-ico">🏡</span>
-        <h3>Boarding &amp; Stays</h3>
-        <p>Safe, loving overnight stays and day-care facilities near you.</p>
-        <span class="srv-link">Browse boarding →</span>
-      </div>
-      <div class="srv-card rv" data-f="pet shop" data-name="Pet Shops">
-        <span class="srv-ico">🛍️</span>
-        <h3>Pet Shops</h3>
-        <p>Food, accessories, medicines and everything your pet loves.</p>
-        <span class="srv-link">Browse shops →</span>
-      </div>
-      <div class="srv-card rv" data-f="trainer" data-name="Dog Trainers">
-        <span class="srv-ico">🎓</span>
-        <h3>Dog Trainers</h3>
-        <p>Certified trainers for obedience, behaviour correction, and tricks.</p>
-        <span class="srv-link">Browse trainers →</span>
-      </div>
+      <div class="srv-card rv d1" data-f="vet"><span class="srv-ico">🏥</span><h3>Veterinarians</h3><p>Qualified vets for check-ups, emergencies, surgery, and specialist care.</p><span class="srv-lnk">Browse vets →</span></div>
+      <div class="srv-card rv d2" data-f="grooming"><span class="srv-ico">✂️</span><h3>Grooming Salons</h3><p>Full grooming, spa baths, haircuts, and nail care for all breeds.</p><span class="srv-lnk">Browse groomers →</span></div>
+      <div class="srv-card rv d3" data-f="boarding"><span class="srv-ico">🏡</span><h3>Boarding &amp; Stays</h3><p>Safe, loving overnight stays and day-care facilities near you.</p><span class="srv-lnk">Browse boarding →</span></div>
+      <div class="srv-card rv d4" data-f="pet shop"><span class="srv-ico">🛍️</span><h3>Pet Shops</h3><p>Food, accessories, medicines, and everything your pet loves.</p><span class="srv-lnk">Browse shops →</span></div>
+      <div class="srv-card rv d5" data-f="trainer"><span class="srv-ico">🎓</span><h3>Dog Trainers</h3><p>Certified trainers for obedience, behaviour correction, and tricks.</p><span class="srv-lnk">Browse trainers →</span></div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════
-     LISTINGS
-═══════════════════════════════════════ -->
-<section class="sec sec-warm" id="listings" data-section="listings">
+<!-- LISTINGS -->
+<section class="lst-sec" id="listings">
   <div class="wrap">
-    <div class="sec-head rv">
-      <div class="eyebrow">Find Care Near You</div>
-      <h2>Trusted providers,<br/><em>vetted for quality.</em></h2>
+    <div class="sec-hd rv"><div class="eyebrow">Find Care Near You</div><h2>Trusted providers,<br/><em>vetted for quality.</em></h2></div>
+    <div class="filter-row rv">
+      <button class="fbtn on" data-f="all">All</button>
+      <button class="fbtn" data-f="vet">Vets</button>
+      <button class="fbtn" data-f="grooming">Grooming</button>
+      <button class="fbtn" data-f="boarding">Boarding</button>
+      <button class="fbtn" data-f="pet shop">Pet Shops</button>
+      <button class="fbtn" data-f="trainer">Trainers</button>
     </div>
-    <div class="filter-row rv" id="filterRow">
-      <button class="fbtn on" data-f="all"><span>All</span></button>
-      <button class="fbtn" data-f="vet"><span>🏥 Vets</span></button>
-      <button class="fbtn" data-f="grooming"><span>✂️ Grooming</span></button>
-      <button class="fbtn" data-f="boarding"><span>🏡 Boarding</span></button>
-      <button class="fbtn" data-f="pet shop"><span>🛍️ Pet Shops</span></button>
-      <button class="fbtn" data-f="trainer"><span>🎓 Trainers</span></button>
+    <div class="lst-grid" id="grid">
+      <div class="lst-loader"><div class="l-animal" id="lAnimal">🐶</div><div class="l-fact" id="lFact"></div><div class="l-label">Loading providers…</div></div>
     </div>
-    <div class="lst-grid" id="grid"></div>
-    <div class="lst-foot" id="lFoot" style="display:none">
-      <button class="more-btn" id="moreBtn" data-track="load_more"><span>Load More Providers</span></button>
-    </div>
+    <div class="lst-foot" id="lFoot" style="display:none"><button class="more-btn" id="moreBtn">Show more</button></div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════
-     SPECIES
-═══════════════════════════════════════ -->
-<section class="sec sec-alt" id="species" data-section="species">
+<!-- SPECIES -->
+<section class="spec-sec" id="species">
   <div class="wrap">
-    <div class="sec-head rv">
-      <div class="eyebrow">All Animals Welcome</div>
-      <h2>Not just dogs &amp; cats —<br/><em>every companion counts.</em></h2>
-      <p>The only pet care platform in Delhi NCR built for every species, not just the popular ones.</p>
-    </div>
+    <div class="sec-hd rv"><div class="eyebrow">All Animals Welcome</div><h2>Not just dogs &amp; cats —<br/><em>every companion counts.</em></h2></div>
     <div class="spec-row rv">
       <div class="spec-item" data-species="Dogs"><span>🐕</span><p>Dogs</p></div>
       <div class="spec-item" data-species="Cats"><span>🐈</span><p>Cats</p></div>
@@ -1228,957 +544,692 @@ footer {
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════
-     TRUST BAR
-═══════════════════════════════════════ -->
-<div class="trust-sec" data-section="trust_bar">
-  <div class="wrap">
-    <div class="trust-inner">
-      <div class="trust-stat"><span class="ts-n">116+</span><span class="ts-l">Verified Providers</span></div>
-      <div class="trust-div"></div>
-      <div class="trust-stat"><span class="ts-n">3</span><span class="ts-l">Cities Covered</span></div>
-      <div class="trust-div"></div>
-      <div class="trust-quote">"Finding a rabbit vet in Gurgaon used to take days. Now it takes seconds."</div>
-      <div class="trust-div"></div>
-      <div class="trust-stat"><span class="ts-n">8</span><span class="ts-l">Species Supported</span></div>
-      <div class="trust-div"></div>
-      <div class="trust-stat"><span class="ts-n">Free</span><span class="ts-l">to List in 2026</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════
-     CTA
-═══════════════════════════════════════ -->
-<section class="cta-sec" id="contact" data-section="cta">
+<!-- CTA -->
+<section class="cta-sec" id="contact">
   <div class="wrap">
     <div class="cta-inner rv">
       <div class="cta-t">
         <div class="eyebrow">For Businesses</div>
-        <h2>Are you a pet care provider in Delhi NCR?</h2>
-        <p>Join the network pet parents are already using. List your clinic, salon, or shop — completely free for the first year, with no commission on bookings.</p>
+        <h2>Are you a pet care provider?</h2>
+        <p>Join Delhi NCR's fastest-growing pet care network. List your clinic, salon, or shop — free for the first year.</p>
       </div>
       <div class="cta-btns">
-        <a href="#" class="btn-fill" data-track="cta_get_listed">Get Listed Free</a>
-        <a href="#" class="btn-out"  data-track="cta_partner">Partner With Us</a>
+        <button class="btn-fill" data-track="cta_get_listed">Get Listed Free</button>
+        <button class="btn-out"  data-track="cta_partner">Partner With Us</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════
-     ABOUT
-═══════════════════════════════════════ -->
-<section class="sec sec-warm" id="about" data-section="about">
+<!-- ABOUT -->
+<section class="about-sec" id="about">
   <div class="wrap">
     <div class="about-g">
       <div class="about-t rv">
         <div class="eyebrow">Our Story</div>
         <h2>Built for every pet parent in Delhi NCR.</h2>
         <p>Happy Pets was born from a simple frustration: finding a good vet for your rabbit or a trusted groomer for your indie dog shouldn't require 20 WhatsApp messages.</p>
-        <p>We're mapping the fragmented, brilliant pet care ecosystem of Gurgaon, Delhi, and Noida — street by street — so you always know exactly where to go.</p>
+        <p>We're mapping the fragmented, brilliant pet care ecosystem of Gurgaon, Delhi, and Noida — so you always know exactly where to go.</p>
         <div class="about-q">"Every animal, every neighbourhood, one platform."</div>
       </div>
       <div class="pillars rv">
-        <div class="pillar">
-          <span class="p-ico">📍</span>
-          <div>
-            <h4>Hyperlocal Discovery</h4>
-            <p>We surface the hidden gems in your colony, not just the big chains everyone already knows.</p>
-          </div>
-        </div>
-        <div class="pillar">
-          <span class="p-ico">🌿</span>
-          <div>
-            <h4>Every Species Welcome</h4>
-            <p>The only platform built for every animal — from Golden Retrievers to Ball Pythons.</p>
-          </div>
-        </div>
-        <div class="pillar">
-          <span class="p-ico">🔒</span>
-          <div>
-            <h4>Digital Health Records</h4>
-            <p>Coming soon: one secure place for all your pet's medical history, accessible anywhere.</p>
-          </div>
-        </div>
+        <div class="pillar"><span class="p-ico">📍</span><div><h4>Hyperlocal First</h4><p>We surface the hidden gems in your colony, not just the big chains.</p></div></div>
+        <div class="pillar"><span class="p-ico">🌿</span><div><h4>All Species</h4><p>The only platform covering every animal — from Labradors to lizards.</p></div></div>
+        <div class="pillar"><span class="p-ico">🔒</span><div><h4>Digital Health Records</h4><p>Coming soon: one secure place for all your pet's medical history.</p></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════ -->
-<footer data-section="footer">
+<!-- FOOTER -->
+<footer>
   <div class="wrap">
-    <div class="foot-top">
-      <div class="foot-brand">
-        <div class="foot-logo">
-          <div class="logo-mark">🐾</div>
-          <div class="logo-name">Happy<em>Pets</em></div>
-        </div>
-        <p>Delhi NCR's premium pet care platform. Connecting pet parents with trusted providers since 2026.</p>
+    <div class="foot-in">
+      <div class="f-brand">
+        <div class="f-logo"><div class="logo-icon" style="width:30px;height:30px;font-size:.9rem">🐾</div><div class="logo-name">Happy<b>Pets</b></div></div>
+        <p class="f-tagline">Delhi NCR's premium pet care platform.<br/>Gurgaon · Delhi · Noida</p>
       </div>
-      <div class="foot-col">
-        <h5>Platform</h5>
-        <a href="#services" data-track="footer_services">Services</a>
-        <a href="#listings" data-track="footer_find_care">Find Care</a>
-        <a href="#species"  data-track="footer_species">All Species</a>
-        <a href="#about"    data-track="footer_about">About</a>
-      </div>
-      <div class="foot-col">
-        <h5>For Businesses</h5>
-        <a href="#" data-track="footer_get_listed">Get Listed</a>
-        <a href="#" data-track="footer_partner">Partner With Us</a>
-        <a href="mailto:hello@happypets.in" data-track="footer_contact">Contact</a>
+      <div class="f-links">
+        <a href="#services" onclick="HP.track('footer_link_click',{label:'Services'})">Services</a>
+        <a href="#listings" onclick="HP.track('footer_link_click',{label:'Find Care'})">Find Care</a>
+        <a href="#about"    onclick="HP.track('footer_link_click',{label:'About'})">About</a>
+        <a href="#"         data-track="footer_get_listed" onclick="HP.track('footer_link_click',{label:'Get Listed'})">Get Listed</a>
+        <a href="#"         data-track="footer_partner"    onclick="HP.track('footer_link_click',{label:'Partner'})">Partner</a>
       </div>
     </div>
-    <div class="foot-btm">
-      <p>© 2026 Happy Pets. Made with 🐾 in Gurgaon.</p>
-      <a href="mailto:hello@happypets.in">hello@happypets.in</a>
-    </div>
+    <div class="foot-btm">© 2025 Happy Pets. Made with 🐾 in Gurgaon.</div>
   </div>
 </footer>
 
-<!-- ═══════════════════════════════════════
-     JAVASCRIPT
-═══════════════════════════════════════ -->
 <script>
 'use strict';
 
-// ─── CONFIG ───────────────────────────────
-// Point this to your GitHub raw CSV:
-// e.g. 'https://raw.githubusercontent.com/YOUR/REPO/main/data/listings.csv'
-const CSV_URL   = 'data/listings.csv';
-const PAGE_SIZE = 9;
+/* ════════════════════════════════════════════════════════
+   CONFIG — paste your deployed Apps Script URLs here
+════════════════════════════════════════════════════════ */
+var FORMS_SCRIPT_URL = 'YOUR_FORMS_SCRIPT_URL';   // forms_submissions.gs
+var APPS_SCRIPT_URL  = 'YOUR_APPS_SCRIPT_URL';    // contact_leads.gs
 
-// ─── PET FUN FACTS for loading states ────
-const PET_FACTS = [
-  { emoji: '🐕', fact: 'Dogs can smell up to 100,000 times better than humans. A bloodhound\'s nose has 300 million scent receptors.' },
-  { emoji: '🐈', fact: 'Cats spend 70% of their lives asleep — that\'s about 13–16 hours every single day.' },
-  { emoji: '🐠', fact: 'Fish have been on Earth for more than 500 million years — older than dinosaurs by a wide margin.' },
-  { emoji: '🦜', fact: 'African Grey Parrots can learn over 1,000 words and understand the concept of zero.' },
-  { emoji: '🐇', fact: 'Rabbits can run up to 72 km/h and jump over a metre high. They\'re surprisingly athletic!' },
-  { emoji: '🦎', fact: 'Some gecko species can detach and regenerate their tails as a defence mechanism.' },
-  { emoji: '🐹', fact: 'Hamsters can run up to 8 km in a single night on their exercise wheel.' },
-  { emoji: '🐕', fact: 'The Basenji is the only breed of dog that doesn\'t bark — it yodels instead.' },
-  { emoji: '🐈', fact: 'A group of cats is called a "clowder." A group of kittens is a "kindle."' },
-  { emoji: '🐠', fact: 'Clownfish are all born male. The dominant fish in a group can change sex to become female.' },
-  { emoji: '🦜', fact: 'Parrots are one of the few animals that can mimic human speech by modifying airflow, not just sounds.' },
-  { emoji: '🐇', fact: 'Rabbits eat their own droppings — a practice called cecotrophy — to absorb extra nutrients.' },
+/* ════════════════════════════════════════════════════════
+   PET FACTS
+════════════════════════════════════════════════════════ */
+var PET_FACTS = [
+  {e:'🐶', f:'Dogs have a sense of smell 10,000× stronger than humans — so your dog always knows what you had for lunch.'},
+  {e:'🐱', f:'Cats spend up to 70% of their lives sleeping. That\'s roughly 13–16 hours of pure, unapologetic nap time.'},
+  {e:'🐠', f:'Fish can recognise their owners\' faces and distinguish them from strangers with 86% accuracy.'},
+  {e:'🦜', f:'African Grey parrots have the emotional intelligence of a 5-year-old child and a vocabulary of 1,000+ words.'},
+  {e:'🐇', f:'Rabbits can run up to 56 km/h — faster than most dog breeds at full sprint.'},
+  {e:'🦎', f:'Geckos can walk upside down because their feet have millions of microscopic hairs creating molecular adhesion.'},
+  {e:'🐹', f:'Hamsters can run up to 8 km per night on their wheel — that\'s Gurgaon to South Delhi and back.'},
+  {e:'🐕', f:'A dog\'s nose print is as unique as a human fingerprint — no two dogs have the same pattern.'},
+  {e:'🐈', f:'A group of cats is called a "clowder." A group of kittens is called a "kindle."'},
+  {e:'🐾', f:'India has over 30 million pet animals. The pet care industry is growing at 20% every single year.'},
 ];
 
-// ─── STATE ────────────────────────────────
-let all = [], filtered = [], page = 0;
-let activeF = 'all', searchQ = '', searchC = '';
-let factIdx = 0, factTimer = null;
-
-// ─── SMOOTH NAV SCROLL ────────────────────
-function smoothTo(target) {
-  const el = document.querySelector(target);
-  if (!el) return;
-  const top = el.getBoundingClientRect().top + window.scrollY - 80;
-  window.scrollTo({ top, behavior: 'smooth' });
-}
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const href = a.getAttribute('href');
-    if (href.length > 1) { e.preventDefault(); smoothTo(href); }
-  });
-});
-
-// ─── NAV SCROLL STATE ─────────────────────
-let lastY = 0;
-window.addEventListener('scroll', () => {
-  const nav = document.getElementById('nav');
-  nav.classList.toggle('up', scrollY > 60);
-  lastY = scrollY;
-}, { passive: true });
-
-// ─── AMBIENT CANVAS ───────────────────────
+/* ════════════════════════════════════════════════════════
+   PAGE OVERLAY — pet fact on load
+════════════════════════════════════════════════════════ */
 (function() {
-  const c = document.getElementById('bgCanvas');
-  const ctx = c.getContext('2d');
-  let W, H, pts = [];
+  var f = PET_FACTS[Math.floor(Math.random() * PET_FACTS.length)];
+  document.getElementById('ovPaw').textContent  = f.e;
+  document.getElementById('ovFact').textContent = '"' + f.f + '"';
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.getElementById('pageOverlay').classList.add('hidden');
+    }, 900);
+  });
+})();
 
-  function resize() { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; }
-  resize();
-  window.addEventListener('resize', resize, { passive: true });
-
-  // Two layers: slow large orbs + fast small dots
-  for (let i = 0; i < 60; i++) {
-    pts.push({
-      x: Math.random(), y: Math.random(),
-      r: i < 8 ? (40 + Math.random()*80) : (.8 + Math.random()*2.5),
-      sp: i < 8 ? .04 + Math.random()*.06 : .2 + Math.random()*.5,
-      dr: (Math.random()-.5) * (i < 8 ? .02 : .12),
-      op: i < 8 ? .03 + Math.random()*.05 : .06 + Math.random()*.2,
-      col: i % 3 === 0 ? '82,183,136' : i % 3 === 1 ? '232,168,56' : '255,140,90',
-      ph: Math.random()*Math.PI*2,
-    });
+/* ════════════════════════════════════════════════════════
+   LOADER FACTS — rotate while CSV loads
+════════════════════════════════════════════════════════ */
+var _loaderTimer, _factIdx = 0;
+function startLoader() {
+  var el = document.getElementById('lAnimal'), ft = document.getElementById('lFact');
+  if (!el || !ft) return;
+  function show() {
+    var f = PET_FACTS[_factIdx % PET_FACTS.length]; _factIdx++;
+    el.style.opacity = '0'; ft.style.opacity = '0';
+    setTimeout(function() { el.textContent = f.e; ft.textContent = '"' + f.f + '"'; el.style.opacity = '1'; ft.style.opacity = '1'; }, 280);
   }
+  show(); _loaderTimer = setInterval(show, 3500);
+}
+function stopLoader() { clearInterval(_loaderTimer); }
 
+/* ════════════════════════════════════════════════════════
+   CANVAS — gentle floating paw prints
+════════════════════════════════════════════════════════ */
+function initCanvas() {
+  var cv = document.getElementById('pawCanvas');
+  if (!cv) return;
+  var ctx = cv.getContext('2d'), W, H, dots = [];
+  function resize() { W = cv.width = cv.offsetWidth; H = cv.height = cv.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize, {passive:true});
+  for (var i = 0; i < 22; i++) {
+    dots.push({x:Math.random(), y:Math.random(), sz:9+Math.random()*17,
+      sy:.12+Math.random()*.3, sx:(Math.random()-.5)*.1,
+      op:.04+Math.random()*.12, rot:Math.random()*Math.PI*2,
+      rs:(Math.random()-.5)*.007, ph:Math.random()*Math.PI*2});
+  }
   function draw() {
     ctx.clearRect(0,0,W,H);
-    pts.forEach(p => {
-      p.y -= p.sp / H * (p.r > 10 ? .5 : 1.8);
-      p.x += p.dr / W;
-      p.ph += .006;
-      const pulse = Math.sin(p.ph) * .25 + .75;
-      if(p.y < -.1) { p.y = 1.05; p.x = Math.random(); }
-      if(p.x < 0) p.x = 1; if(p.x > 1) p.x = 0;
-      ctx.beginPath();
-      ctx.arc(p.x*W, p.y*H, p.r*pulse, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(${p.col},${p.op*pulse})`;
-      ctx.fill();
+    var t = Date.now()*.001;
+    dots.forEach(function(d) {
+      var pulse = Math.sin(t+d.ph)*.25+.75;
+      d.y -= d.sy/H*2; d.x += d.sx/W; d.rot += d.rs;
+      if (d.y < -.05) { d.y = 1.05; d.x = Math.random(); }
+      if (d.x < -.05) d.x = 1.05; if (d.x > 1.05) d.x = -.05;
+      ctx.save(); ctx.globalAlpha = d.op*pulse;
+      ctx.translate(d.x*W, d.y*H); ctx.rotate(d.rot);
+      ctx.font = d.sz*pulse+'px serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('🐾', 0, 0); ctx.restore();
     });
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
+}
+initCanvas();
+
+/* ════════════════════════════════════════════════════════
+   SMOOTH SCROLL MOMENTUM
+════════════════════════════════════════════════════════ */
+(function() {
+  var cur = window.scrollY, tgt = window.scrollY, ticking = false;
+  window.addEventListener('wheel', function(e) {
+    tgt += e.deltaY * .88;
+    tgt = Math.max(0, Math.min(tgt, document.body.scrollHeight - window.innerHeight));
+    if (!ticking) { ticking = true; requestAnimationFrame(tick); }
+  }, {passive:true});
+  function tick() {
+    var diff = tgt - cur;
+    if (Math.abs(diff) < .5) { ticking = false; return; }
+    cur += diff * .1; window.scrollTo(0, cur); requestAnimationFrame(tick);
+  }
 })();
 
-// ─── COUNTER ANIMATION ────────────────────
-let counted = false;
-function countUp() {
-  document.querySelectorAll('.hstat-n').forEach(el => {
-    const target = +el.dataset.t, dur = 1800, t0 = performance.now();
-    (function tick(now) {
-      const p = Math.min((now - t0) / dur, 1);
-      const e = 1 - Math.pow(1-p, 3);
-      el.textContent = Math.round(e * target);
-      if(p < 1) requestAnimationFrame(tick);
-    })(performance.now());
-  });
-}
-new IntersectionObserver(([e]) => {
-  if(e.isIntersecting && !counted) { counted = true; countUp(); }
-}, { threshold: .5 }).observe(document.querySelector('.hero-stats'));
+/* ════════════════════════════════════════════════════════
+   NAV SCROLL
+════════════════════════════════════════════════════════ */
+window.addEventListener('scroll', function() {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 48);
+}, {passive:true});
 
-// ─── SCROLL REVEAL ────────────────────────
-const revealObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if(e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); }
-  });
-}, { threshold: .1, rootMargin: '0px 0px -40px 0px' });
-document.querySelectorAll('.rv').forEach(el => revealObs.observe(el));
+/* ════════════════════════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════════════════════════ */
+var revObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); } });
+}, {threshold:.1, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(function(el) { revObs.observe(el); });
 
-// ─── SECTION IMPRESSION TRACKING ─────────
-const sectionObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if(e.isIntersecting && e.intersectionRatio >= .3) {
-      const sec = e.target.dataset.section;
-      if(sec) {
-        HP.track('section_impression', { section_name: sec, scroll_depth: Math.round(scrollY / document.body.scrollHeight * 100) });
-        sectionObs.unobserve(e.target); // fire once
-      }
+/* ════════════════════════════════════════════════════════
+   SECTION IMPRESSION TRACKING
+════════════════════════════════════════════════════════ */
+var SEC_NAMES = {home:'Hero',services:'Services',listings:'Listings',species:'Species',contact:'CTA Band',about:'About'};
+var secObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) {
+      HP.track('section_impression', {section_name: SEC_NAMES[e.target.id] || e.target.id});
+      secObs.unobserve(e.target);
     }
   });
-}, { threshold: .3 });
-document.querySelectorAll('[data-section]').forEach(el => sectionObs.observe(el));
+}, {threshold:.35});
+document.querySelectorAll('section[id]').forEach(function(s) { secObs.observe(s); });
 
-// ─── DATA ATTRIBUTE CLICK TRACKING ────────
-document.addEventListener('click', e => {
-  const btn = e.target.closest('[data-track]');
-  if(!btn) return;
-  const ev = btn.dataset.track;
-  HP.track('ui_click', {
-    element_id: ev,
-    element_text: btn.textContent?.trim().slice(0,60),
-    element_type: btn.tagName.toLowerCase(),
-    page_section: btn.closest('[data-section]')?.dataset.section || 'unknown',
+/* ════════════════════════════════════════════════════════
+   COUNTER ANIMATION
+════════════════════════════════════════════════════════ */
+var counted = false;
+new IntersectionObserver(function(entries) {
+  if (entries[0].isIntersecting && !counted) {
+    counted = true;
+    document.querySelectorAll('.hst-n').forEach(function(el) {
+      var target = +el.dataset.t, dur = 1800, t0 = performance.now();
+      (function tick(now) {
+        var p = Math.min((now-t0)/dur, 1), eased = 1-Math.pow(1-p, 3);
+        el.textContent = Math.round(eased*target);
+        if (p < 1) requestAnimationFrame(tick);
+      })(performance.now());
+    });
+  }
+}, {threshold:.5}).observe(document.querySelector('.hero-stats'));
+
+/* ════════════════════════════════════════════════════════
+   SCROLL DEPTH & TIME ON PAGE
+════════════════════════════════════════════════════════ */
+var depthHit = {};
+window.addEventListener('scroll', function() {
+  var pct = Math.round(window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100);
+  [25,50,75,90].forEach(function(d) {
+    if (pct >= d && !depthHit[d]) { depthHit[d] = true; HP.track('scroll_depth', {depth_percent:d}); }
+  });
+}, {passive:true});
+[30,60,120,300].forEach(function(s) { setTimeout(function() { HP.track('time_on_page', {seconds:s}); }, s*1000); });
+
+/* ════════════════════════════════════════════════════════
+   MOBILE NAV
+════════════════════════════════════════════════════════ */
+function openMobileNav() {
+  document.getElementById('mobileNav').classList.add('open');
+  document.getElementById('mobileNav').setAttribute('aria-hidden','false');
+  document.getElementById('ham').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  HP.track('mobile_nav_open', {section:'nav'});
+}
+function closeMobileNav() {
+  document.getElementById('mobileNav').classList.remove('open');
+  document.getElementById('mobileNav').setAttribute('aria-hidden','true');
+  document.getElementById('ham').classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.getElementById('ham').addEventListener('click', function() {
+  document.getElementById('mobileNav').classList.contains('open') ? closeMobileNav() : openMobileNav();
+});
+document.getElementById('mobileNavClose').addEventListener('click', closeMobileNav);
+document.getElementById('mobileNav').addEventListener('click', function(e) { if (e.target === this) closeMobileNav(); });
+document.querySelectorAll('.mobile-nav-link').forEach(function(a) {
+  a.addEventListener('click', function() { setTimeout(closeMobileNav, 120); });
+});
+
+/* ════════════════════════════════════════════════════════
+   MODAL SYSTEM (Get Listed + Partner)
+════════════════════════════════════════════════════════ */
+function openModal(id, label) {
+  document.getElementById(id).classList.add('open');
+  document.getElementById(id).setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+  HP.track('modal_open', {modal_id:id, label:label});
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.getElementById(id).setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+
+/* Close buttons */
+document.getElementById('closeListed').addEventListener('click', function() { closeModal('modalListed'); });
+document.getElementById('closePartner').addEventListener('click', function() { closeModal('modalPartner'); });
+document.getElementById('modalListed').addEventListener('click', function(e) { if (e.target === this) closeModal('modalListed'); });
+document.getElementById('modalPartner').addEventListener('click', function(e) { if (e.target === this) closeModal('modalPartner'); });
+
+/* CTA buttons — get listed */
+document.querySelectorAll('[data-track="cta_get_listed"],[data-track="nav_list_business"],[data-track="footer_get_listed"]').forEach(function(el) {
+  el.addEventListener('click', function(e) { e.preventDefault(); openModal('modalListed','Get Listed'); });
+});
+/* CTA buttons — partner */
+document.querySelectorAll('[data-track="cta_partner"],[data-track="footer_partner"]').forEach(function(el) {
+  el.addEventListener('click', function(e) { e.preventDefault(); openModal('modalPartner','Partner With Us'); });
+});
+
+/* ── SHEET SUBMIT HELPER ── */
+function submitToSheet(url, data, onOk, onErr) {
+  if (!url || !url.startsWith('http')) {
+    console.info('[HappyPets] No script URL set. Would have sent:', data);
+    if (onOk) onOk(); return;
+  }
+  fetch(url, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)})
+    .then(function() { if (onOk) onOk(); })
+    .catch(function(err) { console.error('[HappyPets] Sheets error:', err); if (onErr) onErr(); });
+}
+
+/* ── GET LISTED SUBMIT ── */
+document.getElementById('listedSubmit').addEventListener('click', function() {
+  var btn = this;
+  var biz   = document.getElementById('l_biz').value.trim();
+  var name  = document.getElementById('l_name').value.trim();
+  var phone = document.getElementById('l_phone').value.trim();
+  var type  = document.getElementById('l_type').value;
+  var city  = document.getElementById('l_city').value;
+  var errEl = document.getElementById('listedErr');
+  errEl.classList.remove('show');
+  if (!biz || !name || !phone || !type || !city) { errEl.textContent = 'Please fill all required fields.'; errEl.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = 'Submitting…';
+  HP.track('form_submit', {form:'get_listed', city:city, service_type:type});
+  submitToSheet(FORMS_SCRIPT_URL, {
+    sheet:'get_listed', business_name:biz, owner_name:name, phone:phone,
+    email:document.getElementById('l_email').value.trim(),
+    service_type:type, city:city,
+    address:document.getElementById('l_addr').value.trim(),
+    source_url:window.location.href,
+  }, function() {
+    document.getElementById('listedFormWrap').style.display = 'none';
+    document.getElementById('listedSuccess').classList.add('show');
+    HP.track('form_success', {form:'get_listed'});
+  }, function() {
+    errEl.classList.add('show'); btn.disabled = false; btn.textContent = 'Submit Listing Request →';
   });
 });
 
-// ─── LOADING FACTS ────────────────────────
-function showLoader() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = `
-    <div class="lst-loader" id="loaderEl">
-      <div class="loader-anim">
-        <div class="loader-dot"></div>
-        <div class="loader-dot"></div>
-        <div class="loader-dot"></div>
-      </div>
-      <div class="loader-fact" id="loaderFact">
-        <span class="fact-label">✦ Pet Fact</span>
-        <p id="factText"></p>
-      </div>
-    </div>`;
-  rotateFact();
-  factTimer = setInterval(rotateFact, 2800);
+/* ── PARTNER SUBMIT ── */
+document.getElementById('partnerSubmit').addEventListener('click', function() {
+  var btn = this;
+  var company = document.getElementById('p_company').value.trim();
+  var pname   = document.getElementById('p_name').value.trim();
+  var email   = document.getElementById('p_email').value.trim();
+  var type    = document.getElementById('p_type').value;
+  var errEl   = document.getElementById('partnerErr');
+  errEl.classList.remove('show');
+  if (!company || !pname || !email || !type) { errEl.textContent = 'Please fill all required fields.'; errEl.classList.add('show'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { errEl.textContent = 'Please enter a valid email.'; errEl.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  HP.track('form_submit', {form:'partner_enquiry', partnership_type:type});
+  submitToSheet(FORMS_SCRIPT_URL, {
+    sheet:'partner_enquiry', company:company, contact_name:pname, email:email,
+    phone:document.getElementById('p_phone').value.trim(),
+    partnership_type:type, message:document.getElementById('p_msg').value.trim(),
+    source_url:window.location.href,
+  }, function() {
+    document.getElementById('partnerFormWrap').style.display = 'none';
+    document.getElementById('partnerSuccess').classList.add('show');
+    HP.track('form_success', {form:'partner_enquiry'});
+  }, function() {
+    errEl.classList.add('show'); btn.disabled = false; btn.textContent = 'Send Partnership Enquiry →';
+  });
+});
+
+/* ════════════════════════════════════════════════════════
+   EMAIL CAPTURE (gates phone/address on listing cards)
+════════════════════════════════════════════════════════ */
+var EC = (function() {
+  var KEY = 'hp_verified_user', DAYS = 30, _pending = null;
+  function isVerified() {
+    try { var d = JSON.parse(localStorage.getItem(KEY)||'{}'); return !!(d.email && Date.now() < d.expiry); } catch(e) { return false; }
+  }
+  function getEmail() {
+    try { return JSON.parse(localStorage.getItem(KEY)||'{}').email || ''; } catch(e) { return ''; }
+  }
+  function save(email) {
+    localStorage.setItem(KEY, JSON.stringify({email:email, expiry:Date.now()+DAYS*864e5, saved_at:new Date().toISOString()}));
+  }
+  function request(ctx) {
+    if (isVerified()) { if (ctx.onSuccess) ctx.onSuccess(); return; }
+    _pending = ctx; openEC(ctx);
+  }
+  function getPending() { return _pending; }
+  return {isVerified:isVerified, getEmail:getEmail, save:save, request:request, getPending:getPending};
+})();
+
+function openEC(ctx) {
+  document.getElementById('ecStep1').style.display = '';
+  document.getElementById('ecStep2').classList.remove('show');
+  document.getElementById('ecEmail').value = EC.getEmail();
+  document.getElementById('ecErr').textContent = ''; document.getElementById('ecErr').classList.remove('show');
+  if (ctx && ctx.providerName) document.getElementById('ecCtx').textContent = 'Drop your email to unlock the contact details for ' + ctx.providerName + '.';
+  openModal('ecModal', 'Email Capture');
+  HP.track('email_capture_modal_open', {provider_name: ctx ? ctx.providerName : '', provider_city: ctx ? ctx.providerCity : ''});
+  setTimeout(function() { document.getElementById('ecEmail').focus(); }, 350);
+}
+function closeEC() { closeModal('ecModal'); }
+
+document.getElementById('ecClose').addEventListener('click', closeEC);
+document.getElementById('ecModal').addEventListener('click', function(e) { if (e.target === this) closeEC(); });
+
+document.getElementById('ecSubmit').addEventListener('click', submitEC);
+document.getElementById('ecEmail').addEventListener('keydown', function(e) { if (e.key === 'Enter') submitEC(); });
+
+function submitEC() {
+  var email = document.getElementById('ecEmail').value.trim().toLowerCase();
+  var errEl = document.getElementById('ecErr');
+  errEl.classList.remove('show');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    errEl.textContent = 'Please enter a valid email address.'; errEl.classList.add('show'); return;
+  }
+  EC.save(email);
+  var ctx = EC.getPending();
+  HP.track('email_captured', {email_domain: email.split('@')[1]||'unknown', provider_name: ctx ? ctx.providerName : '', provider_city: ctx ? ctx.providerCity : ''});
+  submitToSheet(APPS_SCRIPT_URL, {
+    sheet:'user_leads', email:email,
+    provider_name: ctx ? ctx.providerName : '',
+    provider_city: ctx ? ctx.providerCity : '',
+    provider_type: ctx ? ctx.providerType : '',
+    page_url: window.location.href,
+  });
+  document.getElementById('ecStep1').style.display = 'none';
+  document.getElementById('ecStep2').classList.add('show');
+  setTimeout(function() { closeEC(); if (ctx && ctx.onSuccess) ctx.onSuccess(); }, 1400);
 }
 
-function rotateFact() {
-  const el = document.getElementById('factText');
-  if(!el) { clearInterval(factTimer); return; }
-  const f = PET_FACTS[factIdx % PET_FACTS.length]; factIdx++;
-  el.style.opacity = '0'; el.style.transform = 'translateY(8px)';
-  setTimeout(() => {
-    el.textContent = f.emoji + '  ' + f.fact;
-    el.style.transition = 'opacity .5s var(--smooth), transform .5s var(--smooth)';
-    el.style.opacity = '1'; el.style.transform = 'translateY(0)';
-  }, 250);
-}
+/* ════════════════════════════════════════════════════════
+   SPECIES PANEL
+════════════════════════════════════════════════════════ */
+var SPECIES_DATA = {
+  Dogs:     {emoji:'🐕', hasListings:true,  desc:'We have vets, groomers, trainers, and boarding facilities across Gurgaon, Delhi, and Noida that specialise in dogs — from indie strays to pedigree breeds.', fact:'Dogs can learn over 150 words and understand human emotions better than almost any other animal.'},
+  Cats:     {emoji:'🐈', hasListings:true,  desc:'Find cat-friendly vets and groomers across Delhi NCR. Many of our listed clinics have dedicated cat consultation hours to reduce stress for your feline.', fact:'Cats have 32 muscles in each ear and can rotate them 180 degrees independently.'},
+  Fish:     {emoji:'🐠', hasListings:false, desc:'We\'re building out our aquatic pets section — sourcing specialist aquarium shops and fish vets in Gurgaon and Delhi. You\'re early, and we\'d love to know you\'re interested.', fact:'Fish can recognise faces, feel pain, and have unique personalities — they\'re far more complex than people think.'},
+  Birds:    {emoji:'🦜', hasListings:false, desc:'Our avian care listings are coming soon. We\'re mapping bird vets and specialist shops across Delhi NCR and would love to prioritise your area.', fact:'Parrots are one of the few animals that can genuinely dance to music — they feel the rhythm, not just the noise.'},
+  Rabbits:  {emoji:'🐇', hasListings:false, desc:'Rabbit care specialists are rare but they exist — we\'re finding the best ones in Delhi NCR. Sign up and you\'ll be the first to know when we launch rabbit listings.', fact:'Rabbits can run up to 56 km/h and can jump over 90 cm high. They also purr when they\'re happy.'},
+  Reptiles: {emoji:'🦎', hasListings:false, desc:'Reptile vets and specialist care is something we\'re actively researching in Delhi NCR. Leave your email and we\'ll reach out the moment listings go live.', fact:'Some geckos can detach their tails as a defence mechanism and regrow them completely over a few months.'},
+  Hamsters: {emoji:'🐹', hasListings:false, desc:'Small mammal care is an underserved niche we\'re passionate about. We\'re building this section now — join the waitlist to be notified first.', fact:'A hamster\'s cheek pouches can expand to three times the size of its head. They\'re essentially living backpacks.'},
+  Other:    {emoji:'🐾', hasListings:false, desc:'Got an exotic or unusual pet? We want to make sure you\'re covered too. Tell us your species and city and we\'ll prioritise listing care providers for you.', fact:'India is home to over 90,000 species of animals — and each one deserves great care.'},
+};
 
-function hideLoader() {
-  clearInterval(factTimer);
+function openSpeciesPanel(speciesKey) {
+  var d = SPECIES_DATA[speciesKey] || SPECIES_DATA['Other'];
+  document.getElementById('spEmoji').textContent = d.emoji;
+  document.getElementById('spTitle').textContent = speciesKey;
+  document.getElementById('spBody').textContent  = d.desc;
+  document.getElementById('spFact').textContent  = '🐾 Did you know? ' + d.fact;
+  var actionEl = document.getElementById('spAction');
+  if (d.hasListings) {
+    actionEl.innerHTML = '<div class="sp-cta-row"><button class="sp-cta sp-cta-p" id="spBrowseBtn">Browse ' + speciesKey + ' Care →</button><button class="sp-cta sp-cta-s" id="spCloseBtn2">Maybe later</button></div>';
+    document.getElementById('spBrowseBtn').addEventListener('click', function() {
+      var filter = speciesKey === 'Cats' ? 'vet' : 'all';
+      closeSpeciesPanel();
+      document.querySelectorAll('.fbtn').forEach(function(b) { b.classList.toggle('on', b.dataset.f === filter); });
+      activeF = filter; render(true);
+      document.getElementById('listings').scrollIntoView({behavior:'smooth'});
+      HP.track('species_browse_click', {species:speciesKey, filter_applied:filter});
+    });
+    document.getElementById('spCloseBtn2').addEventListener('click', closeSpeciesPanel);
+  } else {
+    actionEl.innerHTML = '<p style="font-size:.88rem;color:var(--mid);margin-bottom:14px;line-height:1.6">We don\'t have ' + speciesKey.toLowerCase() + ' listings yet — but leave your email and you\'ll be the first to know.</p><div class="sp-notify-form"><input class="sp-notify-input" id="spEmail" type="email" placeholder="your@email.com"/><button class="sp-notify-btn" id="spNotifyBtn">Notify Me</button></div><div class="f-err" id="spErr"></div>';
+    document.getElementById('spNotifyBtn').addEventListener('click', function() {
+      var email = document.getElementById('spEmail').value.trim().toLowerCase();
+      var errEl = document.getElementById('spErr');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { errEl.textContent = 'Please enter a valid email.'; errEl.classList.add('show'); return; }
+      errEl.classList.remove('show');
+      HP.track('species_waitlist_signup', {species:speciesKey, email_domain:email.split('@')[1]||''});
+      submitToSheet(APPS_SCRIPT_URL, {sheet:'species_waitlist', email:email, species:speciesKey, page_url:window.location.href});
+      document.getElementById('spAction').innerHTML = '<div style="background:var(--mint);border-radius:var(--r-md);padding:16px;font-size:.9rem;color:var(--forest);font-weight:500;text-align:center">✅ You\'re on the list! We\'ll email you when ' + speciesKey + ' listings go live.</div>';
+    });
+  }
+  document.getElementById('spBackdrop').classList.add('open');
+  document.getElementById('spBackdrop').setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+  HP.track('species_click', {species:speciesKey, has_listings:d.hasListings});
 }
+function closeSpeciesPanel() {
+  document.getElementById('spBackdrop').classList.remove('open');
+  document.getElementById('spBackdrop').setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+document.getElementById('spClose').addEventListener('click', closeSpeciesPanel);
+document.getElementById('spBackdrop').addEventListener('click', function(e) { if (e.target === this) closeSpeciesPanel(); });
+document.querySelectorAll('.spec-item').forEach(function(el) {
+  el.addEventListener('click', function() { openSpeciesPanel(this.dataset.species); });
+});
 
-// ─── CSV PARSER ───────────────────────────
+/* ════════════════════════════════════════════════════════
+   CSV + LISTINGS
+════════════════════════════════════════════════════════ */
+var CSV_URL = 'data/listings.csv';
+var PAGE_SZ = 9;
+var all = [], filtered = [], page = 0, activeF = 'all', searchQ = '', searchC = '';
+
 function parseCSV(txt) {
-  const lines = txt.split('\n').filter(l => l.trim());
-  if(!lines.length) return [];
+  var lines = txt.split('\n').filter(function(l) { return l.trim(); });
+  if (!lines.length) return [];
   function pl(line) {
-    const f = []; let cur = '', q = false;
-    for(let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if(ch === '"') { if(q && line[i+1] === '"'){cur+='"';i++} else q=!q; }
-      else if(ch === ',' && !q) { f.push(cur.trim()); cur = ''; }
-      else cur += ch;
-    }
+    var f=[],cur='',q=false;
+    for(var i=0;i<line.length;i++){var ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){cur+='"';i++;}else q=!q;}else if(ch===','&&!q){f.push(cur.trim());cur='';}else cur+=ch;}
     f.push(cur.trim()); return f;
   }
-  const hdrs = pl(lines[0]).map(h => h.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,''));
-  return lines.slice(1).map(l => {
-    const v = pl(l); if(v.length < 2) return null;
-    const o = {}; hdrs.forEach((h,i) => o[h] = v[i] || ''); return o;
+  var hdrs = pl(lines[0]).map(function(h) { return h.toLowerCase().replace(/\s+/g,'_'); });
+  return lines.slice(1).map(function(l) {
+    var v=pl(l); if(v.length<2) return null;
+    var o={}; hdrs.forEach(function(h,i){o[h]=v[i]||'';}); return o;
   }).filter(Boolean);
 }
 
-// ─── NORMALISE ROW ────────────────────────
 function norm(r) {
-  const pick = (...keys) => {
-    for(const k of keys) { const v = r[k]; if(v && v.trim() && !/^(n\/a|-|na|none)$/i.test(v.trim())) return v.trim(); }
-    return '';
-  };
+  function pick() {
+    for(var i=0;i<arguments.length;i++){var v=r[arguments[i]];if(v&&v.trim()&&!/^(n\/a|-|na|none)$/i.test(v.trim()))return v.trim();}return'';
+  }
   return {
-    name:    pick('name','business_name','clinic_name','shop_name','title'),
-    type:    pick('type','category','service_type','listing_type','service'),
-    address: pick('address','full_address','location','addr'),
-    city:    pick('city','area','locality','district'),
-    phone:   pick('phone','phone_number','contact','mobile','tel'),
-    hours:   pick('hours','timing','timings','working_hours','open_hours','time'),
+    name:    pick('name','business_name','clinic_name','shop_name'),
+    type:    pick('type','category','service_type','listing_type'),
+    address: pick('address','full_address','location'),
+    city:    pick('city','area','locality'),
+    phone:   pick('phone','phone_number','contact','mobile'),
+    hours:   pick('hours','timing','timings','working_hours','open_hours'),
   };
 }
 
-// ─── BADGE ────────────────────────────────
-function badge(type) {
-  const t = (type||'').toLowerCase();
-  if(t.includes('vet'))                        return ['bv','Veterinarian'];
-  if(t.includes('groom'))                      return ['bg','Grooming'];
-  if(t.includes('board'))                      return ['bb','Boarding'];
-  if(t.includes('shop')||t.includes('store'))  return ['bs','Pet Shop'];
-  if(t.includes('train'))                      return ['bt','Trainer'];
-  return ['bd', type || 'Pet Service'];
+function badgeInfo(type) {
+  var t = (type||'').toLowerCase();
+  if(t.includes('vet'))                          return ['bv','Veterinarian'];
+  if(t.includes('groom'))                        return ['bg','Grooming'];
+  if(t.includes('board'))                        return ['bb','Boarding'];
+  if(t.includes('shop')||t.includes('store'))    return ['bs','Pet Shop'];
+  if(t.includes('train'))                        return ['bt','Trainer'];
+  return ['bd', type||'Pet Service'];
 }
 
-// ─── RENDER LISTING CARD ─────────────────
-let cardImpressionObs = null;
-function mkCard(item, idx, delay) {
-  const n = norm(item);
-  const [bc, bl] = badge(n.type);
-  const el = document.createElement('div');
+function mkCard(item, delay, pos) {
+  var n = norm(item);
+  var bi = badgeInfo(n.type);
+  var isVerified = EC.isVerified();
+  var el = document.createElement('div');
   el.className = 'lcard';
   el.style.animationDelay = delay + 'ms';
-  el.dataset.cardName = n.name;
-  el.dataset.cardType = n.type;
-  el.dataset.cardCity = n.city;
-  el.dataset.cardIdx  = idx;
 
-  // Phone: show last 4 digits masked if not verified
-  const isVerified = OTP.isVerified();
-  const phoneDisplay = n.phone
-    ? (isVerified ? n.phone : maskPhone(n.phone))
-    : '';
+  /* phone section */
+  var phoneHTML = '';
+  if (n.phone) {
+    if (isVerified) {
+      phoneHTML = '<span class="c-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.1 2.27 2 2 0 012.08.09h3a2 2 0 012 1.72c.2.96.45 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.25 1.83.5 2.81.7A2 2 0 0122 14.92z"/></svg><a href="tel:' + n.phone + '">' + n.phone + '</a></span>';
+    } else {
+      phoneHTML = '<button class="ph-reveal-btn" data-action="reveal-phone">🔒 Show number</button>';
+    }
+  }
 
-  el.innerHTML = `
-    <div class="ch">
-      <span class="badge ${bc}">${bl}</span>
-      ${n.city ? `<span class="c-city">📍 ${n.city}</span>` : ''}
-    </div>
-    <div class="c-name">${n.name || 'Pet Service Provider'}</div>
-    ${n.address
-      ? `<div class="c-addr ${isVerified ? '' : 'addr-locked'}" data-full="${encodeURIComponent(n.address)}">
-           ${isVerified ? n.address : blurAddress(n.address)}
-         </div>`
-      : ''}
-    <div class="cf">
-      ${n.phone
-        ? `<span class="c-ph ${isVerified ? '' : 'ph-locked'}" data-phone="${encodeURIComponent(n.phone)}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.1 2.27 2 2 0 012.08.09h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/>
-            </svg>
-            ${isVerified
-              ? `<a href="tel:${n.phone}">${n.phone}</a>`
-              : `<span class="ph-reveal-btn">🔒 ${phoneDisplay} — tap to reveal</span>`}
-          </span>`
-        : '<span></span>'}
-      ${n.hours ? `<span class="c-hrs">${n.hours}</span>` : ''}
-    </div>`;
+  /* address section */
+  var addrHTML = '';
+  if (n.address) {
+    addrHTML = isVerified
+      ? '<div class="c-addr">' + n.address + '</div>'
+      : '<div class="c-addr addr-locked" data-action="reveal-phone" title="Tap to reveal">' + n.address + '</div>';
+  }
 
-  // Gate: tapping locked phone or address triggers OTP
-  el.querySelectorAll('.ph-reveal-btn, .addr-locked').forEach(gated => {
-    gated.style.cursor = 'pointer';
-    gated.addEventListener('click', e => {
-      e.stopPropagation();
-      HP.track('contact_reveal_attempt', {
-        provider_name: n.name, provider_type: n.type,
-        provider_city: n.city, field: gated.classList.contains('ph-reveal-btn') ? 'phone' : 'address',
-      });
-      OTP.requestVerification({
-        providerName: n.name, providerCity: n.city,
-        phone: n.phone, address: n.address,
-        onSuccess: () => refreshCardContact(el, n),
+  el.innerHTML =
+    '<div class="ch"><span class="badge ' + bi[0] + '">' + bi[1] + '</span>' + (n.city ? '<span class="c-city">📍 ' + n.city + '</span>' : '') + '</div>' +
+    '<div class="c-name">' + (n.name||'Unnamed Business') + '</div>' +
+    addrHTML +
+    '<div class="cf">' + phoneHTML + (n.hours ? '<span class="c-hrs">' + n.hours + '</span>' : '') + '</div>';
+
+  /* reveal click handler */
+  el.querySelectorAll('[data-action="reveal-phone"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      HP.track('contact_reveal_attempt', {provider_name:n.name, provider_city:n.city, provider_type:bi[1], item_position:pos});
+      EC.request({
+        providerName: n.name, providerCity: n.city, providerType: bi[1],
+        onSuccess: function() {
+          HP.track('contact_revealed', {provider_name:n.name, provider_city:n.city, item_position:pos});
+          /* replace card with revealed version */
+          var newCard = mkCard(item, 0, pos);
+          el.replaceWith(newCard);
+        }
       });
     });
   });
 
-  // Verified phone click tracking
-  const phoneLink = el.querySelector('a[href^="tel"]');
-  if (phoneLink) {
-    phoneLink.addEventListener('click', () => {
-      HP.track('card_phone_click', {
-        provider_name: n.name, provider_type: n.type,
-        provider_city: n.city, card_position: idx,
-      });
-    });
-  }
+  /* impression */
+  var impObs = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) {
+      HP.track('card_impression', {item_name:n.name, item_type:bi[1], item_city:n.city, item_position:pos, active_filter:activeF});
+      impObs.disconnect();
+    }
+  }, {threshold:.5});
+  setTimeout(function() { impObs.observe(el); }, 0);
 
   return el;
 }
 
-// Mask phone: show only last 4 digits
-function maskPhone(ph) {
-  const digits = ph.replace(/\D/g, '');
-  return '••••••' + digits.slice(-4);
-}
-
-// Blur address: show area only, hide specifics
-function blurAddress(addr) {
-  const parts = addr.split(',');
-  if (parts.length <= 2) return parts[0] + ', ••••';
-  return parts.slice(-2).join(',').trim(); // show only broad area
-}
-
-// After OTP success, reveal contact on already-rendered card
-function refreshCardContact(el, n) {
-  const phEl   = el.querySelector('.ph-locked');
-  const addrEl = el.querySelector('.addr-locked');
-  if (phEl) {
-    phEl.innerHTML = `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;flex-shrink:0;stroke:var(--sage)">
-        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.1 2.27 2 2 0 012.08.09h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/>
-      </svg>
-      <a href="tel:${n.phone}" style="color:inherit">${n.phone}</a>`;
-    phEl.classList.remove('ph-locked');
-    phEl.addEventListener('click', () => HP.track('card_phone_click', { provider_name: n.name, provider_city: n.city }));
-  }
-  if (addrEl) {
-    addrEl.textContent = n.address;
-    addrEl.classList.remove('addr-locked');
-  }
-}
-
-// ─── CARD IMPRESSION OBSERVER ─────────────
-function observeCardImpressions() {
-  if(cardImpressionObs) cardImpressionObs.disconnect();
-  cardImpressionObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if(e.isIntersecting) {
-        const c = e.target;
-        HP.track('card_impression', {
-          provider_name: c.dataset.cardName,
-          provider_type: c.dataset.cardType,
-          provider_city: c.dataset.cardCity,
-          card_position: +c.dataset.cardIdx,
-          active_filter: activeF,
-          search_query: searchQ || '(none)',
-        });
-        cardImpressionObs.unobserve(c);
-      }
-    });
-  }, { threshold: .5 });
-  document.querySelectorAll('.lcard').forEach(c => cardImpressionObs.observe(c));
-}
-
-// ─── FILTER & SEARCH ─────────────────────
-function applyF() {
-  const q = searchQ.toLowerCase(), city = searchC.toLowerCase(), ft = activeF;
-  filtered = all.filter(item => {
-    const n = norm(item), t = n.type.toLowerCase();
-    const mF = ft==='all' ||
-      (ft==='vet'      && t.includes('vet'))   ||
-      (ft==='grooming' && t.includes('groom')) ||
-      (ft==='boarding' && t.includes('board')) ||
-      (ft==='pet shop' && (t.includes('shop')||t.includes('store'))) ||
-      (ft==='trainer'  && t.includes('train'));
-    const mQ = !q || [n.name,n.address,n.city,n.type].some(v => v.toLowerCase().includes(q));
-    const mC = !city || n.city.toLowerCase().includes(city);
-    return mF && mQ && mC;
+function applyFilters() {
+  var q = searchQ.toLowerCase(), city = searchC.toLowerCase(), ft = activeF;
+  filtered = all.filter(function(item) {
+    var n = norm(item), t = n.type.toLowerCase();
+    var mF = ft==='all'||(ft==='vet'&&t.includes('vet'))||(ft==='grooming'&&t.includes('groom'))||(ft==='boarding'&&t.includes('board'))||(ft==='pet shop'&&(t.includes('shop')||t.includes('store')))||(ft==='trainer'&&t.includes('train'));
+    var mQ = !q||[n.name,n.address,n.city,n.type].some(function(v){return v.toLowerCase().includes(q);});
+    var mC = !city||n.city.toLowerCase().includes(city);
+    return mF&&mQ&&mC;
   });
 }
 
-// ─── RENDER PAGE ─────────────────────────
-function render(reset = false) {
-  const grid = document.getElementById('grid');
-  if(reset) { page = 0; grid.innerHTML = ''; }
-  applyF();
-
-  if(!filtered.length) {
+function render(reset) {
+  var grid = document.getElementById('grid');
+  if (reset) { page = 0; grid.innerHTML = ''; }
+  applyFilters();
+  if (!filtered.length) {
     grid.innerHTML = '<div class="no-res"><span>🔍</span><p>No providers found. Try a different search or filter.</p></div>';
-    document.getElementById('lFoot').style.display = 'none';
-    return;
+    document.getElementById('lFoot').style.display = 'none'; return;
   }
-
-  const slice = filtered.slice(page * PAGE_SIZE, (page+1) * PAGE_SIZE);
-  slice.forEach((item, i) => {
-    const globalIdx = page * PAGE_SIZE + i;
-    const card = mkCard(item, globalIdx, i * 60);
-    grid.appendChild(card);
-  });
+  var slice = filtered.slice(page*PAGE_SZ, (page+1)*PAGE_SZ);
+  if (reset) grid.innerHTML = '';
+  slice.forEach(function(item, i) { grid.appendChild(mkCard(item, i*60, page*PAGE_SZ+i+1)); });
   page++;
-  document.getElementById('lFoot').style.display = page * PAGE_SIZE < filtered.length ? 'block' : 'none';
-  // Re-observe impressions for new cards
-  requestAnimationFrame(observeCardImpressions);
+  document.getElementById('lFoot').style.display = page*PAGE_SZ < filtered.length ? 'block' : 'none';
 }
 
-// ─── DEMO DATA ────────────────────────────
 function demo() {
   return [
-    {name:'PawsFirst Veterinary Clinic',type:'Vet',address:'DLF Phase 2, Sector 25, Gurgaon',city:'Gurgaon',phone:'98100 12345',hours:'9am – 9pm'},
-    {name:'Green Paws Animal Hospital',type:'Vet',address:'Sector 14, Near HUDA City Centre, Gurgaon',city:'Gurgaon',phone:'98100 23456',hours:'8am – 8pm'},
-    {name:'Delhi Pet Care Centre',type:'Vet',address:'South Extension Part II, New Delhi',city:'Delhi',phone:'11-2634 5678',hours:'10am – 7pm'},
-    {name:'Noida Animal Clinic',type:'Vet',address:'Sector 62, Noida',city:'Noida',phone:'98110 34567',hours:'9am – 8pm'},
-    {name:'The Grooming Parlour',type:'Grooming Salon',address:'Sushant Lok Phase 1, Gurgaon',city:'Gurgaon',phone:'98100 45678',hours:'10am – 7pm'},
-    {name:'Fluffy & Co. Pet Spa',type:'Grooming Salon',address:'South City 1, Gurgaon',city:'Gurgaon',phone:'98100 56789',hours:'9am – 6pm'},
-    {name:'Bark & Bath Studio',type:'Grooming Salon',address:'Vasant Kunj, New Delhi',city:'Delhi',phone:'98110 67890',hours:'9am – 7pm'},
-    {name:'Happy Tails Boarding',type:'Boarding',address:'Sector 49, Near Huda Metro, Gurgaon',city:'Gurgaon',phone:'98100 78901',hours:'24 / 7'},
-    {name:'PawHaven Pet Resort',type:'Boarding',address:'Sector 18, Noida',city:'Noida',phone:'98110 89012',hours:'24 / 7'},
-    {name:'PetLand Super Store',type:'Pet Shop',address:'MG Road, Gurgaon',city:'Gurgaon',phone:'98100 90123',hours:'10am – 9pm'},
-    {name:'The Pet Boutique',type:'Pet Shop',address:'Lajpat Nagar Central Market, Delhi',city:'Delhi',phone:'98110 01234',hours:'11am – 9pm'},
-    {name:'Alpha Dog Training Academy',type:'Dog Trainer',address:'Nirvana Country, Sector 50, Gurgaon',city:'Gurgaon',phone:'98100 11234',hours:'By Appointment'},
-    {name:'K9 Professional Trainers',type:'Dog Trainer',address:'Sector 15, Noida',city:'Noida',phone:'98110 22345',hours:'7am – 7pm'},
-    {name:'Reptile & Exotic Vet Clinic',type:'Vet',address:'Hauz Khas, New Delhi',city:'Delhi',phone:'98110 33456',hours:'11am – 6pm'},
-    {name:'Feathers & Fins Pet Store',type:'Pet Shop',address:'Sector 29, Gurgaon',city:'Gurgaon',phone:'98100 44567',hours:'10am – 8pm'},
+    {name:'PawsFirst Veterinary Clinic',   type:'Vet',            address:'DLF Phase 2, Sector 25, Gurgaon',      city:'Gurgaon', phone:'98100 12345', hours:'9am – 9pm'},
+    {name:'Green Paws Animal Hospital',    type:'Vet',            address:'Sector 14, Near HUDA City Centre',      city:'Gurgaon', phone:'98100 23456', hours:'8am – 8pm'},
+    {name:'City Vet & Pet Clinic',         type:'Vet',            address:'South Extension Part II, New Delhi',    city:'Delhi',   phone:'98100 34567', hours:'10am – 7pm'},
+    {name:'The Grooming Parlour',          type:'Grooming Salon', address:'Sushant Lok Phase 1, Gurgaon',         city:'Gurgaon', phone:'98100 45678', hours:'10am – 7pm'},
+    {name:'Fluffy & Co. Pet Spa',          type:'Grooming Salon', address:'South City 1, Gurgaon',                city:'Gurgaon', phone:'98100 56789', hours:'9am – 6pm'},
+    {name:'Happy Tails Boarding',          type:'Boarding',       address:'Sector 49, Near Huda Metro, Gurgaon',  city:'Gurgaon', phone:'98100 67890', hours:'24 / 7'},
+    {name:'PawHaven Pet Resort',           type:'Boarding',       address:'Sector 18, Noida',                     city:'Noida',   phone:'98100 78901', hours:'24 / 7'},
+    {name:'PetLand Super Store',           type:'Pet Shop',       address:'MG Road, Above Starbucks, Gurgaon',    city:'Gurgaon', phone:'98100 89012', hours:'10am – 9pm'},
+    {name:'The Pet Boutique',              type:'Pet Shop',       address:'Lajpat Nagar Central Market, Delhi',   city:'Delhi',   phone:'98100 90123', hours:'11am – 9pm'},
+    {name:'Alpha Dog Training Academy',    type:'Dog Trainer',    address:'Nirvana Country, Sector 50, Gurgaon',  city:'Gurgaon', phone:'98100 01234', hours:'By Appointment'},
+    {name:'Noida Animal Hospital',         type:'Vet',            address:'Sector 62, Noida',                     city:'Noida',   phone:'98100 11234', hours:'8am – 9pm'},
+    {name:'Bark & Bath Studio',            type:'Grooming Salon', address:'Vasant Kunj, New Delhi',               city:'Delhi',   phone:'98100 21234', hours:'9am – 7pm'},
   ];
 }
 
-// ─── LOAD CSV ────────────────────────────
 async function load() {
-  showLoader();
-  HP.track('page_load_start', { timestamp: Date.now() });
+  startLoader();
+  HP.track('page_load_start', {timestamp:Date.now()});
   try {
-    const r = await fetch(CSV_URL);
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    const txt = await r.text();
-    const rows = parseCSV(txt).filter(r => norm(r).name);
-    if(!rows.length) throw new Error('empty');
+    var res = await fetch(CSV_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var rows = parseCSV(await res.text()).filter(function(r) { return norm(r).name; });
+    if (!rows.length) throw new Error('empty');
     all = rows;
-    HP.track('listings_loaded', { source: 'csv', count: all.length });
+    HP.track('listings_loaded', {source:'csv', count:rows.length});
   } catch(e) {
-    console.info('ℹ️ CSV not found at ' + CSV_URL + ' — using demo data. In production, host your CSV there.');
+    console.info('[HappyPets] CSV not found — using demo data. Set CSV_URL once hosted.');
     all = demo();
-    HP.track('listings_loaded', { source: 'demo', count: all.length });
+    HP.track('listings_loaded', {source:'demo', count:all.length});
   }
-  hideLoader();
-  render(true);
+  stopLoader(); render(true);
 }
 
-// ─── FILTER BUTTONS ──────────────────────
-document.querySelectorAll('.fbtn').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('.fbtn').forEach(x => x.classList.remove('on'));
-    b.classList.add('on');
-    const prev = activeF;
-    activeF = b.dataset.f;
-    HP.track('filter_change', {
-      filter_from: prev, filter_to: activeF,
-      result_count: filtered.length,
-    });
+/* ── FILTER BUTTONS ── */
+document.querySelectorAll('.fbtn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.fbtn').forEach(function(b) { b.classList.remove('on'); });
+    btn.classList.add('on'); activeF = btn.dataset.f;
+    HP.track('filter_change', {filter_value:btn.dataset.f, section:'listings'});
     render(true);
-    smoothTo('#listings');
+    document.getElementById('listings').scrollIntoView({behavior:'smooth', block:'start'});
   });
 });
-
-// Service cards filter + scroll
-document.querySelectorAll('.srv-card').forEach(c => {
-  c.addEventListener('click', () => {
-    const f = c.dataset.f, name = c.dataset.name;
+/* ── SERVICE CARDS ── */
+document.querySelectorAll('.srv-card').forEach(function(card) {
+  card.addEventListener('click', function() {
+    var f = card.dataset.f, label = card.querySelector('h3').textContent;
     activeF = f;
-    document.querySelectorAll('.fbtn').forEach(b => b.classList.toggle('on', b.dataset.f === f));
-    HP.track('service_card_click', { service_name: name, filter_applied: f });
+    document.querySelectorAll('.fbtn').forEach(function(b) { b.classList.toggle('on', b.dataset.f === f); });
+    HP.track('service_card_click', {service_name:label, filter_applied:f});
     render(true);
-    smoothTo('#listings');
+    document.getElementById('listings').scrollIntoView({behavior:'smooth'});
   });
 });
-
-// Load more
-document.getElementById('moreBtn').addEventListener('click', () => {
-  HP.track('load_more_click', { page_loaded: page, filter: activeF, results_shown: page * PAGE_SIZE });
-  render(false);
-});
-
-// Species click
-document.querySelectorAll('.spec-item').forEach(el => {
-  el.addEventListener('click', () => {
-    HP.track('species_click', { species: el.dataset.species });
-    openSpeciesPanel(el.dataset.species, el.querySelector('span').textContent);
+/* ── SERVICE CARD IMPRESSIONS ── */
+var srvObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { HP.track('service_card_impression', {service_name:e.target.querySelector('h3').textContent}); srvObs.unobserve(e.target); }
   });
-});
-
-// Search
+}, {threshold:.5});
+document.querySelectorAll('.srv-card').forEach(function(c) { srvObs.observe(c); });
+/* ── SEARCH ── */
 function doSearch() {
-  const q = document.getElementById('sInput').value.trim();
-  const city = document.getElementById('sCity').value;
-  searchQ = q; searchC = city;
-  HP.track('search_submit', {
-    query: q || '(empty)', city_filter: city || 'all',
-    active_category: activeF,
-  });
+  searchQ = document.getElementById('sInput').value.trim();
+  searchC = document.getElementById('sCity').value;
+  HP.track('search_submit', {search_term:searchQ, city_filter:searchC||'All', section:'hero'});
   render(true);
-  smoothTo('#listings');
+  document.getElementById('listings').scrollIntoView({behavior:'smooth'});
 }
 document.getElementById('sBtn').addEventListener('click', doSearch);
-document.getElementById('sInput').addEventListener('keydown', e => { if(e.key === 'Enter') doSearch(); });
-
-// Track search input focus (engagement signal)
-document.getElementById('sInput').addEventListener('focus', () => {
-  HP.track('search_focus', { section: 'hero' });
+document.getElementById('sInput').addEventListener('focus', function() { HP.track('search_focus', {section:'hero'}); });
+document.getElementById('sInput').addEventListener('keydown', function(e) { if(e.key==='Enter') doSearch(); });
+document.getElementById('sCity').addEventListener('change', function() { HP.track('city_filter_change', {city:this.value||'All', section:'hero'}); });
+/* ── LOAD MORE ── */
+document.getElementById('moreBtn').addEventListener('click', function() {
+  HP.track('load_more_click', {page_loaded:page, filter:activeF});
+  render(false);
+});
+/* ── ESCAPE KEY ── */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { closeMobileNav(); closeModal('modalListed'); closeModal('modalPartner'); closeEC(); closeSpeciesPanel(); }
 });
 
-// ═══════════════════════════════════════════════════════
-//  EMAIL CAPTURE SYSTEM
-//  When a user taps a locked phone/address on a card,
-//  we ask for their email before revealing it.
-//  Email saved to localStorage (30 days) + Google Sheets.
-//  Only asked once — then contact details always visible.
-// ═══════════════════════════════════════════════════════
-
-// ── VERIFIED STATE (localStorage, 30-day expiry) ────────
-const OTP = (() => {
-  const KEY = 'hp_verified_user';
-  const DAYS = 30;
-
-  function isVerified() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (!raw) return false;
-      const { email, expiry } = JSON.parse(raw);
-      return !!(email && Date.now() < expiry);
-    } catch { return false; }
-  }
-  function getEmail() {
-    try { return JSON.parse(localStorage.getItem(KEY) || '{}').email || null; } catch { return null; }
-  }
-  function save(email) {
-    const expiry = Date.now() + DAYS * 864e5;
-    localStorage.setItem(KEY, JSON.stringify({ email, expiry, saved_at: new Date().toISOString() }));
-  }
-  function clear() { localStorage.removeItem(KEY); }
-
-  let _pending = null;
-  function setPending(ctx) { _pending = ctx; }
-  function getPending()    { return _pending; }
-
-  // Called by card gating code
-  function requestVerification(context) {
-    if (isVerified()) {
-      if (context.onSuccess) context.onSuccess();
-    } else {
-      setPending(context);
-      openEmailCaptureModal(context);
-    }
-  }
-
-  return { isVerified, getEmail, save, clear, setPending, getPending, requestVerification };
-})();
-
-// ── EMAIL CAPTURE MODAL (built once, reused) ─────────────
-(function buildEmailModal() {
-  // Inject styles
-  const style = document.createElement('style');
-  style.textContent = `
-    .ph-reveal-btn {
-      color: var(--mid); font-size: .82rem; font-weight: 500;
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 4px 12px; background: var(--parchment);
-      border-radius: 20px; border: 1px dashed var(--border);
-      transition: background .2s, border-color .2s; cursor: pointer; white-space: nowrap;
-    }
-    .ph-reveal-btn:hover { background: var(--amber-soft, #FFF8E1); border-color: var(--amber, #F5B800); }
-    .addr-locked { filter: blur(4px); pointer-events: all; user-select: none; cursor: pointer; transition: filter .3s; }
-    .addr-locked:hover { filter: blur(2.5px); }
-    .ec-step { transition: opacity .3s, transform .3s; }
-    .ec-step.hidden { display: none; }
-  `;
-  document.head.appendChild(style);
-
-  // Build modal HTML
-  const el = document.createElement('div');
-  el.className = 'modal-backdrop';
-  el.id = 'emailCaptureModal';
-  el.setAttribute('aria-hidden', 'true');
-  el.innerHTML = `
-    <div class="modal" style="max-width:460px" role="dialog" aria-label="Enter your email to view contact">
-
-      <!-- Step 1: email entry -->
-      <div id="ecStep1" class="ec-step">
-        <button class="modal-close" id="ecClose" aria-label="Close">✕</button>
-        <div style="text-align:center;margin-bottom:24px">
-          <div style="font-size:2.5rem;margin-bottom:12px">📋</div>
-          <span class="modal-eyebrow">One quick step</span>
-          <h2 style="font-size:1.65rem">See contact details</h2>
-          <p class="modal-sub" id="ecContext" style="margin-bottom:0">
-            Drop your email to unlock the phone number and address. We won't spam you.
-          </p>
-        </div>
-        <div class="fld" style="margin-bottom:14px">
-          <label>Your email address <span style="color:var(--peach, #E8855A)">*</span></label>
-          <input type="email" id="ecEmailInput" placeholder="you@gmail.com" autocomplete="email"/>
-        </div>
-        <p style="font-size:.75rem;color:var(--mid);margin-bottom:18px;line-height:1.55;text-align:center">
-          We'll remember you for 30 days on this device. No spam, ever.
-        </p>
-        <div class="form-error" id="ecEmailError"></div>
-        <button class="form-submit" id="ecSubmitBtn">Unlock Contact Details →</button>
-      </div>
-
-      <!-- Step 2: success -->
-      <div id="ecStep2" class="ec-step hidden">
-        <div class="form-success show" style="padding:12px 0">
-          <div class="success-icon">✅</div>
-          <h3>You're all set!</h3>
-          <p id="ecSuccessMsg">Contact details are now visible. We've noted your email — we'll only reach out with useful updates.</p>
-        </div>
-      </div>
-
-    </div>`;
-  document.body.appendChild(el);
-
-  // Close handlers
-  document.getElementById('ecClose').addEventListener('click', closeEmailCaptureModal);
-  el.addEventListener('click', e => { if (e.target === el) closeEmailCaptureModal(); });
-
-  // Submit
-  document.getElementById('ecSubmitBtn').addEventListener('click', submitEmailCapture);
-  document.getElementById('ecEmailInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitEmailCapture();
-  });
-})();
-
-function openEmailCaptureModal(context) {
-  const modal = document.getElementById('emailCaptureModal');
-  document.getElementById('ecStep1').classList.remove('hidden');
-  document.getElementById('ecStep2').classList.add('hidden');
-  document.getElementById('ecEmailInput').value = OTP.getEmail() || '';
-  document.getElementById('ecEmailError').textContent = '';
-  document.getElementById('ecEmailError').classList.remove('show');
-  if (context?.providerName) {
-    document.getElementById('ecContext').textContent =
-      `Drop your email to unlock the contact details for ${context.providerName}.`;
-  }
-  modal.classList.add('open');
-  modal.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => document.getElementById('ecEmailInput').focus(), 350);
-  HP.track('email_capture_modal_open', {
-    provider_name: context?.providerName || '',
-    provider_city: context?.providerCity || '',
-  });
-}
-
-function closeEmailCaptureModal() {
-  const modal = document.getElementById('emailCaptureModal');
-  modal.classList.remove('open');
-  modal.setAttribute('aria-hidden', 'true');
-  document.body.style.overflow = '';
-}
-
-function submitEmailCapture() {
-  const emailInput = document.getElementById('ecEmailInput');
-  const email = emailInput.value.trim().toLowerCase();
-  const errEl = document.getElementById('ecEmailError');
-  errEl.classList.remove('show');
-
-  // Validate — basic but catches obvious junk
-  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-  if (!valid) {
-    errEl.textContent = 'Please enter a valid email address.';
-    errEl.classList.add('show');
-    emailInput.style.borderColor = '#E74C3C';
-    setTimeout(() => emailInput.style.borderColor = '', 1800);
-    return;
-  }
-
-  // Save locally
-  OTP.save(email);
-
-  // Save to Google Sheet (non-blocking)
-  const ctx = OTP.getPending();
-  if (APPS_SCRIPT_URL.startsWith('http')) {
-    fetch(APPS_SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sheet: 'user_leads',
-        email,
-        provider_name: ctx?.providerName || '',
-        provider_city: ctx?.providerCity || '',
-        provider_type: ctx?.providerType || '',
-        timestamp: new Date().toISOString(),
-        page: window.location.href,
-      }),
-    }).catch(() => {});
-  } else {
-    // Log to console during dev so you can see what would be saved
-    console.info('[HappyPets] Lead captured (set APPS_SCRIPT_URL to save to Sheets):', {
-      email, provider: ctx?.providerName, city: ctx?.providerCity,
-    });
-  }
-
-  HP.track('email_captured', {
-    email_domain: email.split('@')[1] || 'unknown',
-    provider_name: ctx?.providerName || '',
-    provider_city: ctx?.providerCity || '',
-  });
-
-  // Show success step briefly, then close and reveal
-  document.getElementById('ecStep1').classList.add('hidden');
-  document.getElementById('ecStep2').classList.remove('hidden');
-
-  setTimeout(() => {
-    closeEmailCaptureModal();
-    // Trigger the pending card reveal
-    if (ctx?.onSuccess) ctx.onSuccess();
-  }, 1400);
-}
-
-// ── ESCAPE KEY HANDLER ────────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeSpeciesPanel(); closeEmailCaptureModal(); closeMobileNav(); }
-});
-
-});
-
-// ═══════════════════════════════════════════════════════
-//  MODAL SYSTEM (Get Listed + Partner)
-// ═══════════════════════════════════════════════════════
-function openModal(id, trackLabel) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.add('open'); el.setAttribute('aria-hidden','false');
-  document.body.style.overflow = 'hidden';
-  HP.track('modal_open', { modal: trackLabel });
-}
-function closeModal(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.remove('open'); el.setAttribute('aria-hidden','true');
-  document.body.style.overflow = '';
-}
-
-// Wire CTA buttons to modals
-document.querySelectorAll('[data-track="cta_get_listed"], [data-track="footer_get_listed"], [data-track="nav_list_business"]').forEach(a => {
-  a.addEventListener('click', e => { e.preventDefault(); openModal('modalListed', 'get_listed'); });
-});
-document.querySelectorAll('[data-track="cta_partner"], [data-track="footer_partner"]').forEach(a => {
-  a.addEventListener('click', e => { e.preventDefault(); openModal('modalPartner', 'partner'); });
-});
-
-// Close buttons and backdrops
-document.getElementById('closeModalListed').addEventListener('click',  () => closeModal('modalListed'));
-document.getElementById('closeModalPartner').addEventListener('click', () => closeModal('modalPartner'));
-document.getElementById('modalListed').addEventListener('click',  e => { if(e.target === e.currentTarget) closeModal('modalListed'); });
-document.getElementById('modalPartner').addEventListener('click', e => { if(e.target === e.currentTarget) closeModal('modalPartner'); });
-
-// ── FORM SUBMISSION → GOOGLE SHEETS ─────────────────────
-// Google Apps Script setup (one-time, ~5 min):
-// 1. Go to sheet.new → create a Google Sheet
-// 2. Extensions → Apps Script → paste the script from SETUP.md
-// 3. Deploy → New deployment → Web app → Anyone → Deploy
-// 4. Copy the Web App URL and paste as APPS_SCRIPT_URL above
-async function submitToSheet(sheetName, data, submitBtn, wrapId, successId, errorId) {
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Submitting…';
-
-  HP.track('form_submit_attempt', { form: sheetName, city: data.city || '' });
-
-  if (!APPS_SCRIPT_URL.startsWith('http')) {
-    // No URL configured — show success anyway so form UX works during dev
-    console.info('[HappyPets] Set APPS_SCRIPT_URL to enable sheet logging. Data:', data);
-    showFormSuccess(wrapId, successId, submitBtn, sheetName);
-    return;
-  }
-
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sheet: sheetName, ...data, timestamp: new Date().toISOString() }),
-    });
-    showFormSuccess(wrapId, successId, submitBtn, sheetName);
-  } catch {
-    document.getElementById(errorId).textContent = 'Something went wrong. Please try again or email hello@happypets.in';
-    document.getElementById(errorId).classList.add('show');
-    submitBtn.disabled = false; submitBtn.textContent = 'Try Again';
-    HP.track('form_submit_error', { form: sheetName });
-  }
-}
-
-function showFormSuccess(wrapId, successId, btn, formName) {
-  document.getElementById(wrapId).style.display = 'none';
-  const s = document.getElementById(successId); s.style.display = 'flex'; s.classList.add('show');
-  HP.track('form_submit_success', { form: formName });
-  btn.disabled = false;
-}
-
-function validateRequired(fields) {
-  return fields.every(id => {
-    const el = document.getElementById(id);
-    const ok = el && el.value.trim();
-    if (el) el.style.borderColor = ok ? '' : '#E74C3C';
-    return ok;
-  });
-}
-
-// Get Listed form
-document.getElementById('listedSubmit').addEventListener('click', () => {
-  if (!validateRequired(['l_biz','l_name','l_phone','l_type','l_city'])) {
-    document.getElementById('listedError').textContent = 'Please fill in all required fields.';
-    document.getElementById('listedError').classList.add('show'); return;
-  }
-  document.getElementById('listedError').classList.remove('show');
-  submitToSheet('get_listed', {
-    business_name: document.getElementById('l_biz').value.trim(),
-    owner_name:    document.getElementById('l_name').value.trim(),
-    phone:         document.getElementById('l_phone').value.trim(),
-    email:         document.getElementById('l_email').value.trim(),
-    service_type:  document.getElementById('l_type').value,
-    city:          document.getElementById('l_city').value,
-    address:       document.getElementById('l_address').value.trim(),
-  }, document.getElementById('listedSubmit'), 'listedFormWrap', 'listedSuccess', 'listedError');
-});
-
-// Partner form
-document.getElementById('partnerSubmit').addEventListener('click', () => {
-  if (!validateRequired(['p_company','p_name','p_email','p_type'])) {
-    document.getElementById('partnerError').textContent = 'Please fill in all required fields.';
-    document.getElementById('partnerError').classList.add('show'); return;
-  }
-  document.getElementById('partnerError').classList.remove('show');
-  submitToSheet('partner_enquiry', {
-    company:          document.getElementById('p_company').value.trim(),
-    contact_name:     document.getElementById('p_name').value.trim(),
-    email:            document.getElementById('p_email').value.trim(),
-    phone:            document.getElementById('p_phone').value.trim(),
-    partnership_type: document.getElementById('p_type').value,
-    message:          document.getElementById('p_message').value.trim(),
-  }, document.getElementById('partnerSubmit'), 'partnerFormWrap', 'partnerSuccess', 'partnerError');
-});
-
-// ─── INIT ─────────────────────────────────
+/* ── INIT ── */
 load();
-
 </script>
 </body>
 </html>
